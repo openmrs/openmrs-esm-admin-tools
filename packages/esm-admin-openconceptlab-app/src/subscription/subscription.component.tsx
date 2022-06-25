@@ -60,19 +60,19 @@ const Subscription: React.FC = () => {
 
       const abortController = new AbortController();
 
-      const response = await updateSubscription(
-        {
-          ...subscription,
-          url: subscriptionUrl,
-          token: token,
-          validationType: validationType,
-          subscribedToSnapshot: isSubscribedToSnapshot,
-        },
-        abortController,
-      );
+      const updatedSubscription = {
+        ...subscription,
+        url: subscriptionUrl,
+        token: token,
+        validationType: validationType,
+        subscribedToSnapshot: isSubscribedToSnapshot,
+      };
+      mutate('/ws/rest/v1/openconceptlab/subscription?v=full', updatedSubscription, false);
+
+      const response = await updateSubscription(updatedSubscription, abortController);
+      mutate('/ws/rest/v1/openconceptlab/subscription?v=full');
 
       if (response.ok) {
-        mutate('/ws/rest/v1/openconceptlab/subscription?v=full');
         showToast({
           kind: 'success',
           description: t(response.status === 201 ? 'subscriptionCreated' : 'subscriptionUpdated'),

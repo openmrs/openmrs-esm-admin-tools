@@ -10,7 +10,7 @@ const Root: React.FC = () => {
   const { t } = useTranslation();
   return (
     <SWRConfig>
-      <main className={`omrs-main-content ${styles.main}`} >
+      <main className={`omrs-main-content ${styles.main}`}>
         <h3 className={styles.moduleHeader}>{t('moduleTitle')}</h3>
         <BrowserRouter basename={`${window.getOpenmrsSpaBase()}ocl`}>
           <Tabs className={styles.tabs} type="container">
