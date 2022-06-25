@@ -110,13 +110,13 @@ const Subscription: React.FC = () => {
       const abortController = new AbortController();
 
       const response = await deleteSubscription(subscription, abortController);
+      mutate('/ws/rest/v1/openconceptlab/subscription?v=full');
 
       if (response.status === 204) {
         setSubscriptionUrl('');
         setToken('');
         setIsSubscribedToSnapshot(false);
         setValidationType('FULL');
-        mutate('/ws/rest/v1/openconceptlab/subscription?v=full');
         showToast({
           kind: 'success',
           description: t('subscriptionDeleted'),
