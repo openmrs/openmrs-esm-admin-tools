@@ -1,0 +1,18 @@
+@import "~@openmrs/esm-styleguide/src/vars";
+@import "~carbon-components/src/globals/scss/vars";
+@import "~carbon-components/src/globals/scss/mixins";
+
+.main {
+  background-color: $ui-02
+}
+
+.moduleHeader {
+  @include carbon--type-style('productive-heading-03');
+  padding-left: $spacing-05;
+  padding-top: $spacing-05;
+  padding-bottom: $spacing-05;
+}
+
+.tabs {
+  padding: 0 $spacing-05;
+}

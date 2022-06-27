@@ -24,6 +24,17 @@ export async function updateSubscription(subscription: Subscription, abortContro
   return openmrsFetch<Subscription>(url, {
     method: 'POST',
     body: subscription,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    signal: abortController?.signal,
+  });
+}
+
+export async function deleteSubscription(subscription: Subscription, abortController?: AbortController) {
+  const url = `/ws/rest/v1/openconceptlab/subscription/${subscription.uuid}`;
+  return openmrsFetch<Subscription>(url, {
+    method: 'DELETE',
     signal: abortController?.signal,
   });
 }

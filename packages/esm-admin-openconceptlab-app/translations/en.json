@@ -1,14 +1,23 @@
 {
-  "subscriptionTitle": "OCL Subscription",
+  "moduleTitle": "OCL Subscription Module",
+  "subscription": "Subscription",
+  "import": "Import",
+  "previousImports": "Previous Imports",
+  "setupSubscription": "Setup Subscription",
   "subscriptionUrl": "Subscription URL",
   "apiToken": "Token",
-  "setupSubscription": "Setup Subscription",
+  "advancedOptions": "Advanced Options",
+  "subscribeToSnapshotText": "Subscribe to SNAPSHOT versions (not recommended)",
+  "disableValidationText": "Disable validation (should be used with care for well curated collections or sources)",
   "subscribeButton": "Save changes",
   "cancelButton": "Cancel changes",
-  "unsubscribeLegend": "Unsubscribe",
+  "unsubscribe": "Unsubscribe",
   "unsubscribeButton": "Unsubscribe",
   "unsubscribeInfo": "If you unsubscribe, no concepts will be deleted nor changed. All information about subscription will be deleted from your system.",
   "subscriptionCreated": "Subscription created successfully",
   "subscriptionUpdated": "Subscription updated successfully",
-  "errorSavingSubscription": "Error saving subscription"
+  "errorSavingSubscription": "Error occured while saving the subscription",
+  "subscriptionDeleted": "Successfully unsubscribed",
+  "errorDeletingSubscription": "Error occured while deleting the subscription",
+  "cancelledChanges": "Cancelled changes successfully"
 }
