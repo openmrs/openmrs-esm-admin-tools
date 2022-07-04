@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { SWRConfig } from 'swr';
 import Subscription from './subscription/subscription.component';
 import styles from './root.component.scss';
+import Import from './import/import.component';
 
 const Root: React.FC = () => {
   const { t } = useTranslation();
@@ -17,7 +18,9 @@ const Root: React.FC = () => {
             <Tab label={t('subscription')}>
               <Subscription />
             </Tab>
-            <Tab label={t('import')} />
+            <Tab label={t('import')}>
+              <Import />
+            </Tab>
             <Tab label={t('previousImports')} />
           </Tabs>
         </BrowserRouter>
