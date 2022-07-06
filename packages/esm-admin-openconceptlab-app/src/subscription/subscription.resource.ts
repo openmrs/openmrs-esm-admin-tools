@@ -1,7 +1,7 @@
 import { openmrsFetch } from '@openmrs/esm-framework';
 import useSWR from 'swr';
 import { Subscription } from '../types';
-import { isNil } from 'lodash-es';
+import { isNil } from 'lodash';
 
 export function useSubscription() {
   const { data, error, isValidating } = useSWR<{ data: { results: Subscription[] } }, Error>(
