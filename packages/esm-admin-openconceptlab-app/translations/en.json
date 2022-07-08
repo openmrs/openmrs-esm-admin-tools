@@ -32,5 +32,6 @@
   "importFailed": "Import failed",
   "noFileSelected": "No file selected",
   "noSubscriptionError": "No saved subscription",
-  "fileFormatError": "Only .zip files are allowed"
+  "fileFormatError": "Only .zip files are allowed",
+  "subscriptionError": "Error occured while fetching the subscription"
 }

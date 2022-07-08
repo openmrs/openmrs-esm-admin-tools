@@ -23,7 +23,7 @@ const Import: React.FC = () => {
   const { data: subscription, isLoading, isError } = useSubscription();
 
   useEffect(() => {
-    if (!isLoading) {
+    if (!isLoading && !isError) {
       setIsSubscriptionAvailable(!!subscription);
     }
   }, [isLoading, isError, subscription]);
@@ -129,6 +129,13 @@ const Import: React.FC = () => {
         </Column>
       </Row>
     );
+  }
+
+  if(isError) {
+    showNotification({
+      kind: 'error',
+      description: t('subscriptionError'),
+    });
   }
 
   return (
