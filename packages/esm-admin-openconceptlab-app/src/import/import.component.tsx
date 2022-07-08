@@ -1,4 +1,4 @@
-import { showNotification, showToast } from '@openmrs/esm-framework';
+import { showNotification } from '@openmrs/esm-framework';
 import {
   Button,
   ButtonSkeleton,
@@ -64,12 +64,12 @@ const Import: React.FC = () => {
       const response = await startImportWithSubscription(abortController);
 
       if (response.status === 201) {
-        showToast({
+        showNotification({
           kind: 'success',
           description: t('importSuccess'),
         });
       } else {
-        showToast({
+        showNotification({
           kind: 'error',
           description: t('importFailed'),
         });
@@ -96,12 +96,12 @@ const Import: React.FC = () => {
 
       if (response.status === 201) {
         setFile(null);
-        showToast({
+        showNotification({
           kind: 'success',
           description: t('importSuccess'),
         });
       } else {
-        showToast({
+        showNotification({
           kind: 'error',
           description: t('importFailed'),
         });
@@ -131,7 +131,7 @@ const Import: React.FC = () => {
     );
   }
 
-  if(isError) {
+  if (isError) {
     showNotification({
       kind: 'error',
       description: t('subscriptionError'),
