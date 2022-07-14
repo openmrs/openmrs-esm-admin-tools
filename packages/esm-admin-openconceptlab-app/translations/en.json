@@ -19,5 +19,19 @@
   "errorSavingSubscription": "Error occured while saving the subscription",
   "subscriptionDeleted": "Successfully unsubscribed",
   "errorDeletingSubscription": "Error occured while deleting the subscription",
-  "cancelledChanges": "Cancelled changes successfully"
+  "cancelledChanges": "Cancelled changes successfully",
+  "importConcepts": "Import Concepts",
+  "importInstructions": "Avoid importing during data entry hours, because the operation may significantly slow down the system. You can either use the subscription or a zip file to import concepts.",
+  "importFromSubscription": "Import from Subscription",
+  "importFromFileHeading": "Import from file (Offline)",
+  "importFromFileInfo": "You can import data without setting up a subscription by using this option.",
+  "fileAdded":"File Added",
+  "importFromFileDragInfo": "Drag and drop file here or click to upload",
+  "importFromFile": "Import from file",
+  "importSuccess": "Import started successfully",
+  "importFailed": "Import failed",
+  "noFileSelected": "No file selected",
+  "noSubscriptionError": "No saved subscription",
+  "fileFormatError": "Only .zip files are allowed",
+  "subscriptionError": "Error occured while fetching the subscription"
 }
