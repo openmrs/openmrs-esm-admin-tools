@@ -2,7 +2,7 @@ import React from 'react';
 import { render, cleanup, screen } from '@testing-library/react';
 import Root from './root.component';
 
-describe(`<Root />`, () => {
+describe(`Root component`, () => {
   afterEach(cleanup);
   it(`renders without dying`, () => {
     renderOclSubscriptionModule();
@@ -10,10 +10,10 @@ describe(`<Root />`, () => {
 
   it(`renders the title and tab containers`, () => {
     renderOclSubscriptionModule();
-    expect(screen.getByText(/OCL Subscription Module/i)).toBeInTheDocument();
-    expect(screen.getByText(/Subscription/i)).toBeInTheDocument();
-    expect(screen.getByText(/Import/i)).toBeInTheDocument();
-    expect(screen.getByText(/Previous Imports/i)).toBeInTheDocument();
+    expect(screen.getByText('moduleTitle')).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'subscription' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'import' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'previousImports' })).toBeInTheDocument();
   });
 });
 
