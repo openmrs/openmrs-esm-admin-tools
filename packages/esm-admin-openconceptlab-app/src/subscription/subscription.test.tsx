@@ -5,18 +5,12 @@ import Subscription from './subscription.component';
 import { openmrsFetch, showNotification } from '@openmrs/esm-framework';
 import { renderWithSwr } from '../../../../tools/test-helpers';
 import { deleteSubscription, updateSubscription } from './subscription.resource';
+import { mockSubscription } from '../../../../__mocks__/openconceptlab.mock';
 
 const mockOpenmrsFetch = openmrsFetch as jest.Mock;
 const mockUpdateSubscription = updateSubscription as jest.Mock;
 const mockDeleteSubscription = deleteSubscription as jest.Mock;
 const mockShowNotification = showNotification as jest.Mock;
-
-const mockSubscription = {
-  url: 'https://api.openconceptlab.org/orgs/openmrs/collections/DemoQueueConcepts/1',
-  token: 'Cff4906d8f4890fb08E287f6179781F6165C',
-  subscribedToSnapshot: false,
-  validationType: 'FULL',
-};
 
 jest.mock('./subscription.resource', () => {
   const originalModule = jest.requireActual('./subscription.resource');
