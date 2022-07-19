@@ -1,4 +1,4 @@
-import { showNotification, showToast } from '@openmrs/esm-framework';
+import { showNotification } from '@openmrs/esm-framework';
 import {
   Button,
   ButtonSkeleton,
@@ -73,7 +73,7 @@ const Subscription: React.FC = () => {
       mutate('/ws/rest/v1/openconceptlab/subscription?v=full');
 
       if (response.ok) {
-        showToast({
+        showNotification({
           kind: 'success',
           description: t(response.status === 201 ? 'subscriptionCreated' : 'subscriptionUpdated'),
         });
@@ -97,7 +97,7 @@ const Subscription: React.FC = () => {
     setIsSubscribedToSnapshot(subscription?.subscribedToSnapshot || false);
     setValidationType(subscription?.validationType || 'FULL');
 
-    showToast({
+    showNotification({
       kind: 'info',
       description: t('cancelledChanges'),
     });
@@ -117,7 +117,7 @@ const Subscription: React.FC = () => {
         setToken('');
         setIsSubscribedToSnapshot(false);
         setValidationType('FULL');
-        showToast({
+        showNotification({
           kind: 'success',
           description: t('subscriptionDeleted'),
         });
