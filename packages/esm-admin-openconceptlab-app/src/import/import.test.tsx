@@ -44,12 +44,12 @@ describe(`Import component`, () => {
     renderImportComponent();
     await waitForLoadingToFinish();
 
-    expect(screen.getByText('importConcepts')).toBeInTheDocument();
-    expect(screen.getByText('importInstructions')).toBeInTheDocument();
-    expect(screen.getByText('importFromSubscription')).toBeInTheDocument();
+    expect(screen.getByText('importConcepts')).toBeVisible();
+    expect(screen.getByText('importInstructions')).toBeVisible();
+    expect(screen.getByText('importFromSubscription')).toBeVisible();
 
-    expect(screen.getByText('importFromFileHeading')).toBeInTheDocument();
-    expect(screen.getByText('importFromFileInfo')).toBeInTheDocument();
+    expect(screen.getByText('importFromFileHeading')).toBeVisible();
+    expect(screen.getByText('importFromFileInfo')).toBeVisible();
     expect(screen.getByText('importFromFile')).toBeEnabled();
     expect(screen.queryByText('fileAdded')).not.toBeInTheDocument();
   });
@@ -81,16 +81,16 @@ describe(`Import component`, () => {
 
     await waitFor(() => userEvent.click(screen.getByText('importFromSubscription')));
 
-    expect(mockStartImportWithSubscription).toHaveBeenCalledTimes(1);
     expect(mockStartImportWithSubscription).toHaveBeenCalledWith(new AbortController());
+    expect(mockStartImportWithSubscription).toHaveBeenCalledTimes(1);
 
-    expect(mockShowNotification).toHaveBeenCalledTimes(1);
     expect(mockShowNotification).toHaveBeenCalledWith(
       expect.objectContaining({
         description: 'importSuccess',
         kind: 'success',
       }),
     );
+    expect(mockShowNotification).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -100,6 +100,6 @@ function renderImportComponent() {
 
 function waitForLoadingToFinish() {
   return waitFor(() => {
-    expect(screen.getByText('importConcepts')).toBeInTheDocument, { timeout: 2000 };
+    expect(screen.getByText('importConcepts')).toBeVisible, { timeout: 2000 };
   });
 }

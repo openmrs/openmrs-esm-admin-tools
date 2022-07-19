@@ -46,8 +46,8 @@ describe(`Subscription component`, () => {
     renderSubscriptionComponent();
     await waitForLoadingToFinish();
 
-    expect(screen.getByText('setupSubscription')).toBeInTheDocument();
-    expect(screen.getByText('unsubscribe')).toBeInTheDocument();
+    expect(screen.getByText('setupSubscription')).toBeVisible();
+    expect(screen.getByText('unsubscribe')).toBeVisible();
     expect(screen.getByText('unsubscribeButton')).toBeDisabled();
   });
 
@@ -78,19 +78,19 @@ describe(`Subscription component`, () => {
     userEvent.type(tokenInputField, mockSubscription.token);
     await waitFor(() => userEvent.click(saveButton));
 
-    expect(mockUpdateSubscription).toHaveBeenCalledTimes(1);
     expect(mockUpdateSubscription).toHaveBeenCalledWith(
       expect.objectContaining(mockSubscription),
       new AbortController(),
     );
+    expect(mockUpdateSubscription).toHaveBeenCalledTimes(1);
 
-    expect(mockShowNotification).toHaveBeenCalledTimes(1);
     expect(mockShowNotification).toHaveBeenCalledWith(
       expect.objectContaining({
         description: 'subscriptionCreated',
         kind: 'success',
       }),
     );
+    expect(mockShowNotification).toHaveBeenCalledTimes(1);
   });
 
   it(`allows changing the saved subscription`, async () => {
@@ -110,7 +110,6 @@ describe(`Subscription component`, () => {
     userEvent.type(tokenInputField, 'token123');
     await waitFor(() => userEvent.click(saveButton));
 
-    expect(mockUpdateSubscription).toHaveBeenCalledTimes(1);
     expect(mockUpdateSubscription).toHaveBeenCalledWith(
       expect.objectContaining({
         ...mockSubscription,
@@ -119,14 +118,15 @@ describe(`Subscription component`, () => {
       }),
       new AbortController(),
     );
+    expect(mockUpdateSubscription).toHaveBeenCalledTimes(1);
 
-    expect(mockShowNotification).toHaveBeenCalledTimes(1);
     expect(mockShowNotification).toHaveBeenCalledWith(
       expect.objectContaining({
         description: 'subscriptionUpdated',
         kind: 'success',
       }),
     );
+    expect(mockShowNotification).toHaveBeenCalledTimes(1);
   });
 
   it(`allows removing the saved subscription`, async () => {
@@ -140,19 +140,19 @@ describe(`Subscription component`, () => {
 
     await waitFor(() => userEvent.click(unsubscribeButton));
 
-    expect(mockDeleteSubscription).toHaveBeenCalledTimes(1);
     expect(mockDeleteSubscription).toHaveBeenCalledWith(
       expect.objectContaining(mockSubscription),
       new AbortController(),
     );
+    expect(mockDeleteSubscription).toHaveBeenCalledTimes(1);
 
-    expect(mockShowNotification).toHaveBeenCalledTimes(1);
     expect(mockShowNotification).toHaveBeenCalledWith(
       expect.objectContaining({
         description: 'subscriptionDeleted',
         kind: 'success',
       }),
     );
+    expect(mockShowNotification).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -162,6 +162,6 @@ function renderSubscriptionComponent() {
 
 function waitForLoadingToFinish() {
   return waitFor(() => {
-    expect(screen.getByText('setupSubscription')).toBeInTheDocument, { timeout: 2000 };
+    expect(screen.getByText('setupSubscription')).toBeVisible(), { timeout: 2000 };
   });
 }
