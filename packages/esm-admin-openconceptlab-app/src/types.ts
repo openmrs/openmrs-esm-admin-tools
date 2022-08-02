@@ -14,6 +14,7 @@ export interface Import {
   errorMessage: string;
   importProgress: number;
   allItemsCount: number;
+  addedItemsCount: number;
   errorItemsCount: number;
   ignoredErrorsCount: number;
   updatedItemsCount: number;
@@ -21,4 +22,13 @@ export interface Import {
   retiredItemsCount: number;
   unretiredItemsCount: number;
   status: string;
+}
+
+export interface ImportItem {
+  uuid: string;
+  errorMessage: string;
+  type: 'CONCEPT' | 'MAPPING';
+  versionUrl: string;
+  updatedOn: Date;
+  state: 'ADDED' | 'UPDATED' | 'RETIRED' | 'UNRETIRED' | 'ERROR' | 'IGNORED_ERROR' | 'UP_TO_DATE' | 'DUPLICATE';
 }

@@ -33,5 +33,18 @@
   "noFileSelected": "No file selected",
   "noSubscriptionError": "No saved subscription",
   "fileFormatError": "Only .zip files are allowed",
-  "subscriptionError": "Error occured while fetching the subscription"
+  "subscriptionError": "Error occured while fetching the subscription", 
+  "previousImportsFetchError": "Error occured while fetching the imports",
+  "dateAndTime": "Date and Time",
+  "duration": "Duration",
+  "status": "Status",
+  "startedOn": "Started on",
+  "completedOn": "Completed on",
+  "result": "Result:",
+  "conceptsUpToDate": "concepts up to date",
+  "conceptsAdded": "concepts added",
+  "conceptsUpdated": "concepts updated",
+  "conceptsRetired": "concepts retired",
+  "errorsFound": "errors found",
+  "errorsIgnored": "errors ignored"
 }

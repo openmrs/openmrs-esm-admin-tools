@@ -1,0 +1,44 @@
+@import "~@openmrs/esm-styleguide/src/vars";
+@import "~carbon-components/src/globals/scss/vars";
+@import "~carbon-components/src/globals/scss/mixins";
+
+.tabContentContainer {
+  height: 100%;
+  padding-left: $spacing-07;
+  padding-right: $spacing-07;
+  padding-top: $spacing-05;
+  padding-bottom: $spacing-07;
+  background-color: $ui-01;;
+  margin-left: -$spacing-07;
+  margin-top: -$spacing-05;
+  margin-right: -$spacing-05;
+}
+
+.productiveHeading03 {
+  @include carbon--type-style('productive-heading-03');
+  margin-bottom: $spacing-03;
+}
+
+.pagination {
+  @include carbon--type-style('body-short-01');
+  background-color: $ui-02;
+  color: $text-02;
+  border: 1px solid $ui-03;
+  display: flex;
+}
+
+.tableBordered {
+  border: 1px solid $ui-03;
+}
+
+.tableRow > td {
+  background-color: $ui-02;
+  border-bottom: 1px solid $ui-03 !important;
+}
+
+.tableExpandedRow > td {
+  padding-left: 3rem !important;
+  padding-right: 3rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
