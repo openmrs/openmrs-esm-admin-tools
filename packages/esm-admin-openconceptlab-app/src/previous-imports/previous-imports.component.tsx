@@ -1,4 +1,4 @@
-import { formatDatetime, showNotification } from '@openmrs/esm-framework';
+import { formatDatetime, showNotification, usePagination } from '@openmrs/esm-framework';
 import {
   Column,
   DataTable,
@@ -17,7 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from 'carbon-components-react';
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePreviousImports } from './previous-imports.resource';
 import styles from './previous-imports.component.scss';
@@ -26,8 +26,10 @@ import ImportOverview from './import-overview/import-overview.component';
 
 const PreviousImports: React.FC = () => {
   const { t } = useTranslation();
+  const [pageSize, setPageSize] = useState(10);
 
   const { data: prevImports, isLoading, isError } = usePreviousImports();
+  const { results, currentPage, goTo } = usePagination(prevImports, pageSize);
 
   if (isLoading) {
     return (
@@ -63,7 +65,7 @@ const PreviousImports: React.FC = () => {
     },
   ];
 
-  const rowData = prevImports?.map((prevImport) => {
+  const rowData = results?.map((prevImport) => {
     return {
       id: prevImport.uuid,
       localDateStarted: formatDatetime(new Date(prevImport.localDateStarted)),
@@ -116,11 +118,14 @@ const PreviousImports: React.FC = () => {
           <Pagination
             className={styles.pagination}
             size="sm"
-            page={1}
-            pageSize={10}
+            page={currentPage}
+            pageSize={pageSize}
             pageSizes={[10, 20, 50, 100]}
-            totalItems={25}
-            onChange={null}
+            totalItems={prevImports.length}
+            onChange={({ page, pageSize }) => {
+              goTo(page);
+              setPageSize(pageSize);
+            }}
           />
         </Column>
       </Row>

@@ -1,4 +1,4 @@
-import { showNotification, formatDatetime } from '@openmrs/esm-framework';
+import { showNotification, formatDatetime, usePagination } from '@openmrs/esm-framework';
 import {
   DataTableSkeleton,
   Link,
@@ -25,7 +25,10 @@ interface ImportOverviewProps {
 const ImportOverview: React.FC<ImportOverviewProps> = ({ selectedImportObject }) => {
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState<Boolean>();
+  const [pageSize, setPageSize] = useState(5);
+
   const [selectedImportItems, setSelectedImportItems] = useState<ImportItem[]>();
+  const { results, currentPage, goTo } = usePagination(selectedImportItems, pageSize);
 
   const handleImportDetails = useCallback(async (uuid: string) => {
     const abortController = new AbortController();
@@ -111,17 +114,29 @@ const ImportOverview: React.FC<ImportOverviewProps> = ({ selectedImportObject })
         <br />
 
         <div className={`body ${styles.indentedContent}`}>
-          <span>{selectedImportObject.upToDateItemsCount} {t('conceptsUpToDate')}</span>
+          <span>
+            {selectedImportObject.upToDateItemsCount} {t('conceptsUpToDate')}
+          </span>
           <br />
-          <span>{selectedImportObject.addedItemsCount} {t('conceptsAdded')}</span>
+          <span>
+            {selectedImportObject.addedItemsCount} {t('conceptsAdded')}
+          </span>
           <br />
-          <span>{selectedImportObject.updatedItemsCount} {t('conceptsUpdated')}</span>
+          <span>
+            {selectedImportObject.updatedItemsCount} {t('conceptsUpdated')}
+          </span>
           <br />
-          <span>{selectedImportObject.retiredItemsCount} {t('conceptsRetired')}</span>
+          <span>
+            {selectedImportObject.retiredItemsCount} {t('conceptsRetired')}
+          </span>
           <br />
-          <span>{selectedImportObject.errorItemsCount} {t('errorsFound')}</span>
+          <span>
+            {selectedImportObject.errorItemsCount} {t('errorsFound')}
+          </span>
           <br />
-          <span>{selectedImportObject.ignoredErrorsCount} {t('errorsIgnored')}</span>
+          <span>
+            {selectedImportObject.ignoredErrorsCount} {t('errorsIgnored')}
+          </span>
           <br />
         </div>
         <br />
@@ -138,7 +153,7 @@ const ImportOverview: React.FC<ImportOverviewProps> = ({ selectedImportObject })
                 </TableRow>
               </TableHead>
               <TableBody>
-                {selectedImportItems.map((row) => (
+                {results.map((row) => (
                   <Fragment>
                     <TableRow className={styles.tableDataRow}>
                       <TableCell>
@@ -155,11 +170,14 @@ const ImportOverview: React.FC<ImportOverviewProps> = ({ selectedImportObject })
             <Pagination
               className={styles.pagination}
               size="sm"
-              page={1}
-              pageSize={5}
+              page={currentPage}
+              pageSize={pageSize}
               pageSizes={[5, 10, 20, 50, 100]}
-              totalItems={44}
-              onChange={null}
+              totalItems={selectedImportItems.length}
+              onChange={({ page, pageSize }) => {
+                goTo(page);
+                setPageSize(pageSize);
+              }}
             />
           </div>
         )}
