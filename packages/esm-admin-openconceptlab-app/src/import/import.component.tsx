@@ -9,7 +9,7 @@ import {
   Form,
   Row,
   SkeletonText,
-} from 'carbon-components-react';
+} from '@carbon/react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './import.component.scss';

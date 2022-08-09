@@ -1,36 +1,36 @@
+@use "@carbon/styles/scss/spacing";
+@use "@carbon/styles/scss/type";
 @import "~@openmrs/esm-styleguide/src/vars";
-@import "~carbon-components/src/globals/scss/vars";
-@import "~carbon-components/src/globals/scss/mixins";
 
 .tabContentContainer {
   height: 100%;
-  padding-left: $spacing-07;
-  padding-right: $spacing-07;
-  padding-top: $spacing-05;
-  padding-bottom: $spacing-07;
-  background-color: $ui-01;;
-  margin-left: -$spacing-07;
-  margin-top: -$spacing-05;
-  margin-right: -$spacing-05;
+  padding-left: spacing.$spacing-07;
+  padding-right: spacing.$spacing-07;
+  padding-top: spacing.$spacing-05;
+  padding-bottom: spacing.$spacing-07;
+  background-color: $ui-01;
+  margin-left: -1 * spacing.$spacing-07;
+  margin-top: -1 * spacing.$spacing-05;
+  margin-right: -1 * spacing.$spacing-05;
 }
 
 .productiveHeading03 {
-  @include carbon--type-style('productive-heading-03');
-  margin-bottom: $spacing-03;
+  @include type.type-style('productive-heading-03');
+  margin-bottom: spacing.$spacing-03;
 }
 
 .input {
-  margin-bottom: $spacing-05;
+  margin-bottom: spacing.$spacing-05;
 }
 
 .formGroup {
-  margin-bottom: $spacing-05;
+  margin-bottom: spacing.$spacing-05;
 }
 
 .unsubscribeText {
-  padding-bottom: $spacing-05;
+  padding-bottom: spacing.$spacing-05;
 }
 
 .unsubscribeForm {
-  margin-top: $spacing-05;
+  margin-top: spacing.$spacing-05;
 }

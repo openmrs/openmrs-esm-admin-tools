@@ -11,7 +11,7 @@ import {
   SkeletonText,
   TextInput,
   TextInputSkeleton,
-} from 'carbon-components-react';
+} from '@carbon/react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { deleteSubscription, updateSubscription, useSubscription } from './subscription.resource';
@@ -82,7 +82,7 @@ const Subscription: React.FC = () => {
           title: t('errorSavingSubscription'),
           kind: 'error',
           critical: true,
-          description: response.data,
+          description: JSON.stringify(response.data),
         });
       }
 
@@ -126,7 +126,7 @@ const Subscription: React.FC = () => {
           title: t('errorDeletingSubscription'),
           kind: 'error',
           critical: true,
-          description: response.data,
+          description: JSON.stringify(response.data),
         });
       }
 

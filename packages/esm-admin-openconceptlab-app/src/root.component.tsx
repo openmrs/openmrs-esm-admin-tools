@@ -1,4 +1,4 @@
-import { Tab, Tabs } from 'carbon-components-react';
+import { Tab, Tabs } from '@carbon/react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { BrowserRouter } from 'react-router-dom';
