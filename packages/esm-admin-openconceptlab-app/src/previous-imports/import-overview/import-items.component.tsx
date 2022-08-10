@@ -30,6 +30,7 @@ const ImportItems: React.FC<ImportItemsProps> = ({ importUuid }) => {
   const { results, currentPage, goTo } = usePagination(selectedImportItems, pageSize);
 
   const handleImportDetails = useCallback(async (uuid: string) => {
+    setIsLoading(true);
     const abortController = new AbortController();
 
     const response = await getImportDetails(uuid, abortController);
@@ -49,9 +50,8 @@ const ImportItems: React.FC<ImportItemsProps> = ({ importUuid }) => {
   }, []);
 
   useEffect(() => {
-    setIsLoading(true);
     handleImportDetails(importUuid);
-  }, [handleImportDetails, importUuid]);
+  }, []);
 
   if (isLoading) {
     return (
@@ -87,8 +87,8 @@ const ImportItems: React.FC<ImportItemsProps> = ({ importUuid }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {results.map((row) => (
-              <Fragment>
+            {results?.map((row) => (
+              <Fragment key={row.uuid}>
                 <TableRow className={styles.tableDataRow}>
                   <TableCell>
                     <Link href={row.versionUrl}>
@@ -107,7 +107,7 @@ const ImportItems: React.FC<ImportItemsProps> = ({ importUuid }) => {
           page={currentPage}
           pageSize={pageSize}
           pageSizes={[5, 10, 20, 50, 100]}
-          totalItems={selectedImportItems.length}
+          totalItems={selectedImportItems?.length}
           onChange={({ page, pageSize }) => {
             goTo(page);
             setPageSize(pageSize);
