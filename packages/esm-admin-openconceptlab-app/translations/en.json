@@ -46,5 +46,7 @@
   "conceptsUpdated": "concepts updated",
   "conceptsRetired": "concepts retired",
   "errorsFound": "errors found",
-  "errorsIgnored": "errors ignored"
+  "errorsIgnored": "errors ignored",
+  "conceptOrMapping": "Concept/Mapping",
+  "message": "Message"
 }

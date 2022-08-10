@@ -9,24 +9,3 @@
 .indentedContent {
   margin-left: $spacing-07;
 }
-
-.pagination {
-  @include carbon--type-style('body-short-01');
-  background-color: $ui-02;
-  color: $text-02;
-  border: 1px solid $ui-03;
-  display: flex;
-}
-
-.tableBordered {
-  border: 1px solid $ui-03;
-}
-
-.tableDataRow > td {
-  padding-left: 1rem !important;
-  background-color: $ui-02 !important;
-}
-
-.tableHeaderRow > th {
-  background-color: $ui-03 !important;
-}
