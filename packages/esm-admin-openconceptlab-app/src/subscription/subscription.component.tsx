@@ -7,7 +7,8 @@ import {
   Column,
   Form,
   FormGroup,
-  Row,
+  Grid,
+  Stack,
   SkeletonText,
   TextInput,
   TextInputSkeleton,
@@ -137,16 +138,18 @@ const Subscription: React.FC = () => {
 
   if (isLoading) {
     return (
-      <Row className={styles.tabContentContainer}>
-        <Column sm={12} lg={7}>
+      <Grid className={styles.grid}>
+        <Column sm={4} md={8} lg={10}>
           <Form>
             <SkeletonText className={styles.productiveHeading03} />
-            <TextInputSkeleton className={styles.input} />
-            <TextInputSkeleton className={styles.input} />
-            <FormGroup legendText={<SkeletonText width="75px" />} className={styles.formGroup}>
-              <CheckboxSkeleton />
-              <CheckboxSkeleton />
-            </FormGroup>
+            <Stack gap={5}>
+              <TextInputSkeleton />
+              <TextInputSkeleton />
+              <FormGroup legendText={<SkeletonText width="75px" />} className={styles.formGroup}>
+                <CheckboxSkeleton />
+                <CheckboxSkeleton />
+              </FormGroup>
+            </Stack>
             <ButtonSkeleton />
             <ButtonSkeleton />
           </Form>
@@ -156,51 +159,51 @@ const Subscription: React.FC = () => {
             <ButtonSkeleton />
           </Form>
         </Column>
-      </Row>
+      </Grid>
     );
   }
 
   return (
-    <Row className={styles.tabContentContainer}>
-      <Column sm={12} lg={7}>
+    <Grid className={styles.grid}>
+      <Column sm={4} md={8} lg={10}>
         <Form onSubmit={handleSubmit}>
           <h3 className={styles.productiveHeading03}>{t('setupSubscription')}</h3>
-          <TextInput
-            className={styles.input}
-            id="subscriptionUrl"
-            type="url"
-            labelText={t('subscriptionUrl')}
-            placeholder="https://api.openconceptlab.org/orgs/organization-name/collections/dictionary-name"
-            value={subscriptionUrl}
-            onChange={handleChangeSubscriptionUrl}
-            light={true}
-            required
-          />
-          <TextInput
-            className={styles.input}
-            id="apiToken"
-            type="password"
-            placeholder="••••••••••••••••••••••••••••••••••••••••••••••••"
-            labelText={t('apiToken')}
-            value={token}
-            onChange={handleChangeToken}
-            light={true}
-            required
-          />
-          <FormGroup legendText={t('advancedOptions')} className={styles.formGroup}>
-            <Checkbox
-              checked={isSubscribedToSnapshot}
-              onChange={handleChangeSubscriptionType}
-              labelText={t('subscribeToSnapshotText')}
-              id="isSubscribedToSnapshot"
+          <Stack gap={5}>
+            <TextInput
+              id="subscriptionUrl"
+              type="url"
+              labelText={t('subscriptionUrl')}
+              placeholder="https://api.openconceptlab.org/orgs/organization-name/collections/dictionary-name"
+              value={subscriptionUrl}
+              onChange={handleChangeSubscriptionUrl}
+              light={true}
+              required
             />
-            <Checkbox
-              checked={validationType === 'NONE'}
-              onChange={handleChangeValidationType}
-              labelText={t('disableValidationText')}
-              id="isValidationDisabled"
+            <TextInput
+              id="apiToken"
+              type="password"
+              placeholder="••••••••••••••••••••••••••••••••••••••••••••••••"
+              labelText={t('apiToken')}
+              value={token}
+              onChange={handleChangeToken}
+              light={true}
+              required
             />
-          </FormGroup>
+            <FormGroup legendText={t('advancedOptions')} className={styles.formGroup}>
+              <Checkbox
+                checked={isSubscribedToSnapshot}
+                onChange={handleChangeSubscriptionType}
+                labelText={t('subscribeToSnapshotText')}
+                id="isSubscribedToSnapshot"
+              />
+              <Checkbox
+                checked={validationType === 'NONE'}
+                onChange={handleChangeValidationType}
+                labelText={t('disableValidationText')}
+                id="isValidationDisabled"
+              />
+            </FormGroup>
+          </Stack>
           <Button kind="secondary" onClick={handleCancel}>
             {t('cancelButton')}
           </Button>
@@ -216,7 +219,7 @@ const Subscription: React.FC = () => {
           </Button>
         </Form>
       </Column>
-    </Row>
+    </Grid>
   );
 };
 

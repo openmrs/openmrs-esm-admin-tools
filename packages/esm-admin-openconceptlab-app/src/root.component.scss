@@ -3,7 +3,7 @@
 @import "~@openmrs/esm-styleguide/src/vars";
 
 .main {
-  background-color: $ui-02
+  background-color: $ui-02;
 }
 
 .moduleHeader {
@@ -13,6 +13,11 @@
   padding-bottom: spacing.$spacing-05;
 }
 
-.tabs {
+.tabList {
   padding: 0 spacing.$spacing-05;
+}
+
+.tabPanel {
+  height: 100%;
+  background-color: $ui-01;
 }
