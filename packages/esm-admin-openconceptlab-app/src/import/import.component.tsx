@@ -7,7 +7,7 @@ import {
   FileUploaderItem,
   FileUploaderSkeleton,
   Form,
-  Row,
+  Grid,
   SkeletonText,
 } from '@carbon/react';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -112,8 +112,8 @@ const Import: React.FC = () => {
 
   if (isLoading) {
     return (
-      <Row className={styles.tabContentContainer}>
-        <Column sm={12} lg={7}>
+      <Grid className={styles.grid}>
+        <Column sm={4} md={8} lg={10}>
           <Form>
             <SkeletonText className={styles.productiveHeading03} heading={true} />
             <SkeletonText className={styles.formText} paragraph={true} lineCount={2} />
@@ -127,7 +127,7 @@ const Import: React.FC = () => {
             <ButtonSkeleton />
           </Form>
         </Column>
-      </Row>
+      </Grid>
     );
   }
 
@@ -139,8 +139,8 @@ const Import: React.FC = () => {
   }
 
   return (
-    <Row className={styles.tabContentContainer}>
-      <Column sm={12} lg={7}>
+    <Grid className={styles.grid}>
+      <Column sm={4} md={8} lg={10}>
         <Form onSubmit={handleImportWithSubscription}>
           <h3 className={styles.productiveHeading03}>{t('importConcepts')}</h3>
           <p className={styles.formText}>{t('importInstructions')}</p>
@@ -176,7 +176,7 @@ const Import: React.FC = () => {
           </Button>
         </Form>
       </Column>
-    </Row>
+    </Grid>
   );
 };
 
