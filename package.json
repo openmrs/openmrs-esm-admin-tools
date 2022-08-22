@@ -35,7 +35,6 @@
     "@types/lodash-es": "^4.17.3",
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.5",
-    "@types/react-router-dom": "^5.3.3",
     "@types/webpack-env": "^1.16.0",
     "@typescript-eslint/eslint-plugin": "^4.15.1",
     "@typescript-eslint/parser": "^4.15.1",
