@@ -1,32 +1,27 @@
+@use "@carbon/styles/scss/spacing";
+@use "@carbon/styles/scss/type";
 @import "~@openmrs/esm-styleguide/src/vars";
-@import "~carbon-components/src/globals/scss/vars";
-@import "~carbon-components/src/globals/scss/mixins";
 
-.tabContentContainer {
-  height: 100%;
-  background-color: $ui-01;
-  padding-left: $spacing-07;
-  padding-right: $spacing-07;
-  padding-top: $spacing-05;
-  padding-bottom: $spacing-07;
-  margin-left: -$spacing-07;
-  margin-top: -$spacing-05;
-  margin-right: -$spacing-05;
+.grid {
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .productiveHeading03 {
-  @include carbon--type-style('productive-heading-03');
-  margin-bottom: $spacing-03;
+  @include type.type-style('productive-heading-03');
+  margin-bottom: spacing.$spacing-03;
 }
 
 .form {
-  margin-top: $spacing-07;
+  margin-top: spacing.$spacing-07;
 }
 
 .formText {
-  padding-bottom: $spacing-05;
+  padding-bottom: spacing.$spacing-05;
 }
 
 .fileUploaderDropContainer {
-  margin-bottom: $spacing-06;
+  margin-bottom: spacing.$spacing-06;
 }

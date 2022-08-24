@@ -1,18 +1,23 @@
+@use "@carbon/styles/scss/spacing";
+@use "@carbon/styles/scss/type";
 @import "~@openmrs/esm-styleguide/src/vars";
-@import "~carbon-components/src/globals/scss/vars";
-@import "~carbon-components/src/globals/scss/mixins";
 
 .main {
-  background-color: $ui-02
+  background-color: $ui-02;
 }
 
 .moduleHeader {
-  @include carbon--type-style('productive-heading-03');
-  padding-left: $spacing-05;
-  padding-top: $spacing-05;
-  padding-bottom: $spacing-05;
+  @include type.type-style('productive-heading-03');
+  padding-left: spacing.$spacing-05;
+  padding-top: spacing.$spacing-05;
+  padding-bottom: spacing.$spacing-05;
 }
 
-.tabs {
-  padding: 0 $spacing-05;
+.tabList {
+  padding: 0 spacing.$spacing-05;
+}
+
+.tabPanel {
+  height: 100%;
+  background-color: $ui-01;
 }
