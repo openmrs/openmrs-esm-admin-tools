@@ -29,29 +29,32 @@ const ImportItems: React.FC<ImportItemsProps> = ({ importUuid }) => {
   const [selectedImportItems, setSelectedImportItems] = useState<ImportItem[]>([]);
   const { results, currentPage, goTo } = usePagination(selectedImportItems, pageSize);
 
-  const handleImportDetails = useCallback(async (uuid: string) => {
-    setIsLoading(true);
-    const abortController = new AbortController();
+  const handleImportDetails = useCallback(
+    async (uuid: string) => {
+      setIsLoading(true);
+      const abortController = new AbortController();
 
-    const response = await getImportDetails(uuid, abortController);
+      const response = await getImportDetails(uuid, abortController);
 
-    if (response.ok) {
-      setSelectedImportItems(response.data.results);
-    } else {
-      showNotification({
-        title: t('importItemsFetchError', 'Error occured while fetching the import items'),
-        kind: 'error',
-        critical: true,
-        description: JSON.stringify(response.data),
-      });
-    }
-    setIsLoading(false);
-    return () => abortController.abort();
-  }, []);
+      if (response.ok) {
+        setSelectedImportItems(response.data.results);
+      } else {
+        showNotification({
+          title: t('importItemsFetchError', 'Error occured while fetching the import items'),
+          kind: 'error',
+          critical: true,
+          description: JSON.stringify(response.data),
+        });
+      }
+      setIsLoading(false);
+      return () => abortController.abort();
+    },
+    [t],
+  );
 
   useEffect(() => {
     handleImportDetails(importUuid);
-  }, []);
+  }, [handleImportDetails, importUuid]);
 
   if (isLoading) {
     return (

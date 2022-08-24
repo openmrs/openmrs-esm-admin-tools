@@ -10,10 +10,10 @@ describe(`Root component`, () => {
 
   it(`renders the title and tab containers`, () => {
     renderOclSubscriptionModule();
-    expect(screen.getByText('moduleTitle')).toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: 'subscription' })).toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: 'import' })).toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: 'previousImports' })).toBeInTheDocument();
+    expect(screen.getByText('OCL Subscription Module')).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Subscription' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Import' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Previous Imports' })).toBeInTheDocument();
   });
 });
 

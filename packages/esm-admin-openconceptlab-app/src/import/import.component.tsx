@@ -34,7 +34,7 @@ const Import: React.FC = () => {
       if (fileToUpload.type !== 'application/zip') {
         showNotification({
           kind: 'error',
-          description: t('fileFormatError'),
+          description: t('fileFormatError', 'Only .zip files are allowed'),
         });
       } else {
         setFile(fileToUpload);
@@ -55,7 +55,7 @@ const Import: React.FC = () => {
       if (!isSubscriptionAvailable) {
         showNotification({
           kind: 'error',
-          description: t('noSubscriptionError'),
+          description: t('noSubscriptionError', 'No saved subscription'),
         });
         return;
       }
@@ -66,12 +66,12 @@ const Import: React.FC = () => {
       if (response.status === 201) {
         showNotification({
           kind: 'success',
-          description: t('importSuccess'),
+          description: t('importSuccess', 'Import started successfully'),
         });
       } else {
         showNotification({
           kind: 'error',
-          description: t('importFailed'),
+          description: t('importFailed', 'Import failed'),
         });
       }
     },
@@ -86,7 +86,7 @@ const Import: React.FC = () => {
       if (!file) {
         showNotification({
           kind: 'error',
-          description: t('noFileSelected'),
+          description: t('noFileSelected', 'No file selected'),
         });
         return;
       }
@@ -98,12 +98,12 @@ const Import: React.FC = () => {
         setFile(null);
         showNotification({
           kind: 'success',
-          description: t('importSuccess'),
+          description: t('importSuccess', 'Import started successfully'),
         });
       } else {
         showNotification({
           kind: 'error',
-          description: t('importFailed'),
+          description: t('importFailed', 'Import failed'),
         });
       }
     },
@@ -134,7 +134,7 @@ const Import: React.FC = () => {
   if (isError) {
     showNotification({
       kind: 'error',
-      description: t('subscriptionError'),
+      description: t('subscriptionError', 'Error occured while fetching the subscription'),
     });
   }
 
@@ -142,23 +142,30 @@ const Import: React.FC = () => {
     <Grid className={styles.grid}>
       <Column sm={4} md={8} lg={10}>
         <Form onSubmit={handleImportWithSubscription}>
-          <h3 className={styles.productiveHeading03}>{t('importConcepts')}</h3>
-          <p className={styles.formText}>{t('importInstructions')}</p>
+          <h3 className={styles.productiveHeading03}>{t('importConcepts', 'Import Concepts')}</h3>
+          <p className={styles.formText}>
+            {t(
+              'importInstructions',
+              'Avoid importing during data entry hours, because the operation may significantly slow down the system. You can either use the subscription or a zip file to import concepts.',
+            )}
+          </p>
           <Button kind="primary" type="submit" disabled={!isSubscriptionAvailable}>
-            {t('importFromSubscription')}
+            {t('importFromSubscription', 'Import from Subscription')}
           </Button>
         </Form>
 
         <Form className={styles.form} onSubmit={handleImportWithFile}>
-          <h3 className={styles.productiveHeading03}>{t('importFromFileHeading')}</h3>
-          <p className={styles.formText}>{t('importFromFileInfo')}</p>
+          <h3 className={styles.productiveHeading03}>{t('importFromFileHeading', 'Import from file (Offline)')}</h3>
+          <p className={styles.formText}>
+            {t('importFromFileInfo', 'You can import data without setting up a subscription by using this option.')}
+          </p>
           {file ? (
             <FileUploaderItem
               key={file.name}
               name={file.name}
               size="default"
               status="edit"
-              iconDescription={t('fileAdded')}
+              iconDescription={t('fileAdded', 'File Added')}
               onDelete={handleFileUploaderItemClick}
               style={{ backgroundColor: '#e0e0e0' }}
             />
@@ -166,13 +173,13 @@ const Import: React.FC = () => {
             <FileUploaderDropContainer
               accept={['application/zip']}
               multiple
-              labelText={t('importFromFileDragInfo')}
+              labelText={t('importFromFileDragInfo', 'Drag and drop file here or click to upload')}
               onAddFiles={onAddFiles}
               style={{ marginBottom: '1.5rem' }}
             />
           )}
           <Button kind="primary" type="submit">
-            {t('importFromFile')}
+            {t('importFromFile', 'Import from file')}
           </Button>
         </Form>
       </Column>

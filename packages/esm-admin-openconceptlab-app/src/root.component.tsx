@@ -12,12 +12,12 @@ const Root: React.FC = () => {
   return (
     <SWRConfig>
       <main className={`omrs-main-content ${styles.main}`}>
-        <h3 className={styles.moduleHeader}>{t('moduleTitle')}</h3>
+        <h3 className={styles.moduleHeader}>{t('moduleTitle', 'OCL Subscription Module')}</h3>
         <Tabs>
           <TabList className={styles.tabList} contained={true}>
-            <Tab>{t('subscription')} </Tab>
-            <Tab>{t('import')} </Tab>
-            <Tab>{t('previousImports')} </Tab>
+            <Tab>{t('subscription', 'Subscription')} </Tab>
+            <Tab>{t('import', 'Import')} </Tab>
+            <Tab>{t('previousImports', 'Previous Imports')} </Tab>
           </TabList>
           <TabPanels>
             <TabPanel className={styles.tabPanel}>

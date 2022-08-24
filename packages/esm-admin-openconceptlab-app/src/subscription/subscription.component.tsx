@@ -76,11 +76,14 @@ const Subscription: React.FC = () => {
       if (response.ok) {
         showNotification({
           kind: 'success',
-          description: t(response.status === 201 ? 'subscriptionCreated' : 'subscriptionUpdated'),
+          description: t(
+            response.status === 201 ? 'subscriptionCreated' : 'subscriptionUpdated',
+            response.status === 201 ? 'Subscription created successfully' : 'Subscription updated successfully',
+          ),
         });
       } else {
         showNotification({
-          title: t('errorSavingSubscription'),
+          title: t('errorSavingSubscription', 'Error occured while saving the subscription'),
           kind: 'error',
           critical: true,
           description: JSON.stringify(response.data),
@@ -100,7 +103,7 @@ const Subscription: React.FC = () => {
 
     showNotification({
       kind: 'info',
-      description: t('cancelledChanges'),
+      description: t('cancelledChanges', 'Cancelled changes successfully'),
     });
   }, [subscription, t]);
 
@@ -120,11 +123,11 @@ const Subscription: React.FC = () => {
         setValidationType('FULL');
         showNotification({
           kind: 'success',
-          description: t('subscriptionDeleted'),
+          description: t('subscriptionDeleted', 'Successfully unsubscribed'),
         });
       } else {
         showNotification({
-          title: t('errorDeletingSubscription'),
+          title: t('errorDeletingSubscription', 'Error occured while deleting the subscription'),
           kind: 'error',
           critical: true,
           description: JSON.stringify(response.data),
@@ -166,7 +169,7 @@ const Subscription: React.FC = () => {
   if (isError) {
     showNotification({
       kind: 'error',
-      description: t('subscriptionError'),
+      description: t('subscriptionError', 'Error occured while fetching the subscription'),
     });
   }
 
@@ -174,12 +177,12 @@ const Subscription: React.FC = () => {
     <Grid className={styles.grid}>
       <Column sm={4} md={8} lg={10}>
         <Form onSubmit={handleSubmit}>
-          <h3 className={styles.productiveHeading03}>{t('setupSubscription')}</h3>
+          <h3 className={styles.productiveHeading03}>{t('setupSubscription', 'Setup Subscription')}</h3>
           <Stack gap={5}>
             <TextInput
               id="subscriptionUrl"
               type="url"
-              labelText={t('subscriptionUrl')}
+              labelText={t('subscriptionUrl', 'Subscription URL')}
               placeholder="https://api.openconceptlab.org/orgs/organization-name/collections/dictionary-name"
               value={subscriptionUrl}
               onChange={handleChangeSubscriptionUrl}
@@ -190,39 +193,47 @@ const Subscription: React.FC = () => {
               id="apiToken"
               type="password"
               placeholder="••••••••••••••••••••••••••••••••••••••••••••••••"
-              labelText={t('apiToken')}
+              labelText={t('apiToken', 'Token')}
               value={token}
               onChange={handleChangeToken}
               light={true}
               required
             />
-            <FormGroup legendText={t('advancedOptions')} className={styles.formGroup}>
+            <FormGroup legendText={t('advancedOptions', 'Advanced Options')} className={styles.formGroup}>
               <Checkbox
                 checked={isSubscribedToSnapshot}
                 onChange={handleChangeSubscriptionType}
-                labelText={t('subscribeToSnapshotText')}
+                labelText={t('subscribeToSnapshotText', 'Subscribe to SNAPSHOT versions (not recommended)')}
                 id="isSubscribedToSnapshot"
               />
               <Checkbox
                 checked={validationType === 'NONE'}
                 onChange={handleChangeValidationType}
-                labelText={t('disableValidationText')}
+                labelText={t(
+                  'disableValidationText',
+                  'Disable validation (should be used with care for well curated collections or sources)',
+                )}
                 id="isValidationDisabled"
               />
             </FormGroup>
           </Stack>
           <Button kind="secondary" onClick={handleCancel}>
-            {t('cancelButton')}
+            {t('cancelButton', 'Cancel changes')}
           </Button>
           <Button kind="primary" type="submit">
-            {t('subscribeButton')}
+            {t('subscribeButton', 'Save changes')}
           </Button>
         </Form>
         <Form onSubmit={handleUnsubscribe} className={styles.unsubscribeForm}>
-          <h3 className={styles.productiveHeading03}>{t('unsubscribe')}</h3>
-          <p className={styles.unsubscribeText}>{t('unsubscribeInfo')}</p>
+          <h3 className={styles.productiveHeading03}>{t('unsubscribe', 'Unsubscribe')}</h3>
+          <p className={styles.unsubscribeText}>
+            {t(
+              'unsubscribeInfo',
+              'If you unsubscribe, no concepts will be deleted nor changed. All information about subscription will be deleted from your system.',
+            )}
+          </p>
           <Button kind="danger" type="submit" disabled={!subscription}>
-            {t('unsubscribeButton')}
+            {t('unsubscribeButton', 'Unsubscribe')}
           </Button>
         </Form>
       </Column>

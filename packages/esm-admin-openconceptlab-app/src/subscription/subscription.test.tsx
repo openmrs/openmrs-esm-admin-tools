@@ -47,9 +47,9 @@ describe(`Subscription component`, () => {
     renderSubscriptionComponent();
     await waitForLoadingToFinish();
 
-    expect(screen.getByText('setupSubscription')).toBeVisible();
-    expect(screen.getByText('unsubscribe')).toBeVisible();
-    expect(screen.getByText('unsubscribeButton')).toBeDisabled();
+    expect(screen.getByText('Setup Subscription')).toBeVisible();
+    expect(screen.getByRole('heading', { name: 'Unsubscribe' })).toBeVisible();
+    expect(screen.getByRole('button', { name: 'danger Unsubscribe' })).toBeDisabled();
   });
 
   it(`renders the subscription if a subscription exists`, async () => {
@@ -58,11 +58,13 @@ describe(`Subscription component`, () => {
     await waitForLoadingToFinish();
     await waitForLoadingSubscription();
 
-    expect(screen.getByLabelText('subscriptionUrl')).toHaveValue(mockSubscription.url);
-    expect(screen.getByLabelText('apiToken')).toHaveValue(mockSubscription.token);
-    expect(screen.getByLabelText('subscribeToSnapshotText')).not.toBeChecked();
-    expect(screen.getByLabelText('disableValidationText')).not.toBeChecked();
-    expect(screen.getByText('unsubscribeButton')).toBeEnabled();
+    expect(screen.getByLabelText('Subscription URL')).toHaveValue(mockSubscription.url);
+    expect(screen.getByLabelText('Token')).toHaveValue(mockSubscription.token);
+    expect(screen.getByLabelText('Subscribe to SNAPSHOT versions (not recommended)')).not.toBeChecked();
+    expect(
+      screen.getByLabelText('Disable validation (should be used with care for well curated collections or sources)'),
+    ).not.toBeChecked();
+    expect(screen.getByRole('button', { name: 'danger Unsubscribe' })).toBeEnabled();
   });
 
   it(`allows adding a new subscription`, async () => {
@@ -70,9 +72,9 @@ describe(`Subscription component`, () => {
     renderSubscriptionComponent();
     await waitForLoadingToFinish();
 
-    const urlInputField = screen.getByLabelText('subscriptionUrl');
-    const tokenInputField = screen.getByLabelText('apiToken');
-    const saveButton = screen.getByText('subscribeButton');
+    const urlInputField = screen.getByLabelText('Subscription URL');
+    const tokenInputField = screen.getByLabelText('Token');
+    const saveButton = screen.getByRole('button', { name: 'Save changes' });
 
     mockUpdateSubscription.mockReturnValueOnce({ status: 201, ok: true });
 
@@ -88,7 +90,7 @@ describe(`Subscription component`, () => {
 
     expect(mockShowNotification).toHaveBeenCalledWith(
       expect.objectContaining({
-        description: 'subscriptionCreated',
+        description: 'Subscription created successfully',
         kind: 'success',
       }),
     );
@@ -101,9 +103,9 @@ describe(`Subscription component`, () => {
     await waitForLoadingToFinish();
     await waitForLoadingSubscription();
 
-    const urlInputField = screen.getByLabelText('subscriptionUrl');
-    const tokenInputField = screen.getByLabelText('apiToken');
-    const saveButton = screen.getByText('subscribeButton');
+    const urlInputField = screen.getByLabelText('Subscription URL');
+    const tokenInputField = screen.getByLabelText('Token');
+    const saveButton = screen.getByRole('button', { name: 'Save changes' });
 
     mockUpdateSubscription.mockReturnValueOnce({ status: 200, ok: true });
 
@@ -127,7 +129,7 @@ describe(`Subscription component`, () => {
 
     expect(mockShowNotification).toHaveBeenCalledWith(
       expect.objectContaining({
-        description: 'subscriptionUpdated',
+        description: 'Subscription updated successfully',
         kind: 'success',
       }),
     );
@@ -140,7 +142,7 @@ describe(`Subscription component`, () => {
     await waitForLoadingToFinish();
     await waitForLoadingSubscription();
 
-    const unsubscribeButton = screen.getByText('unsubscribeButton');
+    const unsubscribeButton = screen.getByRole('button', { name: 'danger Unsubscribe' });
 
     mockDeleteSubscription.mockReturnValueOnce({ status: 204 });
 
@@ -154,7 +156,7 @@ describe(`Subscription component`, () => {
 
     expect(mockShowNotification).toHaveBeenCalledWith(
       expect.objectContaining({
-        description: 'subscriptionDeleted',
+        description: 'Successfully unsubscribed',
         kind: 'success',
       }),
     );
@@ -168,12 +170,12 @@ function renderSubscriptionComponent() {
 
 function waitForLoadingToFinish() {
   return waitFor(() => {
-    expect(screen.getByText('setupSubscription')).toBeVisible(), { timeout: 2000 };
+    expect(screen.getByText('Setup Subscription')).toBeVisible(), { timeout: 2000 };
   });
 }
 
 function waitForLoadingSubscription() {
   return waitFor(() => {
-    expect(screen.getByLabelText('subscriptionUrl')).not.toHaveValue(''), { timeout: 2000 };
+    expect(screen.getByLabelText('Subscription URL')).not.toHaveValue(''), { timeout: 2000 };
   });
 }

@@ -7,6 +7,10 @@ import { ImportItem } from '../../types';
 import ImportItems from './import-items.component';
 import { getImportDetails } from './import-items.resource';
 
+const testProps = {
+  importUuid: mockPreviousImports[1].uuid,
+};
+
 const mockGetImportDetails = getImportDetails as jest.Mock;
 const mockUsePagination = usePagination as jest.Mock;
 
@@ -79,7 +83,7 @@ describe(`Import Items component`, () => {
 });
 
 function renderImportItemsComponent() {
-  renderWithSwr(<ImportItems importUuid={mockPreviousImports[1].uuid} />);
+  renderWithSwr(<ImportItems {...testProps} />);
 }
 
 function waitForLoadingToFinish() {
