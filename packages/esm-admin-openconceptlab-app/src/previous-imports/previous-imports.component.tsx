@@ -5,7 +5,7 @@ import {
   DataTableSkeleton,
   Pagination,
   PaginationSkeleton,
-  Row,
+  Grid,
   SkeletonText,
   Table,
   TableBody,
@@ -16,7 +16,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from 'carbon-components-react';
+} from '@carbon/react';
 import React, { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePreviousImports } from './previous-imports.resource';
@@ -33,34 +33,34 @@ const PreviousImports: React.FC = () => {
 
   if (isLoading) {
     return (
-      <Row className={styles.tabContentContainer}>
-        <Column sm={12} lg={8}>
+      <Grid className={styles.grid}>
+        <Column sm={4} md={8} lg={10}>
           <SkeletonText className={styles.productiveHeading03} />
           <DataTableSkeleton showHeader={false} showToolbar={false} rowCount={10} columnCount={3} />
           <PaginationSkeleton />
         </Column>
-      </Row>
+      </Grid>
     );
   }
 
   if (isError) {
     showNotification({
       kind: 'error',
-      description: t('previousImportsFetchError'),
+      description: t('previousImportsFetchError', 'Error occured while fetching the imports'),
     });
   }
 
   const headerData = [
     {
-      header: t('dateAndTime'),
+      header: t('dateAndTime', 'Date and Time'),
       key: 'localDateStarted',
     },
     {
-      header: t('duration'),
+      header: t('duration', 'Duration'),
       key: 'importTime',
     },
     {
-      header: t('status'),
+      header: t('status', 'Status'),
       key: 'status',
     },
   ];
@@ -77,11 +77,11 @@ const PreviousImports: React.FC = () => {
   return (
     !isLoading &&
     !isError && (
-      <Row className={styles.tabContentContainer}>
-        <Column sm={12} lg={8}>
-          <h3 className={styles.productiveHeading03}>{t('previousImports')}</h3>
+      <Grid className={styles.grid}>
+        <Column sm={4} md={8} lg={10}>
+          <h3 className={styles.productiveHeading03}>{t('previousImports', 'Previous Imports')}</h3>
 
-          <DataTable rows={rowData} headers={headerData} size="short">
+          <DataTable rows={rowData} headers={headerData} size="sm">
             {({ rows, headers, getHeaderProps, getRowProps, getTableProps }) => (
               <Table {...getTableProps()} className={styles.tableBordered}>
                 <TableHead>
@@ -128,7 +128,7 @@ const PreviousImports: React.FC = () => {
             }}
           />
         </Column>
-      </Row>
+      </Grid>
     )
   );
 };

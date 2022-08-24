@@ -42,10 +42,10 @@ describe(`Previous Imports component`, () => {
     renderPreviousImportsComponent();
     await waitForLoadingToFinish();
 
-    expect(screen.getByText('previousImports')).toBeVisible();
-    expect(screen.getByText('dateAndTime')).toBeVisible();
-    expect(screen.getByText('duration')).toBeVisible();
-    expect(screen.getByText('status')).toBeVisible();
+    expect(screen.getByText('Previous Imports')).toBeVisible();
+    expect(screen.getByText('Date and Time')).toBeVisible();
+    expect(screen.getByText('Duration')).toBeVisible();
+    expect(screen.getByText('Status')).toBeVisible();
   });
 
   it(`renders the previous imports correctly`, async () => {
@@ -72,6 +72,6 @@ function renderPreviousImportsComponent() {
 
 function waitForLoadingToFinish() {
   return waitFor(() => {
-    expect(screen.getByText('previousImports')).toBeVisible(), { timeout: 2000 };
+    expect(screen.getByText('Previous Imports')).toBeVisible(), { timeout: 2000 };
   });
 }

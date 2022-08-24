@@ -10,7 +10,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from 'carbon-components-react';
+} from '@carbon/react';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getImportDetails } from './import-items.resource';
@@ -39,10 +39,10 @@ const ImportItems: React.FC<ImportItemsProps> = ({ importUuid }) => {
       setSelectedImportItems(response.data.results);
     } else {
       showNotification({
-        title: 'Error',
+        title: t('importItemsFetchError', 'Error occured while fetching the import items'),
         kind: 'error',
         critical: true,
-        description: response.data,
+        description: JSON.stringify(response.data),
       });
     }
     setIsLoading(false);
@@ -64,11 +64,11 @@ const ImportItems: React.FC<ImportItemsProps> = ({ importUuid }) => {
 
   const headerData = [
     {
-      header: t('conceptOrMapping'),
+      header: t('conceptOrMapping', 'Concept/Mapping'),
       key: 'uuid',
     },
     {
-      header: t('message'),
+      header: t('message', 'Message'),
       key: 'errorMessage',
     },
   ];
@@ -76,7 +76,7 @@ const ImportItems: React.FC<ImportItemsProps> = ({ importUuid }) => {
   return (
     !isLoading && (
       <div>
-        <Table size="short" className={styles.tableBordered}>
+        <Table size="sm" className={styles.tableBordered}>
           <TableHead>
             <TableRow className={styles.tableHeaderRow}>
               {headerData.map((header, i) => (

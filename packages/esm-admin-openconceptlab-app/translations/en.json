@@ -47,6 +47,7 @@
   "conceptsRetired": "concepts retired",
   "errorsFound": "errors found",
   "errorsIgnored": "errors ignored",
+  "importItemsFetchError": "Error occured while fetching the import items",
   "conceptOrMapping": "Concept/Mapping",
   "message": "Message"
 }

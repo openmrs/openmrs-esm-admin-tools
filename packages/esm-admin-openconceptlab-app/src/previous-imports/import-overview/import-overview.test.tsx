@@ -15,10 +15,10 @@ describe(`Import Overview component`, () => {
     renderImportOverviewComponent(mockPreviousImports[0]);
     await waitForLoadingToFinish();
 
-    expect(screen.getByText('startedOn')).toBeVisible();
-    expect(screen.getByText('completedOn')).toBeVisible();
-    expect(screen.getByText('duration')).toBeVisible();
-    expect(screen.getByText('result')).toBeVisible();
+    expect(screen.getByText('Started on')).toBeVisible();
+    expect(screen.getByText('Completed on')).toBeVisible();
+    expect(screen.getByText('Duration')).toBeVisible();
+    expect(screen.getByText('Result:')).toBeVisible();
   });
 
   it(`renders the import details when no errored items`, async () => {
@@ -29,12 +29,12 @@ describe(`Import Overview component`, () => {
 
     const startedTimeText = formatDatetime(selectedImport.localDateStarted);
     const stoppedTimeText = formatDatetime(selectedImport.localDateStopped);
-    const upToDateItemsText = selectedImport.upToDateItemsCount + ' conceptsUpToDate';
-    const addedItemsText = selectedImport.addedItemsCount + ' conceptsAdded';
-    const updatedItemsText = selectedImport.updatedItemsCount + ' conceptsUpdated';
-    const retiredItemsText = selectedImport.retiredItemsCount + ' conceptsRetired';
-    const errorItemsText = selectedImport.errorItemsCount + ' errorsFound';
-    const ignoredErrorsText = selectedImport.ignoredErrorsCount + ' errorsIgnored';
+    const upToDateItemsText = selectedImport.upToDateItemsCount + ' concepts up to date';
+    const addedItemsText = selectedImport.addedItemsCount + ' concepts added';
+    const updatedItemsText = selectedImport.updatedItemsCount + ' concepts updated';
+    const retiredItemsText = selectedImport.retiredItemsCount + ' concepts retired';
+    const errorItemsText = selectedImport.errorItemsCount + ' errors found';
+    const ignoredErrorsText = selectedImport.ignoredErrorsCount + ' errors ignored';
 
     expect(screen.getByText(startedTimeText)).toBeVisible();
     expect(screen.getByText(stoppedTimeText)).toBeVisible();
@@ -54,12 +54,12 @@ describe(`Import Overview component`, () => {
 
     const startedTimeText = formatDatetime(selectedImport.localDateStarted);
     const stoppedTimeText = formatDatetime(selectedImport.localDateStopped);
-    const upToDateItemsText = selectedImport.upToDateItemsCount + ' conceptsUpToDate';
-    const addedItemsText = selectedImport.addedItemsCount + ' conceptsAdded';
-    const updatedItemsText = selectedImport.updatedItemsCount + ' conceptsUpdated';
-    const retiredItemsText = selectedImport.retiredItemsCount + ' conceptsRetired';
-    const errorItemsText = selectedImport.errorItemsCount + ' errorsFound';
-    const ignoredErrorsText = selectedImport.ignoredErrorsCount + ' errorsIgnored';
+    const upToDateItemsText = selectedImport.upToDateItemsCount + ' concepts up to date';
+    const addedItemsText = selectedImport.addedItemsCount + ' concepts added';
+    const updatedItemsText = selectedImport.updatedItemsCount + ' concepts updated';
+    const retiredItemsText = selectedImport.retiredItemsCount + ' concepts retired';
+    const errorItemsText = selectedImport.errorItemsCount + ' errors found';
+    const ignoredErrorsText = selectedImport.ignoredErrorsCount + ' errors ignored';
 
     expect(screen.getByText(startedTimeText)).toBeVisible();
     expect(screen.getByText(stoppedTimeText)).toBeVisible();
@@ -78,6 +78,6 @@ function renderImportOverviewComponent(importObject: Import) {
 
 function waitForLoadingToFinish() {
   return waitFor(() => {
-    expect(screen.getByText('startedOn')).toBeVisible(), { timeout: 2000 };
+    expect(screen.getByText('Started on')).toBeVisible(), { timeout: 2000 };
   });
 }

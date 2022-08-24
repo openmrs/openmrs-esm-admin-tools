@@ -54,8 +54,8 @@ describe(`Import Items component`, () => {
     renderImportItemsComponent();
     await waitForLoadingToFinish();
 
-    expect(screen.getByText('conceptOrMapping')).toBeVisible();
-    expect(screen.getByText('message')).toBeVisible();
+    expect(screen.getByText('Concept/Mapping')).toBeVisible();
+    expect(screen.getByText('Message')).toBeVisible();
   });
 
   it(`renders the import items correctly`, async () => {
@@ -68,8 +68,8 @@ describe(`Import Items component`, () => {
     renderImportItemsComponent();
     await waitForLoadingToFinish();
 
-    expect(screen.getByText('conceptOrMapping')).toBeVisible();
-    expect(screen.getByText('message')).toBeVisible();
+    expect(screen.getByText('Concept/Mapping')).toBeVisible();
+    expect(screen.getByText('Message')).toBeVisible();
 
     mockImportItems.slice(5).forEach((importItem: ImportItem) => {
       expect(screen.getByText(importItem.type + ' ' + importItem.uuid)).toBeVisible();
@@ -84,6 +84,6 @@ function renderImportItemsComponent() {
 
 function waitForLoadingToFinish() {
   return waitFor(() => {
-    expect(screen.getByText('conceptOrMapping')).toBeVisible(), { timeout: 2000 };
+    expect(screen.getByText('Concept/Mapping')).toBeVisible(), { timeout: 2000 };
   });
 }
