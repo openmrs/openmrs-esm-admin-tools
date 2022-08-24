@@ -30,7 +30,7 @@ const Subscription: React.FC = () => {
   const { data: subscription, isLoading, isError } = useSubscription();
 
   useEffect(() => {
-    if (!isLoading) {
+    if (!isLoading && !isError) {
       setSubscriptionUrl(subscription?.url || '');
       setToken(subscription?.token || '');
       setIsSubscribedToSnapshot(subscription?.subscribedToSnapshot || false);
@@ -161,6 +161,13 @@ const Subscription: React.FC = () => {
         </Column>
       </Grid>
     );
+  }
+
+  if (isError) {
+    showNotification({
+      kind: 'error',
+      description: t('subscriptionError'),
+    });
   }
 
   return (
