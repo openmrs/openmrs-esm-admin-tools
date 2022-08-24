@@ -44,14 +44,12 @@ describe(`Import component`, () => {
     renderImportComponent();
     await waitForLoadingToFinish();
 
-    expect(screen.getByText('importConcepts')).toBeVisible();
-    expect(screen.getByText('importInstructions')).toBeVisible();
-    expect(screen.getByText('importFromSubscription')).toBeVisible();
+    expect(screen.getByText('Import Concepts')).toBeVisible();
+    expect(screen.getByText('Import from Subscription')).toBeVisible();
 
-    expect(screen.getByText('importFromFileHeading')).toBeVisible();
-    expect(screen.getByText('importFromFileInfo')).toBeVisible();
-    expect(screen.getByText('importFromFile')).toBeEnabled();
-    expect(screen.queryByText('fileAdded')).not.toBeInTheDocument();
+    expect(screen.getByText('Import from file (Offline)')).toBeVisible();
+    expect(screen.getByText('Import from file')).toBeEnabled();
+    expect(screen.queryByText('File Added')).not.toBeInTheDocument();
   });
 
   it(`renders correctly when there is no subscription`, async () => {
@@ -59,8 +57,8 @@ describe(`Import component`, () => {
     renderImportComponent();
     await waitForLoadingToFinish();
 
-    expect(screen.getByText('importFromSubscription')).toBeDisabled();
-    expect(screen.getByText('importFromFile')).toBeEnabled();
+    expect(screen.getByText('Import from Subscription')).toBeDisabled();
+    expect(screen.getByText('Import from file')).toBeEnabled();
   });
 
   it(`renders correctly when when a subscription exists`, async () => {
@@ -68,8 +66,8 @@ describe(`Import component`, () => {
     renderImportComponent();
     await waitForLoadingToFinish();
 
-    expect(screen.getByText('importFromSubscription')).toBeEnabled();
-    expect(screen.getByText('importFromFile')).toBeEnabled();
+    await waitFor(() => expect(screen.getByText('Import from Subscription')).toBeEnabled(), { timeout: 2000 });
+    expect(screen.getByText('Import from file')).toBeEnabled();
   });
 
   it(`allows starting an import using the subscription`, async () => {
@@ -79,14 +77,14 @@ describe(`Import component`, () => {
 
     mockStartImportWithSubscription.mockReturnValueOnce({ status: 201 });
 
-    await waitFor(() => userEvent.click(screen.getByText('importFromSubscription')));
+    await waitFor(() => userEvent.click(screen.getByText('Import from Subscription')));
 
     expect(mockStartImportWithSubscription).toHaveBeenCalledWith(new AbortController());
     expect(mockStartImportWithSubscription).toHaveBeenCalledTimes(1);
 
     expect(mockShowNotification).toHaveBeenCalledWith(
       expect.objectContaining({
-        description: 'importSuccess',
+        description: 'Import started successfully',
         kind: 'success',
       }),
     );
@@ -100,6 +98,6 @@ function renderImportComponent() {
 
 function waitForLoadingToFinish() {
   return waitFor(() => {
-    expect(screen.getByText('importConcepts')).toBeVisible, { timeout: 2000 };
+    expect(screen.getByText('Import Concepts')).toBeVisible, { timeout: 2000 };
   });
 }
