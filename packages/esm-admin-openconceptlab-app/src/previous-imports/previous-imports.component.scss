@@ -1,0 +1,39 @@
+@use "@carbon/styles/scss/spacing";
+@use "@carbon/styles/scss/type";
+@import "~@openmrs/esm-styleguide/src/vars";
+
+.grid {
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.productiveHeading03 {
+  @include type.type-style('productive-heading-03');
+  margin-bottom: spacing.$spacing-03;
+}
+
+.pagination {
+  @include type.type-style('body-short-01');
+  background-color: $ui-02;
+  color: $text-02;
+  border: 1px solid $ui-03;
+  display: flex;
+}
+
+.tableBordered {
+  border: 1px solid $ui-03;
+}
+
+.tableRow > td {
+  background-color: $ui-02;
+  border-bottom: 1px solid $ui-03 !important;
+}
+
+.tableExpandedRow > td {
+  padding-left: spacing.$spacing-09 !important;
+  padding-right: spacing.$spacing-09;
+  padding-top: spacing.$spacing-05;
+  padding-bottom: spacing.$spacing-05;
+}

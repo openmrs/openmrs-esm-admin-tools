@@ -5,6 +5,7 @@ import { SWRConfig } from 'swr';
 import Subscription from './subscription/subscription.component';
 import styles from './root.component.scss';
 import Import from './import/import.component';
+import PreviousImports from './previous-imports/previous-imports.component';
 
 const Root: React.FC = () => {
   const { t } = useTranslation();
@@ -25,7 +26,9 @@ const Root: React.FC = () => {
             <TabPanel className={styles.tabPanel}>
               <Import />
             </TabPanel>
-            <TabPanel className={styles.tabPanel} />
+            <TabPanel className={styles.tabPanel}>
+              <PreviousImports />
+            </TabPanel>
           </TabPanels>
         </Tabs>
       </main>

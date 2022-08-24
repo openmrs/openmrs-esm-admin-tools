@@ -1,0 +1,11 @@
+@use "@carbon/styles/scss/spacing";
+@use "@carbon/styles/scss/type";
+@import "~@openmrs/esm-styleguide/src/vars";
+
+.heading01 {
+  @include type.type-style('heading-01');
+}
+
+.indentedContent {
+  margin-left: spacing.$spacing-07;
+}
