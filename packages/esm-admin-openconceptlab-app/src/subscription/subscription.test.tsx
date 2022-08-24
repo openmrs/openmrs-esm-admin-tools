@@ -35,6 +35,7 @@ describe(`Subscription component`, () => {
   afterEach(() => {
     mockShowNotification.mockReset();
     mockUpdateSubscription.mockReset();
+    mockOpenmrsFetch.mockReset();
   });
 
   it(`renders without dying`, () => {
@@ -55,6 +56,7 @@ describe(`Subscription component`, () => {
     mockOpenmrsFetch.mockReturnValueOnce({ data: { results: [mockSubscription] } });
     renderSubscriptionComponent();
     await waitForLoadingToFinish();
+    await waitForLoadingSubscription();
 
     expect(screen.getByLabelText('subscriptionUrl')).toHaveValue(mockSubscription.url);
     expect(screen.getByLabelText('apiToken')).toHaveValue(mockSubscription.token);
@@ -74,8 +76,8 @@ describe(`Subscription component`, () => {
 
     mockUpdateSubscription.mockReturnValueOnce({ status: 201, ok: true });
 
-    userEvent.type(urlInputField, mockSubscription.url);
-    userEvent.type(tokenInputField, mockSubscription.token);
+    await waitFor(() => userEvent.type(urlInputField, mockSubscription.url));
+    await waitFor(() => userEvent.type(tokenInputField, mockSubscription.token));
     await waitFor(() => userEvent.click(saveButton));
 
     expect(mockUpdateSubscription).toHaveBeenCalledWith(
@@ -97,6 +99,7 @@ describe(`Subscription component`, () => {
     mockOpenmrsFetch.mockReturnValueOnce({ data: { results: [mockSubscription] } });
     renderSubscriptionComponent();
     await waitForLoadingToFinish();
+    await waitForLoadingSubscription();
 
     const urlInputField = screen.getByLabelText('subscriptionUrl');
     const tokenInputField = screen.getByLabelText('apiToken');
@@ -104,10 +107,12 @@ describe(`Subscription component`, () => {
 
     mockUpdateSubscription.mockReturnValueOnce({ status: 200, ok: true });
 
-    userEvent.clear(urlInputField);
-    userEvent.clear(tokenInputField);
-    userEvent.type(urlInputField, 'https://api.openconceptlab.org/orgs/openmrs/collections/DemoQueueConcepts/2');
-    userEvent.type(tokenInputField, 'token123');
+    await waitFor(() => userEvent.clear(urlInputField));
+    await waitFor(() => userEvent.clear(tokenInputField));
+    await waitFor(() =>
+      userEvent.type(urlInputField, 'https://api.openconceptlab.org/orgs/openmrs/collections/DemoQueueConcepts/2'),
+    );
+    await waitFor(() => userEvent.type(tokenInputField, 'token123'));
     await waitFor(() => userEvent.click(saveButton));
 
     expect(mockUpdateSubscription).toHaveBeenCalledWith(
@@ -133,6 +138,7 @@ describe(`Subscription component`, () => {
     mockOpenmrsFetch.mockReturnValueOnce({ data: { results: [mockSubscription] } });
     renderSubscriptionComponent();
     await waitForLoadingToFinish();
+    await waitForLoadingSubscription();
 
     const unsubscribeButton = screen.getByText('unsubscribeButton');
 
@@ -163,5 +169,11 @@ function renderSubscriptionComponent() {
 function waitForLoadingToFinish() {
   return waitFor(() => {
     expect(screen.getByText('setupSubscription')).toBeVisible(), { timeout: 2000 };
+  });
+}
+
+function waitForLoadingSubscription() {
+  return waitFor(() => {
+    expect(screen.getByLabelText('subscriptionUrl')).not.toHaveValue(''), { timeout: 2000 };
   });
 }
