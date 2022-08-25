@@ -46,11 +46,11 @@ const Subscription: React.FC = () => {
     setToken(event.target.value);
   }, []);
 
-  const handleChangeValidationType = useCallback((checked: boolean) => {
+  const handleChangeValidationType = useCallback((event, { checked, id }) => {
     setValidationType(checked ? 'NONE' : 'FULL');
   }, []);
 
-  const handleChangeSubscriptionType = useCallback((checked: boolean) => {
+  const handleChangeSubscriptionType = useCallback((event, { checked, id }) => {
     setIsSubscribedToSnapshot(checked);
   }, []);
 
