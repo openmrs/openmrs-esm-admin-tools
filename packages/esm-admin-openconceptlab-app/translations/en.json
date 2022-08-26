@@ -37,6 +37,7 @@
   "previousImportsFetchError": "Error occured while fetching the imports",
   "result": "Result:",
   "setupSubscription": "Setup Subscription",
+  "snapshotDisabledError": "You cannot subscribe to a SNAPSHOT if you've provided the collection version",
   "startedOn": "Started on",
   "status": "Status",
   "subscribeButton": "Save changes",
