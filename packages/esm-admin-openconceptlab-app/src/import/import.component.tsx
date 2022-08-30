@@ -8,6 +8,8 @@ import {
   FileUploaderSkeleton,
   Form,
   Grid,
+  InlineLoading,
+  Stack,
   SkeletonText,
 } from '@carbon/react';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -19,6 +21,7 @@ const Import: React.FC = () => {
   const { t } = useTranslation();
   const [isSubscriptionAvailable, setIsSubscriptionAvailable] = useState(false);
   const [file, setFile] = useState<File>();
+  const [isFileUploading, setIsFileUploading] = useState(false);
 
   const { data: subscription, isLoading, isError } = useSubscription();
 
@@ -80,10 +83,12 @@ const Import: React.FC = () => {
 
   const handleImportWithFile = useCallback(
     async (evt: React.FormEvent<HTMLFormElement>) => {
+      setIsFileUploading(true);
       evt.preventDefault();
       evt.stopPropagation();
 
       if (!file) {
+        setIsFileUploading(false);
         showNotification({
           kind: 'error',
           description: t('noFileSelected', 'No file selected'),
@@ -96,11 +101,13 @@ const Import: React.FC = () => {
 
       if (response.status === 201) {
         setFile(null);
+        setIsFileUploading(false);
         showNotification({
           kind: 'success',
           description: t('importSuccess', 'Import started successfully'),
         });
       } else {
+        setIsFileUploading(false);
         showNotification({
           kind: 'error',
           description: t('importFailed', 'Import failed'),
@@ -178,9 +185,12 @@ const Import: React.FC = () => {
               style={{ marginBottom: '1.5rem' }}
             />
           )}
-          <Button kind="primary" type="submit">
-            {t('importFromFile', 'Import from file')}
-          </Button>
+          <Stack gap={6} orientation="horizontal">
+            <Button kind="primary" type="submit">
+              {t('importFromFile', 'Import from file')}
+            </Button>
+            {isFileUploading && <InlineLoading description={t('uploading', 'Uploading...')} />}
+          </Stack>
         </Form>
       </Column>
     </Grid>
