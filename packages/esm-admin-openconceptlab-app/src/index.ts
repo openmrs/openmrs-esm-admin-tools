@@ -22,7 +22,7 @@ const importTranslation = require.context('../translations', false, /.json$/, 'l
  * `openmrs-module-`; e.g., `openmrs-module-fhir2` becomes `fhir2`.
  */
 const backendDependencies = {
-  openconceptlab: '^1.2.0',
+  openconceptlab: '>=1.2.0',
   'webservices.rest': '^2.2.0',
 };
 
