@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next';
 import { deleteSubscription, updateSubscription, useSubscription } from './subscription.resource';
 import styles from './subscription.component.scss';
 import { useSWRConfig } from 'swr';
+import { isVersionDefinedInUrl } from '../utils';
 
 const Subscription: React.FC = () => {
   const { t } = useTranslation();
@@ -26,6 +27,7 @@ const Subscription: React.FC = () => {
   const [token, setToken] = useState('');
   const [isSubscribedToSnapshot, setIsSubscribedToSnapshot] = useState(false);
   const [validationType, setValidationType] = useState<'NONE' | 'FULL'>('FULL');
+  const [isSnapshotOptionDisabled, setIsSnapshotOptionDisabled] = useState(false);
 
   const { data: subscription, isLoading, isError } = useSubscription();
 
@@ -35,11 +37,18 @@ const Subscription: React.FC = () => {
       setToken(subscription?.token || '');
       setIsSubscribedToSnapshot(subscription?.subscribedToSnapshot || false);
       setValidationType(subscription?.validationType || 'FULL');
+      setIsSnapshotOptionDisabled(subscription ? isVersionDefinedInUrl(subscription.url) : false);
     }
   }, [isLoading, isError, subscription]);
 
   const handleChangeSubscriptionUrl = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setSubscriptionUrl(event.target.value);
+    if (isVersionDefinedInUrl(event.target.value)) {
+      setIsSnapshotOptionDisabled(true);
+      setIsSubscribedToSnapshot(false);
+    } else {
+      setIsSnapshotOptionDisabled(false);
+    }
   }, []);
 
   const handleChangeToken = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,6 +67,17 @@ const Subscription: React.FC = () => {
     async (evt: React.FormEvent<HTMLFormElement>) => {
       evt.preventDefault();
       evt.stopPropagation();
+
+      if (isSnapshotOptionDisabled && isSubscribedToSnapshot) {
+        showNotification({
+          kind: 'error',
+          description: t(
+            'snapshotDisabledError',
+            "You cannot subscribe to a SNAPSHOT if you've provided the collection version",
+          ),
+        });
+        return;
+      }
 
       const abortController = new AbortController();
 
@@ -92,7 +112,7 @@ const Subscription: React.FC = () => {
 
       return () => abortController.abort();
     },
-    [subscriptionUrl, token, validationType, isSubscribedToSnapshot, t, subscription, mutate],
+    [subscriptionUrl, token, validationType, isSubscribedToSnapshot, isSnapshotOptionDisabled, subscription, t, mutate],
   );
 
   const handleCancel = useCallback(() => {
@@ -100,6 +120,7 @@ const Subscription: React.FC = () => {
     setToken(subscription?.token || '');
     setIsSubscribedToSnapshot(subscription?.subscribedToSnapshot || false);
     setValidationType(subscription?.validationType || 'FULL');
+    setIsSnapshotOptionDisabled(subscription ? isVersionDefinedInUrl(subscription.url) : false);
 
     showNotification({
       kind: 'info',
@@ -121,6 +142,7 @@ const Subscription: React.FC = () => {
         setToken('');
         setIsSubscribedToSnapshot(false);
         setValidationType('FULL');
+        setIsSnapshotOptionDisabled(false);
         showNotification({
           kind: 'success',
           description: t('subscriptionDeleted', 'Successfully unsubscribed'),
@@ -205,6 +227,7 @@ const Subscription: React.FC = () => {
                 onChange={handleChangeSubscriptionType}
                 labelText={t('subscribeToSnapshotText', 'Subscribe to SNAPSHOT versions (not recommended)')}
                 id="isSubscribedToSnapshot"
+                disabled={isSnapshotOptionDisabled}
               />
               <Checkbox
                 checked={validationType === 'NONE'}
