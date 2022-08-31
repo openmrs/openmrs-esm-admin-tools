@@ -48,5 +48,6 @@
   "subscriptionUrl": "Subscription URL",
   "unsubscribe": "Unsubscribe",
   "unsubscribeButton": "Unsubscribe",
-  "unsubscribeInfo": "If you unsubscribe, no concepts will be deleted nor changed. All information about subscription will be deleted from your system."
+  "unsubscribeInfo": "If you unsubscribe, no concepts will be deleted nor changed. All information about subscription will be deleted from your system.",
+  "uploading": "Uploading..."
 }
