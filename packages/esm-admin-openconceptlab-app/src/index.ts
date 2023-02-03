@@ -55,6 +55,15 @@ function setupOpenMRS() {
         route: 'ocl',
       },
     ],
+    extensions: [
+      {
+        id: 'openconceptlab-app-link',
+        slot: 'app-menu-slot',
+        load: getAsyncLifecycle(() => import('./openconceptlab-app-menu-link'), options),
+        online: true,
+        offline: false,
+      },
+    ],
   };
 }
 
