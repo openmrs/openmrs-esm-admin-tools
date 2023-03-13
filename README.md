@@ -12,7 +12,7 @@ Please note that at this time, these microfrontends currently aren't deployed or
 
 ## Setup
 
-See the guidance in the [Developer Documentation](https://o3-dev.docs.openmrs.org/#/getting_started/prerequisite-knowledge).
+See the guidance in the [Developer Documentation](https://o3-dev.docs.openmrs.org/#/getting_started/prerequisites).
 This repository uses Yarn and Lerna.
 
 To start the dev server for a specific package, run
