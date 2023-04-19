@@ -13,7 +13,8 @@
     "!**/node_modules/**",
     "!**/vendor/**",
     "!**/src/**/*.test.*",
-    "!**/src/declarations.d.tsx"
+    "!**/src/declarations.d.tsx",
+    "!**/e2e/**"
   ],
   "coverageThreshold": {
     "global": {
@@ -29,5 +30,8 @@
   "testEnvironment": "jsdom",
   "testEnvironmentOptions": {
     "url": "http://localhost/"
-  }
+  },
+  "testPathIgnorePatterns" : [
+    "<rootDir>/e2e"
+  ]
 }

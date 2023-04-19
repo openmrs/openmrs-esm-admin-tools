@@ -15,6 +15,20 @@ Please note that at this time, these microfrontends currently aren't deployed or
 See the guidance in the [Developer Documentation](https://o3-dev.docs.openmrs.org/#/getting_started/prerequisites).
 This repository uses Yarn and Lerna.
 
+To set up environment variables for the project, follow these steps:
+
+1. Create a copy of the .env.example file by running the following command:
+
+  ```bash
+  cp example.env .env
+  ```
+  
+2. Open the newly created .env file in the root of the project.
+
+3. Add the environment variables you need.
+
+Note: These variables are currently only used for end-to-end tests.
+
 To start the dev server for a specific package, run
 
 ```bash
@@ -35,6 +49,32 @@ Note that this is very much not recommended.
 
 Please see the [Implementer Documentation](https://wiki.openmrs.org/display/projects/Frontend+3.0+Documentation+for+Implementers#Frontend3.0DocumentationforImplementers-Configuringtheapplication)
 for information about configuring modules.
+
+## Running tests
+
+### Unit tests
+
+To run unit tests, use:
+
+```sh
+yarn test
+```
+
+### E2E tests
+
+To run E2E tests, make sure the dev server is running by using:
+
+```sh
+yarn start --sources 'packages/esm-*-app/'
+```
+
+Then, in a separate terminal, run:
+
+```sh
+yarn test-e2e --headed
+```
+
+Please read [our e2e docs](e2e/README.md) for more information about E2E testing.
 
 ## Deployment
 
