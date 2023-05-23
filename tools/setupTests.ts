@@ -27,6 +27,23 @@ i18n.use(initReactI18next).init({
   resources: { en: { translations: {} } },
 });
 
+import 'whatwg-fetch';
+import { server } from '../__mocks__/server';
+
+beforeAll(() => {
+  server.listen({
+    onUnhandledRequest: 'error',
+  });
+  server.printHandlers();
+});
+
+// Reset any request handlers that we may add during the tests,
+// so they don't affect other tests.
+afterEach(() => server.resetHandlers());
+
+// Clean up after the tests are finished.
+afterAll(() => server.close());
+
 window.openmrsBase = '/openmrs';
 window.spaBase = '/spa';
 window.getOpenmrsSpaBase = () => '/openmrs/spa/';
