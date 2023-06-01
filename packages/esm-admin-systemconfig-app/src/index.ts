@@ -22,7 +22,7 @@ function setupOpenMRS() {
   registerBreadcrumbs([
     {
       path: `${window.spaBase}/system-administration`,
-      title: 'System Admninistration',
+      title: () => Promise.resolve(window.i18next.t('systemAdmin', 'System Administration')),
       parent: `${window.spaBase}/home`,
     },
   ]);
