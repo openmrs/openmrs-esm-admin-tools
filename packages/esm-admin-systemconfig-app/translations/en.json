@@ -1,11 +1,5 @@
 {
-  "cohortBuilder": "Cohort Builder",
   "config": "Configurations",
-  "formBuilder": "Form Builder",
   "legacyAdmin": "Legacy Admin",
-  "manageCohorts": "Manage Cohorts",
-  "manageConcepts": "Manage Concepts",
-  "manageForms": "Manage Forms",
-  "openConceptLab": "Open Concept Lab",
   "systemAdmin": "System Administration"
 }
