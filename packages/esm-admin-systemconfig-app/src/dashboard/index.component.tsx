@@ -18,15 +18,7 @@ export const SystemAdministrationDashbord = () => {
         <LinkCard header={t('config', 'Configurations')} viewLink="/openmrs/admin">
           {t('legacyAdmin', 'Legacy Admin')}
         </LinkCard>
-        <LinkCard header={t('manageConcepts', 'Manage Concepts')} viewLink={`${window.spaBase}/ocl`}>
-          {t('openConceptLab', 'Open Concept Lab')}
-        </LinkCard>
-        <LinkCard header={t('manageCohorts', 'Manage Cohorts')} viewLink={`${window.spaBase}/cohort-builder`}>
-          {t('cohortBuilder', 'Cohort Builder')}
-        </LinkCard>
-        <LinkCard header={t('manageForms', 'Manage Forms')} viewLink={`${window.spaBase}/form-builder`}>
-          {t('formBuilder', 'Form Builder')}
-        </LinkCard>
+        <ExtensionSlot className={styles.cardLinks} name="system-admin-page-card-link-slot" />
       </div>
     </div>
   );

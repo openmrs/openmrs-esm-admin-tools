@@ -17,4 +17,35 @@
     padding: 2rem 1rem;
     margin-top: 2rem;
   }
+
+  .cardLinks {
+    display: flex;
+    width: 100%;
+    :global(.cds--link) {
+      height: 8rem;
+      width: 14rem;
+      position: relative;
+      margin-right: 1rem;
+    }
+
+    :global(.heading) {
+      color: $color-gray-70;
+      font-size: 0.875rem;
+      margin-bottom: 0.5rem;
+    }
+
+    :global(.content) {
+      color: $color-gray-100;
+      font-size: 1rem;
+    }
+
+    :global(.iconWrapper) {
+      position: absolute;
+      bottom: 0.5rem;
+      right: 1rem;
+      svg {
+        color: $interactive-01;
+      }
+    }
+  }
 }
