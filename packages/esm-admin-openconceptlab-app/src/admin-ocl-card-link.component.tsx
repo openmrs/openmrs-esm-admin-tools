@@ -5,12 +5,11 @@ import { ArrowRight } from '@carbon/react/icons';
 
 const OpenConceptLabCardLink: React.FC = () => {
   const { t } = useTranslation();
-  const header = t('manageConcepts', 'Manage Concepts');
   return (
     <Layer>
-      <ClickableTile id={`clickable-tile-${header}`} href={`${window.spaBase}/ocl`} target="_blank" rel="norefferer">
+      <ClickableTile href={`${window.spaBase}/ocl`} target="_blank" rel="norefferer">
         <div>
-          <div className="heading">{header}</div>
+          <div className="heading">{t('manageConcepts', 'Manage Concepts')}</div>
           <div className="content">{t('openConceptLab', 'Open Concept Lab')}</div>
         </div>
         <div className="iconWrapper">

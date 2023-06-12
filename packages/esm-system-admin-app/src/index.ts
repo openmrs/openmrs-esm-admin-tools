@@ -42,6 +42,14 @@ function setupOpenMRS() {
         online: true,
         offline: true,
       },
+      {
+        id: 'system-admin-page-link',
+        slot: 'system-admin-page-card-link-slot',
+        load: getAsyncLifecycle(() => import('./dashboard/legacy-admin-page-link.component'), options),
+        order: 0,
+        online: true,
+        offline: true,
+      },
     ],
   };
 }
