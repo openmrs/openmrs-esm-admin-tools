@@ -8,7 +8,7 @@ const OpenConceptLabCardLink: React.FC = () => {
   const header = t('manageConcepts', 'Manage Concepts');
   return (
     <Layer>
-      <ClickableTile id={`clickable-tile-${header}`} href={`${window.spaBase}/ocl`} target="_blank" rel="no-refferer">
+      <ClickableTile id={`clickable-tile-${header}`} href={`${window.spaBase}/ocl`} target="_blank" rel="norefferer">
         <div>
           <div className="heading">{header}</div>
           <div className="content">{t('openConceptLab', 'Open Concept Lab')}</div>

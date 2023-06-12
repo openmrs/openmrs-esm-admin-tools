@@ -16,10 +16,10 @@ export const LinkCard: React.FC<LinkCardProps> = ({ header, viewLink, children }
     <Layer>
       <ClickableTile
         className={styles.overviewCard}
-        id={`clickable-tile-${header}`}
         href={viewLink}
+        id={`clickable-tile-${header}`}
         target="_blank"
-        rel="no-refferer"
+        rel="norefferer"
       >
         <div>
           <div className={styles.heading}>{header}</div>

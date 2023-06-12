@@ -6,13 +6,13 @@ import { LinkCard } from './card.component';
 
 import styles from './index.scss';
 
-export const SystemAdministrationDashbord = () => {
+export const SystemAdministrationDashboard = () => {
   const { t } = useTranslation();
 
   return (
     <div className={styles.systemAdminPage}>
       <div className={styles.breadcrumbsContainer}>
-        <ExtensionSlot extensionSlotName="breadcrumbs-slot" />
+        <ExtensionSlot name="breadcrumbs-slot" />
       </div>
       <div className={styles.cardsView}>
         <LinkCard header={t('config', 'Configurations')} viewLink="/openmrs/admin">

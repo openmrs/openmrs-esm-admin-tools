@@ -1,9 +1,9 @@
 {
-  "name": "@openmrs/esm-admin-systemconfig-app",
+  "name": "@openmrs/esm-system-admin-app",
   "version": "3.0.0",
   "license": "MPL-2.0",
   "description": "System Admin page for OpenMRS",
-  "browser": "dist/openmrs-esm-admin-systemconfig-app.js",
+  "browser": "dist/openmrs-esm-system-admin-app.js",
   "main": "src/index.ts",
   "source": true,
   "scripts": {
@@ -20,9 +20,7 @@
   ],
   "keywords": [
     "openmrs",
-    "openconceptlab",
-    "OCL",
-    "medical terminology"
+    "system administration"
   ],
   "repository": {
     "type": "git",
