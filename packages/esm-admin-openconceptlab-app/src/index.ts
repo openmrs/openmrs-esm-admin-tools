@@ -55,6 +55,15 @@ function setupOpenMRS() {
         route: 'ocl',
       },
     ],
+    extensions: [
+      {
+        id: 'admin-ocl-card-link',
+        slot: 'system-admin-page-card-link-slot',
+        load: getAsyncLifecycle(() => import('./admin-ocl-card-link.component'), options),
+        offline: true,
+        online: true,
+      },
+    ],
   };
 }
 
