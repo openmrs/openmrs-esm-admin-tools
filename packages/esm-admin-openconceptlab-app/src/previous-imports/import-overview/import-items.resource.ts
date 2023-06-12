@@ -1,5 +1,5 @@
 import { openmrsFetch } from '@openmrs/esm-framework';
-import { ImportItem } from '../../types';
+import type { ImportItem } from '../../types';
 
 export async function getImportDetails(importUuid: string, abortController?: AbortController) {
   const url = `/ws/rest/v1/openconceptlab/import/${importUuid}/item?state=ERROR&v=full`;

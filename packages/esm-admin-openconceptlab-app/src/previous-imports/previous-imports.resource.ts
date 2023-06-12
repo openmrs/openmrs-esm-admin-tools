@@ -1,6 +1,6 @@
 import { openmrsFetch } from '@openmrs/esm-framework';
 import useSWR from 'swr';
-import { Import } from '../types';
+import type { Import } from '../types';
 
 export function usePreviousImports() {
   const { data, error, isValidating } = useSWR<{ data: { results: Import[] } }, Error>(

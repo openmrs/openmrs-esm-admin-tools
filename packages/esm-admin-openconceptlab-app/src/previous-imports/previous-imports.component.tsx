@@ -1,4 +1,4 @@
-import { formatDatetime, showNotification, usePagination } from '@openmrs/esm-framework';
+import React, { Fragment, useState } from 'react';
 import {
   Column,
   DataTable,
@@ -17,12 +17,12 @@ import {
   TableHeader,
   TableRow,
 } from '@carbon/react';
-import React, { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { formatDatetime, showNotification, usePagination } from '@openmrs/esm-framework';
 import { usePreviousImports } from './previous-imports.resource';
-import styles from './previous-imports.component.scss';
-import { Import } from '../types';
+import type { Import } from '../types';
 import ImportOverview from './import-overview/import-overview.component';
+import styles from './previous-imports.scss';
 
 const PreviousImports: React.FC = () => {
   const { t } = useTranslation();

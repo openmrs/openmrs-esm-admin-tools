@@ -3,9 +3,8 @@ import { screen, waitFor } from '@testing-library/react';
 import { usePagination } from '@openmrs/esm-framework';
 import { renderWithSwr } from '../../../../../tools/test-helpers';
 import { mockImportItems, mockPreviousImports } from '../../../../../__mocks__/openconceptlab.mock';
-import { ImportItem } from '../../types';
-import ImportItems from './import-items.component';
 import { getImportDetails } from './import-items.resource';
+import ImportItems from './import-items.component';
 
 const testProps = {
   importUuid: mockPreviousImports[1].uuid,
@@ -38,16 +37,6 @@ describe(`Import Items component`, () => {
     mockUsePagination.mockReset();
   });
 
-  it(`renders without dying`, () => {
-    mockGetImportDetails.mockReturnValue({ status: 200, ok: true, data: [] });
-    mockUsePagination.mockReturnValue({
-      currentPage: 1,
-      goTo: () => {},
-      results: [],
-    });
-    renderImportItemsComponent();
-  });
-
   it(`renders the table`, async () => {
     mockGetImportDetails.mockReturnValue({ status: 200, ok: true, data: mockImportItems });
     mockUsePagination.mockReturnValue({
@@ -75,7 +64,7 @@ describe(`Import Items component`, () => {
     expect(screen.getByText('Concept/Mapping')).toBeVisible();
     expect(screen.getByText('Message')).toBeVisible();
 
-    mockImportItems.slice(5).forEach((importItem: ImportItem) => {
+    mockImportItems.slice(5).forEach((importItem) => {
       expect(screen.getByText(importItem.type + ' ' + importItem.uuid)).toBeVisible();
       expect(screen.getByText(importItem.errorMessage)).toBeVisible();
     });
