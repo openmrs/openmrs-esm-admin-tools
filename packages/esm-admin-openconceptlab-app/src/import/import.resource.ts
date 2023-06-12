@@ -1,6 +1,6 @@
 import { openmrsFetch } from '@openmrs/esm-framework';
 import useSWR from 'swr';
-import { Import, Subscription } from '../types';
+import type { Import, Subscription } from '../types';
 
 export function useSubscription() {
   const { data, error, isValidating } = useSWR<{ data: { results: Subscription[] } }, Error>(

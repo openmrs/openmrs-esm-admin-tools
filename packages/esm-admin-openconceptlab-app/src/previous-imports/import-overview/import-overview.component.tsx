@@ -1,9 +1,9 @@
 import { formatDatetime } from '@openmrs/esm-framework';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import styles from './import-overview.component.scss';
-import { Import } from '../../types';
+import type { Import } from '../../types';
 import ImportItems from './import-items.component';
+import styles from './import-overview.scss';
 
 interface ImportOverviewProps {
   selectedImportObject: Import;

@@ -14,8 +14,8 @@ import {
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getImportDetails } from './import-items.resource';
-import styles from './import-items.component.scss';
-import { ImportItem } from '../../types';
+import type { ImportItem } from '../../types';
+import styles from './import-items.scss';
 
 interface ImportItemsProps {
   importUuid: string;

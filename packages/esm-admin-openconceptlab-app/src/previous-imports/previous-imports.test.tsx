@@ -3,7 +3,6 @@ import { screen, waitFor } from '@testing-library/react';
 import { formatDatetime, openmrsFetch, usePagination } from '@openmrs/esm-framework';
 import { renderWithSwr } from '../../../../tools/test-helpers';
 import { mockPreviousImports } from '../../../../__mocks__/openconceptlab.mock';
-import { Import } from '../types';
 import PreviousImports from './previous-imports.component';
 
 const mockOpenmrsFetch = openmrsFetch as jest.Mock;
@@ -58,7 +57,7 @@ describe(`Previous Imports component`, () => {
     renderPreviousImportsComponent();
     await waitForLoadingToFinish();
 
-    mockPreviousImports.forEach((item: Import) => {
+    mockPreviousImports.forEach((item) => {
       expect(screen.getByText(formatDatetime(item.localDateStarted))).toBeVisible();
       expect(screen.getByText(item.importTime)).toBeVisible();
       expect(screen.getByText(item.status)).toBeVisible();
