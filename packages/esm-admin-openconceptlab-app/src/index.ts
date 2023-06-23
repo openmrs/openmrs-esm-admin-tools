@@ -14,6 +14,6 @@ export function startupApp() {
   defineConfigSchema(moduleName, configSchema);
 }
 
-export const root = () => getAsyncLifecycle(() => import('./root.component'), options);
+export const root = getAsyncLifecycle(() => import('./root.component'), options);
 
-export const adminOclCardLink = () => getAsyncLifecycle(() => import('./admin-ocl-card-link.component'), options);
+export const adminOclCardLink = getAsyncLifecycle(() => import('./admin-ocl-card-link.component'), options);
