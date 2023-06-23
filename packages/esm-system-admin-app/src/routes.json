@@ -8,7 +8,7 @@
     {
       "name": "system-administration-app-menu-link",
       "slot": "app-menu-slot",
-      "component": "systemADminAppMenuLink"
+      "component": "systemAdminAppMenuLink"
     },
     {
       "name": "system-admin-page-link",
