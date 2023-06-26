@@ -25,8 +25,12 @@ export function startupApp() {
 
 export const root = () => getAsyncLifecycle(() => import('./root.component'), options);
 
-export const systemAdminAppMenuLink = () =>
-  getAsyncLifecycle(() => import('./system-admin-app-menu-link.component'), options);
+export const systemAdminAppMenuLink = getAsyncLifecycle(
+  () => import('./system-admin-app-menu-link.component'),
+  options,
+);
 
-export const legacySystemAdminPageCardLink = () =>
-  getAsyncLifecycle(() => import('./dashboard/legacy-admin-page-link.component'), options);
+export const legacySystemAdminPageCardLink = getAsyncLifecycle(
+  () => import('./dashboard/legacy-admin-page-link.component'),
+  options,
+);
