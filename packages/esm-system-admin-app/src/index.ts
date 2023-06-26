@@ -23,7 +23,7 @@ export function startupApp() {
   ]);
 }
 
-export const root = () => getAsyncLifecycle(() => import('./root.component'), options);
+export const root = getAsyncLifecycle(() => import('./root.component'), options);
 
 export const systemAdminAppMenuLink = getAsyncLifecycle(
   () => import('./system-admin-app-menu-link.component'),
