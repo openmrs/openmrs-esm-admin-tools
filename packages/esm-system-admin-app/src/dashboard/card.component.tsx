@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Layer, TileProps, ClickableTile } from '@carbon/react';
+import { Layer, ClickableTile } from '@carbon/react';
 import { ArrowRight } from '@carbon/react/icons';
 
 import styles from './card.scss';
