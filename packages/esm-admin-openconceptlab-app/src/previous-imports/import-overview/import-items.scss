@@ -1,24 +1,23 @@
-@use "@carbon/styles/scss/spacing";
-@use "@carbon/styles/scss/type";
-@import "~@openmrs/esm-styleguide/src/vars";
+@use "@carbon/colors";
+@use "@carbon/type";
 
 .pagination {
   @include type.type-style('body-short-01');
-  background-color: $ui-02;
-  color: $text-02;
-  border: 1px solid $ui-03;
+  background-color: colors.$white-0;
+  color: colors.$gray-70;
+  border: 1px solid colors.$gray-20;
   display: flex;
 }
 
 .tableBordered {
-  border: 1px solid $ui-03;
+  border: 1px solid colors.$gray-20;
 }
 
 .tableDataRow > td {
   padding-left: 1rem !important;
-  background-color: $ui-02 !important;
+  background-color: colors.$white-0 !important;
 }
 
 .tableHeaderRow > th {
-  background-color: $ui-03 !important;
+  background-color: colors.$gray-20 !important;
 }

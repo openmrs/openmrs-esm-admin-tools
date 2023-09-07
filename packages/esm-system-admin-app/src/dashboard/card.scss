@@ -1,6 +1,4 @@
-@use "@carbon/styles/scss/spacing";
-@use "@carbon/styles/scss/type";
-@import "~@openmrs/esm-styleguide/src/vars";
+@use "@carbon/colors";
 
 .overviewCard {
   height: 8rem;
@@ -9,13 +7,13 @@
   margin-right: 1rem;
 
   .heading {
-    color: $color-gray-70;
+    color: colors.$gray-70;
     font-size: 0.875rem;
     margin-bottom: 0.5rem;
   }
 
   .content {
-    color: $color-gray-100;
+    color: colors.$gray-100;
     font-size: 1rem;
   }
 
@@ -24,7 +22,7 @@
     bottom: 0.5rem;
     right: 1rem;
     svg {
-      color: $interactive-01;
+      color: colors.$blue-60;
     }
   }
 }

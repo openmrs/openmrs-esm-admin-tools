@@ -1,18 +1,16 @@
-@use "@carbon/styles/scss/spacing";
-@use "@carbon/styles/scss/type";
-@import "~@openmrs/esm-styleguide/src/vars";
+@use "@carbon/colors";
 
 .systemAdminPage {
-  background-color: $ui-02;
+  background-color: colors.$white-0;
 
   .breadCrumbsContainer {
     nav {
-      background-color: $ui-01;
+      background-color: colors.$gray-10;
     }
   }
 
   .cardsView {
-    background-color: $ui-01;
+    background-color: colors.$gray-10;
     padding-top: 3rem;
   }
 
@@ -36,13 +34,13 @@
     }
 
     :global(.heading) {
-      color: $color-gray-70;
+      color: colors.$gray-70;
       font-size: 0.875rem;
       margin-bottom: 0.5rem;
     }
 
     :global(.content) {
-      color: $color-gray-100;
+      color: colors.$gray-100;
       font-size: 1rem;
     }
 
@@ -51,7 +49,7 @@
       bottom: 0.5rem;
       right: 1rem;
       svg {
-        color: $interactive-01;
+        color: colors.$blue-60;
       }
     }
   }
