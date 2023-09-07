@@ -13,6 +13,8 @@
     "analyze": "webpack --mode=production --env.analyze=true",
     "lint": "eslint src --ext js,jsx,ts,tsx",
     "typescript": "tsc",
+    "test": "cross-env TZ=UTC jest --config jest.config.js --verbose false --passWithNoTests --color",
+    "test:watch": "cross-env TZ=UTC jest --watch --config jest.config.js --color",
     "extract-translations": "i18next 'src/**/*.component.tsx' --config ../../tools/i18next-parser.config.js"
   },
   "browserslist": [

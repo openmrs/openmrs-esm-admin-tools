@@ -6,12 +6,8 @@
       "outputs": ["dist/**"]  
     },
     "test": {},
-    "lint": {
-      "dependsOn": ["^lint"]
-    },
-    "typescript": {
-      "dependsOn": ["^typescript"]
-    },
+    "lint": {},
+    "typescript": {},
     "extract-translations": {},
     "dev": {
       "cache": false

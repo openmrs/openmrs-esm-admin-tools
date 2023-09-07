@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/extend-expect';
 
 declare global {
   interface Window {
@@ -7,24 +7,15 @@ declare global {
   }
 }
 
-import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
-
-i18n.use(initReactI18next).init({
-  lng: 'en',
-  fallbackLng: 'en',
-
-  // have a common namespace used around the full app
-  ns: ['translations'],
-  defaultNS: 'translations',
-
-  // debug: true,
-
-  interpolation: {
-    escapeValue: false, // not needed for react!!
-  },
-
-  resources: { en: { translations: {} } },
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: jest.fn().mockImplementation((query) => ({
+    matches: false, // Set the desired value (true or false) based on your test case
+    media: query,
+    onchange: null,
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+  })),
 });
 
 window.openmrsBase = '/openmrs';

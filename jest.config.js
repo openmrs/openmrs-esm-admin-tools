@@ -1,12 +1,20 @@
+/**
+ * @returns {Promise<import('jest').Config>}
+ */
+
+const path = require('path');
+
 module.exports = {
   transform: {
-    '^.+\\.(m?j|t)sx?$': ['@swc/jest'],
+    '^.+\\.(j|t)sx?$': '@swc/jest',
   },
-  transformIgnorePatterns: ['/node_modules/(?!@openmrs|dexie)'],
+  transformIgnorePatterns: ['/node_modules/(?!@openmrs)'],
   moduleNameMapper: {
     '\\.(s?css)$': 'identity-obj-proxy',
     '@openmrs/esm-framework': '@openmrs/esm-framework/mock',
+    '^dexie$': require.resolve('dexie'),
     '^lodash-es/(.*)$': 'lodash/$1',
+    '^react-i18next$': path.resolve(__dirname, '__mocks__', 'react-i18next.js'),
   },
   collectCoverageFrom: [
     '**/src/**/*.component.tsx',
@@ -24,10 +32,10 @@ module.exports = {
       lines: 80,
     },
   },
-  setupFilesAfterEnv: ['<rootDir>/tools/setupTests.ts'],
+  setupFilesAfterEnv: [path.resolve(__dirname, 'tools', 'setupTests.ts')],
   testEnvironment: 'jsdom',
   testEnvironmentOptions: {
     url: 'http://localhost/',
   },
-  testPathIgnorePatterns: ['<rootDir>/e2e'],
+  testPathIgnorePatterns: [path.resolve(__dirname, 'e2e')],
 };
