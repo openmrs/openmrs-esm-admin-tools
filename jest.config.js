@@ -1,9 +1,6 @@
-/**
- * @returns {Promise<import('jest').Config>}
- */
-
 const path = require('path');
 
+/** @type {import('jest').Config} */
 module.exports = {
   transform: {
     '^.+\\.(j|t)sx?$': '@swc/jest',
