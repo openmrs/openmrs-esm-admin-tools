@@ -32,7 +32,7 @@ Note: These variables are currently only used for end-to-end tests.
 To start the dev server for a specific package, run
 
 ```bash
-yarn start --sources 'packages/esm-admin-<package>-app'
+yarn start --sources 'packages/esm-<package>-app'
 ```
 
 This will start a dev server for that package.
@@ -52,12 +52,48 @@ for information about configuring modules.
 
 ## Running tests
 
-### Unit tests
+To run tests for all packages, run:
 
-To run unit tests, use:
+```bash
+yarn turbo test
+```
 
-```sh
-yarn test
+To run tests in `watch` mode, run:
+
+```bash
+yarn turbo test:watch
+```
+
+To run tests for a specific package, pass the package name to the `--filter` flag. For example, to run tests for `esm-patient-system-admin-app`, run:
+
+```bash
+yarn turbo test --filter="esm-system-admin-app"
+```
+
+To run a specific test file, run:
+
+```bash
+yarn turbo test -- dashboard
+```
+
+The above command will only run tests in the file or files that match the provided string.
+
+You can also run the matching tests from above in watch mode by running:
+
+```bash
+yarn turbo test:watch -- dashboard
+```
+
+To generate a `coverage` report, run:
+
+```bash
+yarn turbo coverage
+```
+
+By default, `turbo` will cache test runs. This means that re-running tests wihout changing any of the related files will return the cached logs from the last run. To bypass the cache, run tests with the `force` flag, as follows:
+
+```bash
+yarn turbo test --force
 ```
 
 ### E2E tests
