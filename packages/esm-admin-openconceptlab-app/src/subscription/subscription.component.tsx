@@ -9,6 +9,7 @@ import {
   Form,
   FormGroup,
   Grid,
+  Layer,
   Stack,
   SkeletonText,
   TextInput,
@@ -201,26 +202,28 @@ const Subscription: React.FC = () => {
         <Form onSubmit={handleSubmit}>
           <h3 className={styles.productiveHeading03}>{t('setupSubscription', 'Setup Subscription')}</h3>
           <Stack gap={5}>
-            <TextInput
-              id="subscriptionUrl"
-              type="url"
-              labelText={t('subscriptionUrl', 'Subscription URL')}
-              placeholder="https://api.openconceptlab.org/orgs/organization-name/collections/dictionary-name"
-              value={subscriptionUrl}
-              onChange={handleChangeSubscriptionUrl}
-              light={true}
-              required
-            />
-            <TextInput
-              id="apiToken"
-              type="password"
-              placeholder="••••••••••••••••••••••••••••••••••••••••••••••••"
-              labelText={t('apiToken', 'Token')}
-              value={token}
-              onChange={handleChangeToken}
-              light={true}
-              required
-            />
+            <Layer>
+              <TextInput
+                id="subscriptionUrl"
+                type="url"
+                labelText={t('subscriptionUrl', 'Subscription URL')}
+                placeholder="https://api.openconceptlab.org/orgs/organization-name/collections/dictionary-name"
+                value={subscriptionUrl}
+                onChange={handleChangeSubscriptionUrl}
+                required
+              />
+            </Layer>
+            <Layer>
+              <TextInput
+                id="apiToken"
+                type="password"
+                placeholder="••••••••••••••••••••••••••••••••••••••••••••••••"
+                labelText={t('apiToken', 'Token')}
+                value={token}
+                onChange={handleChangeToken}
+                required
+              />
+            </Layer>
             <FormGroup legendText={t('advancedOptions', 'Advanced Options')} className={styles.formGroup}>
               <Checkbox
                 checked={isSubscribedToSnapshot}
