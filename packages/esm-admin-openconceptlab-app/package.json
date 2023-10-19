@@ -49,6 +49,7 @@
     "react-dom": "18.x",
     "react-i18next": "11.x",
     "react-router-dom": "6.x",
-    "rxjs": "6.x"
+    "rxjs": "6.x",
+    "swr": "2.x"
   }
 }
