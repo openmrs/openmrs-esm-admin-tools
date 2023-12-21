@@ -13,12 +13,12 @@ test.beforeEach(async ({ api }) => {
 test('should be able to setup a subscription and import concepts', async ({ page }) => {
   const openConceptLabPage = new OpenConceptLabPage(page);
 
-  await test.step('When the user setup the subscription', async () => {
+  await test.step('When I setup the subscription', async () => {
   await openConceptLabPage.goto();
   await openConceptLabPage.addOclSubscription();
   });
 
-  await test.step('And the user starts and import', async () => {
+  await test.step('And I starts and import', async () => {
   await openConceptLabPage.importTab().click();
   await openConceptLabPage.startImport();
   });
@@ -29,7 +29,7 @@ test('should be able to setup a subscription and import concepts', async ({ page
   await expect(openConceptLabPage.previousImportsTable()).toHaveText(/\d+ items fetched/);
   });
 
-  await test.step('And the user unsubscribes', async () => {
+  await test.step('And I unsubscribes', async () => {
   await openConceptLabPage.subscriptionTab().click();
   await openConceptLabPage.unsubscribe();
   });
