@@ -11,8 +11,9 @@ on:
 jobs:
   main:
     runs-on: ubuntu-latest
-      - name: Checkout repo
     timeout-minutes: 15
+      - name: Checkout repo
+    
     steps:
         uses: actions/checkout@v3
 
