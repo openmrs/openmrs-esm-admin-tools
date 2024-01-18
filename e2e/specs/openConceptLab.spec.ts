@@ -18,12 +18,12 @@ test('should be able to setup a subscription and import concepts', async ({ page
   await openConceptLabPage.addOclSubscription();
   });
 
-  await test.step('And I starts and import', async () => {
+  await test.step('And I starts an import', async () => {
   await openConceptLabPage.importTab().click();
   await openConceptLabPage.startImport();
   });
 
-  await test.step('Then the import results should show in the test report', async () => {
+  await test.step('Then the import results should appear in the test report', async () => {
   await openConceptLabPage.goto();
   await openConceptLabPage.previousImportsTab().click();
   await expect(openConceptLabPage.previousImportsTable()).toHaveText(/\d+ items fetched/);
