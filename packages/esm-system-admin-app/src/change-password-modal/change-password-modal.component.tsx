@@ -110,8 +110,8 @@ export default function ChangePasswordModal({ close }: ChangePasswordModalProps)
           showSnackbar({
             isLowContrast: true,
             kind: 'success',
-            subtitle: t('userPasswordUpdated', 'User password updated successfully'),
-            title: t('userPassword', 'User password'),
+            title: t('passwordChanged', 'Password changed'),
+						subtitle: t('passwordUpdatedSuccessfully', 'Your password has been successfully updated.')
           });
         })
         .catch((error) => {
