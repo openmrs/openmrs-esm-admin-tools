@@ -46,7 +46,7 @@ export default function ChangePasswordModal({ close }: ChangePasswordModalProps)
         } else if (!uppercasePassword) {
           errMsg = t('atLeastOneUppercaseLetterRequired', 'Your password must contain at least one uppercase letter (A-Z)');
         } else if (!lowercasePassword) {
-          errMsg = t('atLeastOneLowercase', 'At least one Lowercase');
+          errMsg = t('atLeastOneLowercaseLetterRequired', 'Your password must contain at least one lowercase letter (a-z)');
         } else if (!digitsPassword) {
           errMsg = t('atLeastOneDigit', 'At least one digit');
         } else if (!minLengthPassword) {
