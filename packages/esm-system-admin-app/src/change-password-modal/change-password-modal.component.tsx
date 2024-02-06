@@ -42,7 +42,7 @@ export default function ChangePasswordModal({ close }: ChangePasswordModalProps)
         const minLengthPassword = minLengthRegExp.test(passwordInputValue);
         let errMsg = '';
         if (passwordLength === 0) {
-          errMsg = t('passwordIsEmpty', 'Password is empty');
+          errMsg = t('passwordRequired', 'Your password cannot be blank. Please enter a password.');
         } else if (!uppercasePassword) {
           errMsg = t('atLeastOneUppercase', 'At least one Uppercase');
         } else if (!lowercasePassword) {
