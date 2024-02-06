@@ -44,7 +44,7 @@ export default function ChangePasswordModal({ close }: ChangePasswordModalProps)
         if (passwordLength === 0) {
           errMsg = t('passwordRequired', 'Your password cannot be blank. Please enter a password.');
         } else if (!uppercasePassword) {
-          errMsg = t('atLeastOneUppercase', 'At least one Uppercase');
+          errMsg = t('atLeastOneUppercaseLetterRequired', 'Your password must contain at least one uppercase letter (A-Z)');
         } else if (!lowercasePassword) {
           errMsg = t('atLeastOneLowercase', 'At least one Lowercase');
         } else if (!digitsPassword) {
