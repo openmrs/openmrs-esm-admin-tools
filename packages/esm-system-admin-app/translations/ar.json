@@ -9,6 +9,7 @@
   "confirmPasswordMustBeTheSameAsNew": "تأكيد كلمة المرور يجب أن تكون هي نفسها الجديدة",
   "invalidPasswordCredentials": "",
   "legacyAdmin": "إدارة النظام القديم",
+  "systemAdmin": "إدارة النظام"
   "minimum8Characters": "الحد الأدنى 8 أحرف",
   "newPassword": "كلمة المرور الجديدة",
   "newPasswordMustNotBeTheSameAsOld": "كلمة المرور الجديدة يجب ألا تكون نفس كلمة المرور",
