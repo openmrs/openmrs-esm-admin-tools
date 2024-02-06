@@ -9,6 +9,7 @@
   "confirmPasswordMustBeTheSameAsNew": "Confirm password must be the same as new",
   "invalidPasswordCredentials": "",
   "legacyAdmin": "Legacy Admin",
+  "systemAdmin": "System Administration"
   "minimum8Characters": "Minimum 8 characters",
   "newPassword": "New Password",
   "newPasswordMustNotBeTheSameAsOld": "New password must not be the same as password",
