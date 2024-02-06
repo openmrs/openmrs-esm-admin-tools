@@ -50,7 +50,7 @@ export default function ChangePasswordModal({ close }: ChangePasswordModalProps)
         } else if (!digitsPassword) {
           errMsg = t('atLeastOneNumberRequired', 'Your password must include at least one number (0-9).');
         } else if (!minLengthPassword) {
-          errMsg = t('minimum8Characters', 'Minimum 8 characters');
+          errMsg = t('minCharacterLengthRequired', 'Your password must contain at least 8 characters.');
         } else if (passwordInput.oldPassword.length > 0 && passwordInput.newPassword === passwordInput.oldPassword) {
           errMsg = t('newPasswordMustNotBeTheSameAsOld', 'New password must not be the same as password');
         } else {
