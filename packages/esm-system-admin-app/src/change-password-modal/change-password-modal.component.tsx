@@ -48,7 +48,7 @@ export default function ChangePasswordModal({ close }: ChangePasswordModalProps)
         } else if (!lowercasePassword) {
           errMsg = t('atLeastOneLowercaseLetterRequired', 'Your password must contain at least one lowercase letter (a-z)');
         } else if (!digitsPassword) {
-          errMsg = t('atLeastOneDigit', 'At least one digit');
+          errMsg = t('atLeastOneNumberRequired', 'Your password must include at least one number (0-9).');
         } else if (!minLengthPassword) {
           errMsg = t('minimum8Characters', 'Minimum 8 characters');
         } else if (passwordInput.oldPassword.length > 0 && passwordInput.newPassword === passwordInput.oldPassword) {
