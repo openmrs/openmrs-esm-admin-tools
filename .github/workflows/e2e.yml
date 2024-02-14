@@ -11,9 +11,10 @@ on:
 jobs:
   main:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
-    steps:
+    timeout-minutes: 15
       - name: Checkout repo
+    
+    steps:
         uses: actions/checkout@v3
 
       - name: Copy test environment variables
