@@ -11,7 +11,7 @@
     "ci:prepublish": "lerna publish from-package --no-git-reset --yes --dist-tag next",
     "release": "lerna version --no-git-tag-version",
     "verify": "turbo lint typescript test",
-    "prettier": "prettier --config prettier.config.js --write \"packages/**/*.{ts,tsx}\" \"e2e/**/*.ts\"",
+    "prettier": "prettier --config prettier.config.js --write \"packages/**/*.{ts,tsx}\" \"e2e/**/*.ts\" --list-different",
     "postinstall": "husky install",
     "test-e2e": "playwright test",
     "coverage": "yarn test --coverage",
