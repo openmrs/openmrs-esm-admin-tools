@@ -1,0 +1,90 @@
+.statusIcon {
+  margin-bottom: -2px;
+  margin-right: 5px;
+}
+
+.failedIcon {
+  color: red;
+}
+
+.successIcon {
+  color: green;
+}
+
+.runningIcon {
+  display: inline-block;
+}
+
+.actionButon {
+  padding-left: 0px;
+  color: inherit;
+}
+
+.actionButtonIcon {
+  margin-left: 5px;
+}
+
+.mainActionButton {
+  margin-top: 25px;
+}
+
+.mainPanelDiv {
+  height: 130px;
+  background-color: white;
+}
+
+.emptyButton {
+  width: 100px;
+}
+
+.actionButtonsWrapperDiv {
+  width: 110px;
+  display: inline-block;
+}
+
+.mainActionButtonsDiv {
+  text-align: right;
+  height: 48px;
+}
+
+.reportsLabelDiv {
+  margin-left: 20px;
+  padding-top: 20px;
+}
+
+.breadcrumbsSlot {
+  grid-row: 1 / 2;
+  grid-column: 1 / 2;
+}
+
+.downloadReportsVisible {
+  display: inline-block;
+}
+
+.downloadReportsHidden {
+  display: none;
+}
+
+.breadcrumb {
+  margin-top: -30px;
+}
+
+.rowCellEven {
+  background-color: #FFFFFF !important;
+}
+
+.rowCellOdd {
+  background-color: #F4F4F4 !important;
+}
+
+.scheduledStatusText {
+  color: green;
+}
+
+.scheduleCompletedStatusText {
+  color: red;
+}
+
+.notScheduledStatusText {
+  color: red;
+}
