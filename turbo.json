@@ -3,14 +3,13 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**"]  
+      "outputs": ["dist/**"]
     },
     "test": {},
     "lint": {},
     "typescript": {},
-    "extract-translations": {},
-    "dev": {
-      "cache": false
+    "extract-translations": {
+      "outputs": ["./translations/*"]
     }
   }
 }
