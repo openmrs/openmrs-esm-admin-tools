@@ -29,7 +29,7 @@ module.exports = {
       lines: 80,
     },
   },
-  setupFilesAfterEnv: [path.resolve(__dirname, 'tools', 'setupTests.ts')],
+  setupFilesAfterEnv: [path.resolve(__dirname, 'tools', 'setup-tests.ts')],
   testEnvironment: 'jsdom',
   testEnvironmentOptions: {
     url: 'http://localhost/',
