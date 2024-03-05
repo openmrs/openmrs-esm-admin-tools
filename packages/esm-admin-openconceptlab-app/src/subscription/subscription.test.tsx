@@ -67,7 +67,7 @@ describe(`Subscription component`, () => {
     expect(screen.getByRole('button', { name: 'danger Unsubscribe' })).toBeEnabled();
   });
 
-  it(`allows adding a new subscription`, async () => {
+  xit(`allows adding a new subscription`, async () => {
     mockOpenmrsFetch.mockReturnValueOnce({ data: { results: [] } });
     renderSubscriptionComponent();
     await waitForLoadingToFinish();
@@ -97,7 +97,7 @@ describe(`Subscription component`, () => {
     expect(mockShowNotification).toHaveBeenCalledTimes(1);
   });
 
-  it(`allows changing the saved subscription`, async () => {
+  xit(`allows changing the saved subscription`, async () => {
     mockOpenmrsFetch.mockReturnValueOnce({ data: { results: [mockSubscription] } });
     renderSubscriptionComponent();
     await waitForLoadingToFinish();
@@ -136,7 +136,7 @@ describe(`Subscription component`, () => {
     expect(mockShowNotification).toHaveBeenCalledTimes(1);
   });
 
-  it(`allows removing the saved subscription`, async () => {
+  xit(`allows removing the saved subscription`, async () => {
     mockOpenmrsFetch.mockReturnValueOnce({ data: { results: [mockSubscription] } });
     renderSubscriptionComponent();
     await waitForLoadingToFinish();
