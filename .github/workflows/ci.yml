@@ -55,6 +55,7 @@ jobs:
           name: packages
           path: |
             packages/**/dist
+          overwrite: true
 
   pre_release:
     runs-on: ubuntu-latest
@@ -100,6 +101,7 @@ jobs:
           name: packages
           path: |
             packages/**/dist
+          overwrite: true
 
   release:
     runs-on: ubuntu-latest
