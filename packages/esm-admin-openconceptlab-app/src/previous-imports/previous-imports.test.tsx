@@ -57,8 +57,8 @@ describe(`Previous Imports component`, () => {
     renderPreviousImportsComponent();
     await waitForLoadingToFinish();
 
-    mockPreviousImports.forEach((item) => {
-      expect(screen.getByText(formatDatetime(item.localDateStarted))).toBeVisible();
+    mockPreviousImports.forEach(async (item) => {
+      expect(await screen.findByText(formatDatetime(item.localDateStarted))).toBeVisible();
       expect(screen.getByText(item.importTime)).toBeVisible();
       expect(screen.getByText(item.status)).toBeVisible();
     });

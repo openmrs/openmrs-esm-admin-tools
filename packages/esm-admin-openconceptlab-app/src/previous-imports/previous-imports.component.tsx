@@ -99,7 +99,13 @@ const PreviousImports: React.FC = () => {
                     <Fragment key={row.id}>
                       <TableExpandRow {...getRowProps({ row })} className={styles.tableRow}>
                         {row.cells.map((cell) => (
-                          <TableCell key={cell.id}>{cell.value}</TableCell>
+                          <TableCell key={cell.id}>
+                            {cell.id === 'status' && row.isExpanded
+                              ? cell.value
+                              : cell.value.length > 10 && !row.isExpanded
+                                ? `${cell.value.slice(0, 50)}...` //this can be changed according to the requirement
+                                : cell.value}
+                          </TableCell>
                         ))}
                       </TableExpandRow>
                       {row.isExpanded && (
