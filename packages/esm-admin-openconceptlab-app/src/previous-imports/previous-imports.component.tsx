@@ -103,7 +103,7 @@ const PreviousImports: React.FC = () => {
                             {cell.id === 'status' && row.isExpanded
                               ? cell.value
                               : cell.value.length > 10 && !row.isExpanded
-                                ? `${cell.value.slice(0, 50)}...`
+                                ? `${cell.value.slice(0, 50)}...` //this can be changed according to the requirement
                                 : cell.value}
                           </TableCell>
                         ))}
