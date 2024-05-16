@@ -34,3 +34,13 @@ export const legacySystemAdminPageCardLink = getAsyncLifecycle(
   () => import('./dashboard/legacy-admin-page-link.component'),
   options,
 );
+
+export const changePasswordButton = getAsyncLifecycle(
+  () => import('./change-password-button/change-password-button.component'),
+  options,
+);
+
+export const changePasswordModal = getAsyncLifecycle(
+  () => import('./change-password-modal/change-password-modal.component'),
+  options,
+);
