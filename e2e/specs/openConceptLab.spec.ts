@@ -13,22 +13,26 @@ test.beforeEach(async ({ api }) => {
 test('should be able to setup a subscription and import concepts', async ({ page }) => {
   const openConceptLabPage = new OpenConceptLabPage(page);
 
-  // Setup the subscription
-  await openConceptLabPage.goto();
-  await openConceptLabPage.addOclSubscription();
+  await test.step('When I setup the subscription', async () => {
+    await openConceptLabPage.goto();
+    await openConceptLabPage.addOclSubscription();
+  });
 
-  // Start an Import
-  await openConceptLabPage.importTab().click();
-  await openConceptLabPage.startImport();
+  await test.step('And I starts an import', async () => {
+    await openConceptLabPage.importTab().click();
+    await openConceptLabPage.startImport();
+  });
 
-  // Check results of the import
-  await openConceptLabPage.goto();
-  await openConceptLabPage.previousImportsTab().click();
-  await expect(openConceptLabPage.previousImportsTable()).toHaveText(/\d+ items fetched/);
+  await test.step('Then the import results should appear in previous imports', async () => {
+    await openConceptLabPage.goto();
+    await openConceptLabPage.previousImportsTab().click();
+    await expect(openConceptLabPage.previousImportsTable()).toHaveText(/\d+ items fetched/);
+  });
 
-  // Unsubscribe
-  await openConceptLabPage.subscriptionTab().click();
-  await openConceptLabPage.unsubscribe();
+  await test.step('And I unsubscribe', async () => {
+    await openConceptLabPage.subscriptionTab().click();
+    await openConceptLabPage.unsubscribe();
+  });
 });
 
 test.afterEach(async ({ api }) => {
