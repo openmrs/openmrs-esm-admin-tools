@@ -30,17 +30,17 @@ const Subscription: React.FC = () => {
   const [validationType, setValidationType] = useState<'NONE' | 'FULL'>('FULL');
   const [isSnapshotOptionDisabled, setIsSnapshotOptionDisabled] = useState(false);
 
-  const { data: subscription, isLoading, isError } = useSubscription();
+  const { data: subscription, isLoading, error } = useSubscription();
 
   useEffect(() => {
-    if (!isLoading && !isError) {
+    if (!isLoading && !error) {
       setSubscriptionUrl(subscription?.url || '');
       setToken(subscription?.token || '');
       setIsSubscribedToSnapshot(subscription?.subscribedToSnapshot || false);
       setValidationType(subscription?.validationType || 'FULL');
       setIsSnapshotOptionDisabled(subscription ? isVersionDefinedInUrl(subscription.url) : false);
     }
-  }, [isLoading, isError, subscription]);
+  }, [isLoading, error, subscription]);
 
   const handleChangeSubscriptionUrl = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setSubscriptionUrl(event.target.value);
@@ -189,7 +189,7 @@ const Subscription: React.FC = () => {
     );
   }
 
-  if (isError) {
+  if (error) {
     showNotification({
       kind: 'error',
       description: t('subscriptionError', 'Error occured while fetching the subscription'),

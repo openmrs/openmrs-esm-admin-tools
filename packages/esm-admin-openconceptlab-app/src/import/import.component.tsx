@@ -23,13 +23,13 @@ const Import: React.FC = () => {
   const [file, setFile] = useState<File>();
   const [isFileUploading, setIsFileUploading] = useState(false);
 
-  const { data: subscription, isLoading, isError } = useSubscription();
+  const { data: subscription, isLoading, error } = useSubscription();
 
   useEffect(() => {
-    if (!isLoading && !isError) {
+    if (!isLoading && !error) {
       setIsSubscriptionAvailable(!!subscription);
     }
-  }, [isLoading, isError, subscription]);
+  }, [isLoading, error, subscription]);
 
   const onAddFiles = useCallback(
     (evt: React.DragEvent<HTMLInputElement>, { addedFiles }) => {
@@ -138,7 +138,7 @@ const Import: React.FC = () => {
     );
   }
 
-  if (isError) {
+  if (error) {
     showNotification({
       kind: 'error',
       description: t('subscriptionError', 'Error occured while fetching the subscription'),
