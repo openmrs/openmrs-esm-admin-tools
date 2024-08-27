@@ -5,12 +5,8 @@ import { renderWithSwr } from '../../../../../tools/test-helpers';
 import { mockPreviousImports } from '../../../../../__mocks__/openconceptlab.mock';
 import ImportOverview from './import-overview.component';
 
-describe(`Import Overview component`, () => {
-  it(`renders without dying`, () => {
-    renderImportOverviewComponent(mockPreviousImports[0]);
-  });
-
-  it(`renders the fields`, async () => {
+describe('Import Overview component', () => {
+  it('renders the fields', async () => {
     renderImportOverviewComponent(mockPreviousImports[0]);
     await waitForLoadingToFinish();
 
@@ -20,7 +16,7 @@ describe(`Import Overview component`, () => {
     expect(screen.getByText('Result:')).toBeVisible();
   });
 
-  it(`renders the import details when no errored items`, async () => {
+  it('renders the import details when no errored items', async () => {
     const selectedImport = mockPreviousImports[0];
 
     renderImportOverviewComponent(selectedImport);
@@ -45,7 +41,7 @@ describe(`Import Overview component`, () => {
     expect(screen.getByText(ignoredErrorsText)).toBeVisible();
   });
 
-  it(`renders the import details when there are errored items`, async () => {
+  it('renders the import details when there are errored items', async () => {
     const selectedImport = mockPreviousImports[1];
 
     renderImportOverviewComponent(selectedImport);
