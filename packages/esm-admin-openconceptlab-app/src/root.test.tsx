@@ -1,14 +1,9 @@
 import React from 'react';
-import { render, cleanup, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import Root from './root.component';
 
-describe(`Root component`, () => {
-  afterEach(cleanup);
-  it(`renders without dying`, () => {
-    renderOclSubscriptionModule();
-  });
-
-  it(`renders the title and tab containers`, () => {
+describe('Root component', () => {
+  it('renders the title and tab containers', () => {
     renderOclSubscriptionModule();
     expect(screen.getByText('OCL Subscription Module')).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: 'Subscription' })).toBeInTheDocument();

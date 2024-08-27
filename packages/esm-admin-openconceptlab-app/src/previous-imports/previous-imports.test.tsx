@@ -8,37 +8,15 @@ import PreviousImports from './previous-imports.component';
 const mockOpenmrsFetch = openmrsFetch as jest.Mock;
 const mockUsePagination = usePagination as jest.Mock;
 
-jest.mock('@openmrs/esm-framework', () => {
-  const originalModule = jest.requireActual('@openmrs/esm-framework');
-
-  return {
-    ...originalModule,
-    usePagination: jest.fn(),
-  };
-});
-
-describe(`Previous Imports component`, () => {
-  afterEach(() => {
-    mockUsePagination.mockReset();
-  });
-
-  it(`renders without dying`, () => {
-    mockUsePagination.mockReturnValue({
-      currentPage: 1,
-      goTo: () => {},
-      results: [],
-    });
-    renderPreviousImportsComponent();
-  });
-
-  it(`renders the table`, async () => {
+describe('Previous imports', () => {
+  it('renders the table', async () => {
     mockOpenmrsFetch.mockReturnValueOnce({ data: { results: [] } });
     mockUsePagination.mockReturnValue({
       currentPage: 1,
       goTo: () => {},
       results: [],
     });
-    renderPreviousImportsComponent();
+    renderWithSwr(<PreviousImports />);
     await waitForLoadingToFinish();
 
     expect(screen.getByText('Previous Imports')).toBeVisible();
@@ -47,14 +25,14 @@ describe(`Previous Imports component`, () => {
     expect(screen.getByText('Status')).toBeVisible();
   });
 
-  it(`renders the previous imports correctly`, async () => {
+  it('renders the previous imports correctly', async () => {
     mockOpenmrsFetch.mockReturnValueOnce({ data: { results: mockPreviousImports } });
     mockUsePagination.mockReturnValue({
       currentPage: 1,
       goTo: () => {},
       results: mockPreviousImports,
     });
-    renderPreviousImportsComponent();
+    renderWithSwr(<PreviousImports />);
     await waitForLoadingToFinish();
 
     mockPreviousImports.forEach((item) => {
@@ -64,10 +42,6 @@ describe(`Previous Imports component`, () => {
     });
   });
 });
-
-function renderPreviousImportsComponent() {
-  renderWithSwr(<PreviousImports />);
-}
 
 function waitForLoadingToFinish() {
   return waitFor(() => {

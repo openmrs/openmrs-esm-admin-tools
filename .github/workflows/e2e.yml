@@ -50,7 +50,7 @@ jobs:
         run: yarn playwright test
 
       - name: Stop dev server
-        if: "!cancelled()"
+        if: '!cancelled()'
         run: docker stop $(docker ps -a -q)
 
       - name: Upload Report

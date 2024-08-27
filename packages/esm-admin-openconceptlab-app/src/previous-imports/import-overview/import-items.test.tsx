@@ -6,7 +6,7 @@ import { mockImportItems, mockPreviousImports } from '../../../../../__mocks__/o
 import { getImportDetails } from './import-items.resource';
 import ImportItems from './import-items.component';
 
-const testProps = {
+const defaultProps = {
   importUuid: mockPreviousImports[1].uuid,
 };
 
@@ -22,43 +22,29 @@ jest.mock('./import-items.resource', () => {
   };
 });
 
-jest.mock('@openmrs/esm-framework', () => {
-  const originalModule = jest.requireActual('@openmrs/esm-framework');
-
-  return {
-    ...originalModule,
-    usePagination: jest.fn(),
-  };
-});
-
-describe(`Import Items component`, () => {
-  afterEach(() => {
-    mockGetImportDetails.mockReset();
-    mockUsePagination.mockReset();
-  });
-
-  it(`renders the table`, async () => {
+describe('Import items', () => {
+  it('renders a tabular overview', async () => {
     mockGetImportDetails.mockReturnValue({ status: 200, ok: true, data: mockImportItems });
     mockUsePagination.mockReturnValue({
       currentPage: 1,
       goTo: () => {},
       results: mockImportItems,
     });
-    renderImportItemsComponent();
+    renderWithSwr(<ImportItems {...defaultProps} />);
     await waitForLoadingToFinish();
 
     expect(screen.getByText('Concept/Mapping')).toBeVisible();
     expect(screen.getByText('Message')).toBeVisible();
   });
 
-  it(`renders the import items correctly`, async () => {
+  it('renders the import items correctly', async () => {
     mockGetImportDetails.mockReturnValue({ status: 200, ok: true, data: mockImportItems });
     mockUsePagination.mockReturnValue({
       currentPage: 1,
       goTo: () => {},
       results: mockImportItems,
     });
-    renderImportItemsComponent();
+    renderWithSwr(<ImportItems {...defaultProps} />);
     await waitForLoadingToFinish();
 
     expect(screen.getByText('Concept/Mapping')).toBeVisible();
@@ -70,10 +56,6 @@ describe(`Import Items component`, () => {
     });
   });
 });
-
-function renderImportItemsComponent() {
-  renderWithSwr(<ImportItems {...testProps} />);
-}
 
 function waitForLoadingToFinish() {
   return waitFor(() => {
