@@ -1,3 +1,2 @@
-src/**/*.test.tsx
 src/**/*.spec.tsx
 **/node_modules/**/*
