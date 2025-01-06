@@ -67,5 +67,8 @@
     "webpack": "^5.88.2",
     "webpack-cli": "^4.10.0"
   },
-  "packageManager": "yarn@3.6.3"
+  "packageManager": "yarn@3.6.3",
+  "dependencies": {
+    "playwright": "^1.49.1"
+  }
 }
