@@ -1,14 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './run-report-form.scss';
-import {
-  useLocations,
-  useReportDefinitions,
-  useReportDesigns,
-  runReportObservable,
-  RunReportRequest,
-} from '../reports.resource';
-import { ReportDesign } from '../../types/report-design';
+import { useLocations, useReportDefinitions, useReportDesigns, runReportObservable } from '../reports.resource';
 import { closeOverlay } from '../../hooks/useOverlay';
 import { Button, ButtonSet, DatePicker, DatePickerInput, Form, Select, SelectItem, TextInput } from '@carbon/react';
 import { showToast, useLayoutType } from '@openmrs/esm-framework';
@@ -138,14 +131,22 @@ const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
 
       setIsSubmitting(true);
 
-      const runReportRequest: RunReportRequest = {
-        reportDefinitionUuid: reportUuid,
-        renderModeUuid: renderModeUuid,
-        reportParameters: reportParameters,
+      const reportRequest = {
+        uuid: null,
+        reportDefinition: {
+          parameterizable: {
+            uuid: reportUuid,
+          },
+          parameterMappings: reportParameters,
+        },
+        renderingMode: {
+          argument: renderModeUuid,
+        },
+        schedule: null,
       };
 
       const abortController = new AbortController();
-      runReportObservable(runReportRequest, abortController)
+      runReportObservable(reportRequest, abortController)
         .pipe(first())
         .subscribe(
           () => {

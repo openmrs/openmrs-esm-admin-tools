@@ -31,7 +31,7 @@ import { closeOverlay, launchOverlay } from '../hooks/useOverlay';
 import RunReportForm from './run-report/run-report-form.component';
 import Overlay from './overlay.component';
 import ReportStatus from './report-status.component';
-import { COMPLETED, SAVED } from './report-statuses-constants';
+import { COMPLETED, FAILED, PROCESSING, RAN_REPORT_STATUSES, REQUESTED, SAVED } from './report-statuses-constants';
 import ReportOverviewButton from './report-overview-button.component';
 import { PRIVILEGE_SYSTEM_DEVELOPER } from '../constants';
 
@@ -59,7 +59,11 @@ const OverviewComponent: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(DEFAULT_PAGE_NUMBER);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
 
-  const { reports, reportsTotalCount, mutateReports } = useReports('ran', currentPage, pageSize);
+  const { reports, reportsTotalCount, mutateReports } = useReports(
+    RAN_REPORT_STATUSES.join(','),
+    currentPage,
+    pageSize,
+  );
 
   const layout = useLayoutType();
 

@@ -2,13 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { first } from 'rxjs/operators';
 import styles from './edit-scheduled-report-form.scss';
 import SimpleCronEditor from '../simple-cron-editor/simple-cron-editor.component';
-import {
-  useReportDefinition,
-  useReportDesigns,
-  useReportRequest,
-  runReportObservable,
-  RunReportRequest,
-} from '../reports.resource';
+import { useReportDefinition, useReportDesigns, useReportRequest, runReportObservable } from '../reports.resource';
 import ReportParameterInput from '../report-parameter-input.component';
 import { Button, ButtonSet, Form, Select, SelectItem, Stack } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
@@ -52,16 +46,22 @@ const EditScheduledReportForm: React.FC<EditScheduledReportForm> = ({
 
       setIsSubmitting(true);
 
-      const runReportRequest: RunReportRequest = {
-        existingRequestUuid: reportRequestUuid,
-        reportDefinitionUuid,
-        renderModeUuid,
-        reportParameters,
+      const scheduleRequest = {
+        uuid: reportRequestUuid ? reportRequestUuid : null,
+        reportDefinition: {
+          parameterizable: {
+            uuid: reportDefinitionUuid,
+          },
+          parameterMappings: reportParameters,
+        },
+        renderingMode: {
+          argument: renderModeUuid,
+        },
         schedule,
       };
 
       const abortController = new AbortController();
-      runReportObservable(runReportRequest, abortController)
+      runReportObservable(scheduleRequest, abortController)
         .pipe(first())
         .subscribe(
           () => {
