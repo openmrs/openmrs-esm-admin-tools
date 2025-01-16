@@ -4,6 +4,11 @@ import { useTranslation } from 'react-i18next';
 import { cancelReportRequest } from '../reports.resource';
 import { showToast } from '@openmrs/esm-framework';
 import { mutate } from 'swr';
+import {
+  PROCESSING_REPORT_STATUSES,
+  RAN_REPORT_STATUSES,
+  SCHEDULED_REPORT_STATUSES,
+} from '../report-statuses-constants';
 
 interface CancelReportModalProps {
   closeModal: () => void;
@@ -39,14 +44,14 @@ const CancelReportModal: React.FC<CancelReportModalProps> = ({ closeModal, repor
   }, [closeModal]);
 
   const callMutates = (modalType) => {
-    let baseUrl = '/ws/rest/v1/reportingrest/reportRequest?statusesGroup=';
+    let baseUrl = '/ws/rest/v1/reportingrest/reportRequest?status=';
     if (modalType === 'delete') {
-      mutate(baseUrl + 'ran');
+      mutate(baseUrl + RAN_REPORT_STATUSES.join(','));
     } else if (modalType === 'cancel') {
-      mutate(baseUrl + 'ran');
-      mutate(baseUrl + 'processing');
+      mutate(baseUrl + RAN_REPORT_STATUSES.join(','));
+      mutate(baseUrl + PROCESSING_REPORT_STATUSES.join(','));
     } else if (modalType === 'schedule') {
-      mutate(baseUrl + 'scheduled&sortBy=name');
+      mutate(baseUrl + SCHEDULED_REPORT_STATUSES.join(',') + '&sortBy=name');
     }
   };
 

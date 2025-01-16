@@ -26,14 +26,6 @@ interface ScheduledReportModel {
   schedule: string;
 }
 
-export interface RunReportRequest {
-  existingRequestUuid?: string | undefined;
-  reportDefinitionUuid: string;
-  renderModeUuid: string;
-  reportParameters: any;
-  schedule?: string | undefined;
-}
-
 export function useLocations() {
   const apiUrl = `/ws/rest/v1/location?tag=Login+Location`;
 
@@ -44,9 +36,9 @@ export function useLocations() {
   };
 }
 
-export function useReports(statusesGroup: string, pageNumber: number, pageSize: number, sortBy?: string): any {
+export function useReports(statuses: string, pageNumber: number, pageSize: number, sortBy?: string): any {
   const reportsUrl =
-    `/ws/rest/v1/reportingrest/reportRequest?statusesGroup=${statusesGroup}&startIndex=${pageNumber}&limit=${pageSize}&totalCount=true` +
+    `/ws/rest/v1/reportingrest/reportRequest?status=${statuses}&startIndex=${pageNumber}&limit=${pageSize}&totalCount=true` +
     (sortBy ? `&sortBy=${sortBy}` : '');
 
   const { data, error, isValidating, mutate } = useSWR<{ data: { results: Array<any>; totalCount: number } }, Error>(
@@ -81,7 +73,8 @@ export function useReportRequest(reportRequestUuid: string): any {
 }
 
 export function useScheduledReports(sortBy?: string): any {
-  const scheduledReportsUrl = `/ws/rest/v1/reportingrest/scheduledReport` + (sortBy ? `?sortBy=${sortBy}` : '');
+  const scheduledReportsUrl =
+    `/ws/rest/v1/reportingrest/reportDefinitionsWithScheduledRequests` + (sortBy ? `?sortBy=${sortBy}` : '');
 
   const { data, error, isValidating, mutate } = useSWR<{ data: { results: Array<any> } }, Error>(
     scheduledReportsUrl,
@@ -120,7 +113,7 @@ export function useReportDefinition(reportDefinitionUuid: string): ReportDefinit
 }
 
 export function useReportDesigns(reportDefinitionUuid: string) {
-  const apiUrl = `/ws/rest/v1/reportingrest/designs?reportDefinitionUuid=${reportDefinitionUuid}`;
+  const apiUrl = `/ws/rest/v1/reportingrest/reportDesign?reportDefinitionUuid=${reportDefinitionUuid}`;
 
   const { data, error, isValidating, mutate } = useSWR<{ data: { results: ReportDesign[] } }, Error>(
     reportDefinitionUuid ? apiUrl : null,
@@ -142,11 +135,8 @@ function mapDesignResults(design: any): ReportDesign {
   };
 }
 
-export function runReportObservable(
-  payload: RunReportRequest,
-  abortController: AbortController,
-): Observable<FetchResponse<any>> {
-  return openmrsObservableFetch(`/ws/rest/v1/reportingrest/runReport`, {
+export function runReportObservable(payload: any, abortController: AbortController): Observable<FetchResponse<any>> {
+  return openmrsObservableFetch(`/ws/rest/v1/reportingrest/reportRequest`, {
     signal: abortController.signal,
     method: 'POST',
     headers: {
@@ -157,7 +147,7 @@ export function runReportObservable(
 }
 
 export async function cancelReportRequest(reportRequestUuid: string) {
-  const apiUrl = `/ws/rest/v1/reportingrest/cancelReport?reportRequestUuid=${reportRequestUuid}`;
+  const apiUrl = `/ws/rest/v1/reportingrest/reportRequest/${reportRequestUuid}`;
 
   return openmrsFetch(apiUrl, {
     method: 'DELETE',
@@ -165,7 +155,7 @@ export async function cancelReportRequest(reportRequestUuid: string) {
 }
 
 export async function preserveReport(reportRequestUuid: string) {
-  const apiUrl = `/ws/rest/v1/reportingrest/preserveReport?reportRequestUuid=${reportRequestUuid}`;
+  const apiUrl = `/ws/rest/v1/reportingrest/saveReport?reportRequestUuid=${reportRequestUuid}`;
 
   return openmrsFetch(apiUrl, {
     method: 'POST',
@@ -208,9 +198,9 @@ function mapReportResults(data: any): ReportModel {
 function mapScheduledReportResults(data: any): ScheduledReportModel {
   return {
     reportDefinitionUuid: data.reportDefinition.uuid,
-    reportRequestUuid: data.reportScheduleRequest?.uuid,
-    name: data.reportDefinition.name,
-    schedule: data.reportScheduleRequest?.schedule,
+    reportRequestUuid: data.scheduledRequests?.[0]?.uuid,
+    name: data.reportDefinition.display,
+    schedule: data.scheduledRequests?.[0]?.schedule,
   };
 }
 
