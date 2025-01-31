@@ -31,7 +31,7 @@ test('OpenConceptLabPage', async ({ page }) => {
   });
 
   await test.step('And I unsubscribe', async () => {
-    await openConceptLabPage.page.getByRole('button', {name: 'Unsubscribe'}).click();
+    await openConceptLabPage.page.getByRole('button', { name: 'Unsubscribe' }).click();
   });
 
   await test.step('Then I should see the unsubscribe message', async () => {
