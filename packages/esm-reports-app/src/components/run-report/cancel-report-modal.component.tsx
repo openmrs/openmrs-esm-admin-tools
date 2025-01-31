@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { ModalBody, Button, ModalFooter, ModalHeader, InlineLoading } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
 import { cancelReportRequest } from '../reports.resource';
-import { showToast } from '@openmrs/esm-framework';
+import { showSnackbar } from '@openmrs/esm-framework';
 import { mutate } from 'swr';
 import {
   PROCESSING_REPORT_STATUSES,
@@ -26,19 +26,17 @@ const CancelReportModal: React.FC<CancelReportModalProps> = ({ closeModal, repor
       .then(() => {
         callMutates(modalType);
         closeModal();
-        showToast({
-          critical: true,
+        showSnackbar({
           kind: 'success',
           title: getModalTitleByType(modalType),
-          description: getSuccessToastMessageByType(modalType),
+          subtitle: getSuccessToastMessageByType(modalType),
         });
       })
-      .catch((error) => {
-        showToast({
-          critical: true,
+      .catch(() => {
+        showSnackbar({
           kind: 'error',
           title: getModalTitleByType(modalType),
-          description: getFailedToastMessageByType(modalType),
+          subtitle: getFailedToastMessageByType(modalType),
         });
       });
   }, [closeModal]);

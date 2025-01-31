@@ -4,8 +4,9 @@ import styles from './run-report-form.scss';
 import { useLocations, useReportDefinitions, useReportDesigns, runReportObservable } from '../reports.resource';
 import { closeOverlay } from '../../hooks/useOverlay';
 import { Button, ButtonSet, DatePicker, DatePickerInput, Form, Select, SelectItem, TextInput } from '@carbon/react';
-import { showToast, useLayoutType } from '@openmrs/esm-framework';
-import { first } from 'rxjs/operators';
+import { showSnackbar, useLayoutType } from '@openmrs/esm-framework';
+import { take } from 'rxjs/operators';
+import classNames from 'classnames';
 
 interface RunReportForm {
   closePanel: () => void;
@@ -88,12 +89,11 @@ const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
               value={reportParameters[parameter.name] ?? ''}
             >
               <SelectItem value="" />
-              {locations?.length > 0 &&
-                locations.map((location) => (
-                  <SelectItem key={location.uuid} text={location.display} value={location.uuid}>
-                    {location.display}
-                  </SelectItem>
-                ))}
+              {locations?.map((location) => (
+                <SelectItem key={location.uuid} text={location.display} value={location.uuid}>
+                  {location.display}
+                </SelectItem>
+              ))}
             </Select>
           </div>
         );
@@ -145,18 +145,16 @@ const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
         schedule: null,
       };
 
-      const abortController = new AbortController();
-      runReportObservable(reportRequest, abortController)
-        .pipe(first())
+      runReportObservable(reportRequest)
+        .pipe(take(1))
         .subscribe(
           () => {
             // delayed handling because runReport returns before new reports is accessible via GET
             setTimeout(() => {
-              showToast({
-                critical: true,
+              showSnackbar({
                 kind: 'success',
                 title: t('reportRunning', 'Report running'),
-                description: t('reportRanSuccessfullyMsg', 'Report ran successfully'),
+                subtitle: t('reportRanSuccessfullyMsg', 'Report ran successfully'),
               });
               closePanel();
               setIsSubmitting(false);
@@ -164,11 +162,10 @@ const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
           },
           (error) => {
             console.error(error);
-            showToast({
-              critical: true,
+            showSnackbar({
               kind: 'error',
               title: t('reportRunningErrorMsg', 'Error while running the report'),
-              description: t('reportRunningErrorMsg', 'Error while running the report'),
+              subtitle: t('reportRunningErrorMsg', 'Error while running the report'),
             });
             setIsSubmitting(false);
           },
@@ -192,18 +189,18 @@ const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
           }}
           value={reportUuid}
         >
-          <SelectItem value="" />
-          {reportDefinitions?.length > 0 &&
-            reportDefinitions.map((reportDefinition) => (
-              <SelectItem key={reportDefinition.uuid} text={reportDefinition.name} value={reportDefinition.uuid}>
-                {reportDefinition.name}
-              </SelectItem>
-            ))}
+          <SelectItem text="" value={''} />
+          {reportDefinitions?.map((reportDefinition) => (
+            <SelectItem key={reportDefinition.uuid} text={reportDefinition.name} value={reportDefinition.uuid}>
+              {reportDefinition.name}
+            </SelectItem>
+          ))}
         </Select>
       </div>
       <div id="reportParametersDiv">
-        {currentReport &&
-          currentReport.parameters?.map((parameter) => <div>{renderParameterElementBasedOnType(parameter)}</div>)}
+        {currentReport?.parameters?.map((parameter) => (
+          <div key={`param-${parameter.name}`}>{renderParameterElementBasedOnType(parameter)}</div>
+        ))}
       </div>
       <div className={styles.outputFormatDiv}>
         <Select
@@ -213,17 +210,16 @@ const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
           onChange={(e) => setRenderModeUuid(e.target.value)}
           value={renderModeUuid}
         >
-          <SelectItem value="" />
-          {reportDesigns?.length > 0 &&
-            reportDesigns.map((reportDesign) => (
-              <SelectItem key={reportDesign.uuid} text={reportDesign.name} value={reportDesign.uuid}>
-                {reportDesign.name}
-              </SelectItem>
-            ))}
+          <SelectItem text="" value={''} />
+          {reportDesigns?.map((reportDesign) => (
+            <SelectItem key={reportDesign.uuid} text={reportDesign.name} value={reportDesign.uuid}>
+              {reportDesign.name}
+            </SelectItem>
+          ))}
         </Select>
       </div>
       <div className={styles.buttonsDiv}>
-        <ButtonSet className={isTablet ? styles.tablet : styles.desktop}>
+        <ButtonSet className={classNames({ [styles.tablet]: isTablet, [styles.desktop]: !isTablet })}>
           <Button onClick={closeOverlay} kind="secondary" size="xl" className={styles.reportButton}>
             {t('cancel', 'Cancel')}
           </Button>

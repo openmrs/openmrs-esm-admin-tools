@@ -83,13 +83,12 @@ const ReportParameterInput: React.FC<ReportParameterInputProps> = ({ parameter, 
             onChange={(e) => handleOnChange(e)}
             value={valueInternal}
           >
-            <SelectItem value={null} />
-            {locations?.length > 0 &&
-              locations.map((location) => (
-                <SelectItem key={location.uuid} text={location.display} value={location.uuid}>
-                  {location.display}
-                </SelectItem>
-              ))}
+            <SelectItem text="" value={''} />
+            {locations?.map((location) => (
+              <SelectItem key={location.uuid} text={location.display} value={location.uuid}>
+                {location.display}
+              </SelectItem>
+            ))}
           </Select>
         );
       default:

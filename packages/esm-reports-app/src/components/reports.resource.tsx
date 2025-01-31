@@ -1,10 +1,10 @@
-import { openmrsFetch, Session, FetchResponse, openmrsObservableFetch } from '@openmrs/esm-framework';
+import { openmrsFetch, type FetchResponse, openmrsObservableFetch } from '@openmrs/esm-framework';
 import { Observable } from 'rxjs';
 import useSWR from 'swr';
-import moment from 'moment';
 import { ReportDefinition } from '../types/report-definition';
 import { ReportDesign } from '../types/report-design';
 import { ReportRequest } from '../types/report-request';
+import dayjs from 'dayjs';
 
 interface ReportModel {
   reportName: string;
@@ -53,7 +53,7 @@ export function useReports(statuses: string, pageNumber: number, pageSize: numbe
   return {
     reports: reportsArray,
     reportsTotalCount: totalCount,
-    isError: error,
+    error,
     isValidating: isValidating,
     mutateReports: mutate,
   };
@@ -66,7 +66,7 @@ export function useReportRequest(reportRequestUuid: string): any {
 
   return {
     reportRequest: data?.data,
-    isError: error,
+    error,
     isValidating: isValidating,
     mutate,
   };
@@ -88,7 +88,7 @@ export function useScheduledReports(sortBy?: string): any {
 
   return {
     scheduledReports: scheduledReportsArray,
-    isError: error,
+    error,
     isValidating: isValidating,
     mutateScheduledReports: mutate,
   };
@@ -122,20 +122,14 @@ export function useReportDesigns(reportDefinitionUuid: string) {
 
   return {
     reportDesigns: data?.data.results,
-    isError: error,
+    error,
     isValidating: isValidating,
     mutateReportDesigns: mutate,
   };
 }
 
-function mapDesignResults(design: any): ReportDesign {
-  return {
-    name: design.name,
-    uuid: design.uuid,
-  };
-}
-
-export function runReportObservable(payload: any, abortController: AbortController): Observable<FetchResponse<any>> {
+export function runReportObservable(payload: any): Observable<FetchResponse<any>> {
+  const abortController = new AbortController();
   return openmrsObservableFetch(`/ws/rest/v1/reportingrest/reportRequest`, {
     signal: abortController.signal,
     method: 'POST',
@@ -185,11 +179,11 @@ function mapReportResults(data: any): ReportModel {
     status: data.status,
     requestedBy: data.requestedBy.person.display,
     requestedByUserUuid: data.requestedBy.uuid,
-    requestedOn: moment(data.requestDate).format('YYYY-MM-DD HH:mm'),
+    requestedOn: dayjs(data.requestDate).format('YYYY-MM-DD HH:mm'),
     outputFormat: data.renderingMode.label,
     parameters: convertParametersToString(data),
     evaluateCompleteDatetime: data.evaluateCompleteDatetime
-      ? moment(data.evaluateCompleteDatetime).format('YYYY-MM-DD HH:mm')
+      ? dayjs(data.evaluateCompleteDatetime).format('YYYY-MM-DD HH:mm')
       : undefined,
     schedule: data.schedule,
   };
@@ -211,7 +205,7 @@ function convertParametersToString(data: any): string {
     parameters.forEach((parameter) => {
       let value = data.parameterMappings[parameter.name];
       if (parameter.type === 'java.util.Date') {
-        value = moment(value).format('YYYY-MM-DD');
+        value = dayjs(value).format('YYYY-MM-DD');
       } else if (parameter.type === 'org.openmrs.Location') {
         value = value?.display;
       }

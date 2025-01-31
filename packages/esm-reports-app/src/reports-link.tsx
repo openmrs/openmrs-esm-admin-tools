@@ -8,7 +8,7 @@ export default function ReportsLink() {
   const { t } = useTranslation();
   return (
     <Layer>
-      <ClickableTile href={`${spaBasePath}`} target="_blank" rel="norefferer">
+      <ClickableTile href={`${spaBasePath}`}>
         <div>
           <div className="heading">{t('manageReports', 'Manage Reports')}</div>
           <div className="content">{t('reports', 'Reports')}</div>

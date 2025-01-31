@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import moment from 'moment';
 import { Select, SelectItem, TextInput } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
 import { Time } from '../../utils/time-utils';
@@ -10,6 +9,7 @@ import {
   CronField,
   DAYS_OF_MONTH,
   DAYS_OF_WEEK,
+  SCHEDULE_TYPE_DEFAULT_LABELS,
   SCHEDULE_TYPES,
   ST_ADVANCED,
   ST_EVERY_DAY,
@@ -19,7 +19,11 @@ import {
 } from './commons';
 import CronDayOfMonthSelect from './cron-day-of-month-select.component';
 import styles from './simple-cron-editor.scss';
-import { parseOpenMRSCron } from '../../utils/openmrs-cron-utiils';
+import { parseOpenMRSCron } from '../../utils/openmrs-cron-utils';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+
+dayjs.extend(utc);
 
 interface SimpleCronEditorProps {
   initialCron: string;
@@ -60,7 +64,7 @@ function getEditorState(initialCron: string): EditorState {
   } else if (scheduleType == ST_ONCE) {
     return {
       scheduleType,
-      date: moment()
+      date: dayjs()
         .set('year', parseInt(openMRSCron.year))
         .set('month', parseInt(openMRSCron.month) - 1)
         .set('date', parseInt(openMRSCron.day))
@@ -87,7 +91,7 @@ function getEditorState(initialCron: string): EditorState {
       selectedDaysOfWeek: openMRSCron.dayOfWeek
         .split(',')
         .map((dayId) => parseInt(dayId))
-        .map((dayId) => DAYS_OF_WEEK[dayId - 1]),
+        .map((dayId) => DAYS_OF_WEEK[dayId]),
       time: { hours: parseInt(openMRSCron.hours), minutes: parseInt(openMRSCron.minutes) },
       cron: null,
     };
@@ -133,8 +137,8 @@ const SimpleCronEditor: React.FC<SimpleCronEditorProps> = ({ initialCron, onChan
   const initialScheduleType = detectSchedulingType(initialCron);
 
   const [editorState, setEditorState] = useState<EditorState>(getEditorState(initialCron));
-  const [invalid, setInvalid] = useState<boolean>(false);
-  const [cron, setCron] = useState<string>(initialCron);
+  const [invalid, setInvalid] = useState(false);
+  const [cron, setCron] = useState(initialCron);
 
   useEffect(() => {
     setEditorState(getEditorState(initialCron));
@@ -231,7 +235,11 @@ const SimpleCronEditor: React.FC<SimpleCronEditorProps> = ({ initialCron, onChan
             (scheduleType) =>
               (initialScheduleType != ST_ADVANCED && scheduleType != ST_ADVANCED) || initialScheduleType == ST_ADVANCED,
           ).map((scheduleType) => (
-            <SelectItem key={scheduleType} text={t('scheduleType_' + scheduleType, scheduleType)} value={scheduleType}>
+            <SelectItem
+              key={scheduleType}
+              text={t('scheduleType_' + scheduleType, SCHEDULE_TYPE_DEFAULT_LABELS[scheduleType] || scheduleType)}
+              value={scheduleType}
+            >
               {scheduleType}
             </SelectItem>
           ))}

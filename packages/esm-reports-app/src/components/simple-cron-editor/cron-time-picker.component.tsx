@@ -17,7 +17,7 @@ interface ValidationState {
 const CronTimePicker: React.FC<CronTimePickerProps> = ({ value, onChange }) => {
   const { t } = useTranslation();
   const timePatternExp = new RegExp(TIME_PATTERN);
-  const [valueInternal, setValueInternal] = useState<string>(to24HTime(value));
+  const [valueInternal, setValueInternal] = useState(to24HTime(value));
   const [validationState, setValidationState] = useState<ValidationState>({
     invalid: false,
     invalidText: null,
@@ -42,7 +42,7 @@ const CronTimePicker: React.FC<CronTimePickerProps> = ({ value, onChange }) => {
     if (timePatternExp.test(valueInternal)) {
       setValidationState({ invalid: false, invalidText: null });
     } else {
-      setValidationState({ invalid: true, invalidText: 'notATimeText' });
+      setValidationState({ invalid: true, invalidText: t('notATimeText', 'hh:mm 24-hr pattern required') });
     }
   };
 

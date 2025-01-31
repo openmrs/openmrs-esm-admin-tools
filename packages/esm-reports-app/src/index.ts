@@ -4,8 +4,7 @@
  * connects the app shell to the React application(s) that make up this
  * microfrontend.
  */
-import { getAsyncLifecycle, defineConfigSchema, registerBreadcrumbs } from '@openmrs/esm-framework';
-import { configSchema } from './config-schema';
+import { getAsyncLifecycle, registerBreadcrumbs } from '@openmrs/esm-framework';
 
 const moduleName = '@openmrs/esm-reports-app';
 
@@ -28,8 +27,6 @@ export const importTranslation = require.context('../translations', false, /.jso
  * rendered.
  */
 export function startupApp() {
-  defineConfigSchema(moduleName, configSchema);
-
   registerBreadcrumbs([
     {
       title: 'Home',

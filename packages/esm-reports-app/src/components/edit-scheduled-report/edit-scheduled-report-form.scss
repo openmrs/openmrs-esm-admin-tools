@@ -1,9 +1,9 @@
-@use '@carbon/styles/scss/spacing';
-@use '@carbon/styles/scss/type';
-@import '~@openmrs/esm-styleguide/src/vars';
+@use '@carbon/layout';
+@use '@carbon/type';
+@use '~@openmrs/esm-styleguide/src/vars' as *;
 
 .tablet {
-  padding: spacing.$spacing-06 spacing.$spacing-05;
+  padding: layout.$spacing-06 layout.$spacing-05;
   background-color: $ui-02;
 }
 
@@ -20,11 +20,11 @@
 }
 
 .container {
-  margin: spacing.$spacing-05 0rem;
+  margin: layout.$spacing-05 0rem;
   background-color: $ui-background;
 
   & section {
-    margin: spacing.$spacing-02 spacing.$spacing-05 0;
+    margin: layout.$spacing-02 layout.$spacing-05 0;
   }
 }
 

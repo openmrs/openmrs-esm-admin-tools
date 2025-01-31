@@ -38,7 +38,7 @@ const CronDatePicker: React.FC<CronDatePickerProps> = ({ value, onChange }) => {
 
   const validate = () => {
     if (!(valueInternal instanceof Date)) {
-      setValidationState({ invalid: true, invalidText: 'dateRequired' });
+      setValidationState({ invalid: true, invalidText: t('dateRequired', 'Required') });
     } else {
       setValidationState({ invalid: false, invalidText: null });
     }

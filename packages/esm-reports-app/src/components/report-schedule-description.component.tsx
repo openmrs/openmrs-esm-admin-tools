@@ -12,7 +12,7 @@ const ReportScheduleDescription: React.FC<ReportScheduleProps> = ({ schedule }) 
     ? cronstrue.toString(schedule, {
         locale: session.locale,
         use24HourTimeFormat: true,
-        dayOfWeekStartIndexZero: false,
+        dayOfWeekStartIndexZero: true,
       })
     : '';
   return <span>{scheduleDescription}</span>;

@@ -2,7 +2,9 @@
   "$schema": "https://json.openmrs.org/routes.schema.json",
   "backendDependencies": {
     "fhir2": "^1.2.0",
-    "webservices.rest": "^2.24.0"
+    "webservices.rest": "^2.24.0",
+    "reportingrest": ">=1.15.0-SNAPSHOT",
+    "reporting": ">=1.27.0-SNAPSHOT"
   },
   "extensions": [
     {
