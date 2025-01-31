@@ -19,7 +19,7 @@ import {
   isDesktop,
   navigate,
   showModal,
-  showToast,
+  showSnackbar,
   useLayoutType,
   userHasAccess,
   useSession,
@@ -31,9 +31,10 @@ import { closeOverlay, launchOverlay } from '../hooks/useOverlay';
 import RunReportForm from './run-report/run-report-form.component';
 import Overlay from './overlay.component';
 import ReportStatus from './report-status.component';
-import { COMPLETED, FAILED, PROCESSING, RAN_REPORT_STATUSES, REQUESTED, SAVED } from './report-statuses-constants';
+import { COMPLETED, RAN_REPORT_STATUSES, SAVED } from './report-statuses-constants';
 import ReportOverviewButton from './report-overview-button.component';
 import { PRIVILEGE_SYSTEM_DEVELOPER } from '../constants';
+import classNames from 'classnames';
 
 const OverviewComponent: React.FC = () => {
   const { t } = useTranslation();
@@ -92,7 +93,7 @@ const OverviewComponent: React.FC = () => {
     const statusValue = statusCell?.value;
     if (statusValue === COMPLETED || statusValue === SAVED) {
       return (
-        <td className={index % 2 == 0 ? styles.rowCellEven : styles.rowCellOdd}>
+        <td className={classNames({ [styles.rowCellEven]: index % 2 === 0, [styles.rowCellOdd]: index % 2 !== 0 })}>
           <Checkbox
             id={`checkbox-${row.id}`}
             onChange={(e) => handleOnCheckboxClick(e)}
@@ -101,7 +102,11 @@ const OverviewComponent: React.FC = () => {
         </td>
       );
     } else {
-      return <td className={index % 2 == 0 ? styles.rowCellEven : styles.rowCellOdd}></td>;
+      return (
+        <td
+          className={classNames({ [styles.rowCellEven]: index % 2 === 0, [styles.rowCellOdd]: index % 2 !== 0 })}
+        ></td>
+      );
     }
   }
 
@@ -124,19 +129,17 @@ const OverviewComponent: React.FC = () => {
     preserveReport(reportRequestUuid)
       .then(() => {
         mutateReports();
-        showToast({
-          critical: true,
+        showSnackbar({
           kind: 'success',
           title: t('preserveReport', 'Preserve report'),
-          description: t('reportPreservedSuccessfully', 'Report preserved successfully'),
+          subtitle: t('reportPreservedSuccessfully', 'Report preserved successfully'),
         });
       })
-      .catch((error) => {
-        showToast({
-          critical: true,
+      .catch(() => {
+        showSnackbar({
           kind: 'error',
           title: t('preserveReport', 'Preserve report'),
-          description: t('reportPreservingErrorMsg', 'Error during report preserving'),
+          subtitle: t('reportPreservingErrorMsg', 'Error during report preserving'),
         });
       });
   }, []);
@@ -157,18 +160,16 @@ const OverviewComponent: React.FC = () => {
       const response = await downloadReport(reportRequestUuid);
       processAndDownloadFile(response);
       clearReportCheckboxes();
-      showToast({
-        critical: true,
+      showSnackbar({
         kind: 'success',
         title: t('downloadReport', 'Download report'),
-        description: t('reportDownloadedSuccessfully', 'Report downloaded successfully'),
+        subtitle: t('reportDownloadedSuccessfully', 'Report downloaded successfully'),
       });
     } catch (error) {
-      showToast({
-        critical: true,
+      showSnackbar({
         kind: 'error',
         title: t('downloadReport', 'Download report'),
-        description: t('reportDownloadingErrorMsg', 'Error during report downloading'),
+        subtitle: t('reportDownloadError', 'Error downloading report'),
       });
     }
   }, []);
@@ -178,18 +179,16 @@ const OverviewComponent: React.FC = () => {
       const response = await downloadMultipleReports(reportRequestUuids);
       response.forEach((file) => processAndDownloadFile(file));
       clearReportCheckboxes();
-      showToast({
-        critical: true,
+      showSnackbar({
         kind: 'success',
         title: t('downloadReport', 'Download report(s)'),
-        description: t('reportDownloadedSuccessfully', 'Report(s) downloaded successfully'),
+        subtitle: t('reportDownloadedSuccessfully', 'Report(s) downloaded successfully'),
       });
     } catch (error) {
-      showToast({
-        critical: true,
+      showSnackbar({
         kind: 'error',
         title: t('downloadReport', 'Download report(s)s'),
-        description: t('reportDownloadingErrorMsg', 'Error during report(s) downloading'),
+        subtitle: t('reportDownloadingErrorMsg', 'Error during report(s) downloading'),
       });
     }
   }, []);
@@ -226,9 +225,10 @@ const OverviewComponent: React.FC = () => {
             renderIcon={() => <Download size={16} style={{ fill: '#0F62FE' }} className={styles.actionButtonIcon} />}
             iconDescription="Download reports"
             onClick={() => handleDownloadMultipleReports(checkedReportUuidsArray.join(','))}
-            className={`${styles.mainActionButton} ${
-              downloadReportButtonVisible ? styles.downloadReportsVisible : styles.downloadReportsHidden
-            }`}
+            className={classNames(styles.mainActionButton, {
+              [styles.downloadReportsVisible]: downloadReportButtonVisible,
+              [styles.downloadReportsHidden]: !downloadReportButtonVisible,
+            })}
           >
             {t('downloadReports', 'Download reports')}
           </Button>
@@ -280,7 +280,13 @@ const OverviewComponent: React.FC = () => {
                   <TableRow className={styles.tableRow}>
                     {renderRowCheckbox(row, index)}
                     {row.cells.map((cell) => (
-                      <TableCell className={index % 2 == 0 ? styles.rowCellEven : styles.rowCellOdd}>
+                      <TableCell
+                        key={cell.id}
+                        className={classNames({
+                          [styles.rowCellEven]: index % 2 === 0,
+                          [styles.rowCellOdd]: index % 2 !== 0,
+                        })}
+                      >
                         {cell.info.header === 'actions' ? (
                           <div>
                             <ReportOverviewButton

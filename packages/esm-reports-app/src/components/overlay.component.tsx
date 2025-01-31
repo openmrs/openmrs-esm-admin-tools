@@ -1,23 +1,31 @@
 import React from 'react';
-import { Button, Header } from '@carbon/react';
+import { Header } from '@carbon/react';
 import { ArrowLeft, Close } from '@carbon/react/icons';
 import { useLayoutType } from '@openmrs/esm-framework';
 import { closeOverlay, useOverlay } from '../hooks/useOverlay';
 import styles from './overlay.scss';
+import { IconButton } from '@carbon/react';
+import { t } from 'i18next';
+import classNames from 'classnames';
 
 const Overlay: React.FC = () => {
   const { header, component, isOverlayOpen } = useOverlay();
   const layout = useLayoutType();
-  const overlayClass = layout !== 'tablet' ? styles.desktopOverlay : styles.tabletOverlay;
+
   return (
     <>
       {isOverlayOpen && (
-        <div className={overlayClass}>
+        <div
+          className={classNames({
+            [styles.desktopOverlay]: layout !== 'tablet',
+            [styles.tabletOverlay]: layout === 'tablet',
+          })}
+        >
           {layout === 'tablet' && (
             <Header onClick={() => closeOverlay()} aria-label="Tablet overlay" className={styles.tabletOverlayHeader}>
-              <Button hasIconOnly>
+              <IconButton>
                 <ArrowLeft size={16} />
-              </Button>
+              </IconButton>
               <div className={styles.headerContent}>{header}</div>
             </Header>
           )}
@@ -25,9 +33,14 @@ const Overlay: React.FC = () => {
           {layout !== 'tablet' && (
             <div className={styles.desktopHeader}>
               <div className={styles.headerContent}>{header}</div>
-              <Button className={styles.closePanelButton} onClick={() => closeOverlay()} kind="ghost" hasIconOnly>
+              <IconButton
+                className={styles.closePanelButton}
+                onClick={() => closeOverlay()}
+                kind="ghost"
+                label={t('close', 'Close')}
+              >
                 <Close size={16} />
-              </Button>
+              </IconButton>
             </div>
           )}
           {component}

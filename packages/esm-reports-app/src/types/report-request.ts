@@ -4,5 +4,5 @@ export interface ReportRequest {
   renderingMode: {
     argument: string;
   };
-  parameterMappings: any;
+  parameterMappings: Record<string, string>;
 }

@@ -2,7 +2,7 @@
   "name": "@openmrs/esm-reports-app",
   "version": "4.0.1",
   "license": "MPL-2.0",
-  "description": "Reports Admin page for OpenMRS",
+  "description": "Reports admin dashboard for 03",
   "browser": "dist/openmrs-esm-reports-app.js",
   "main": "src/index.ts",
   "source": true,
@@ -11,7 +11,7 @@
     "serve": "webpack serve --mode=development",
     "build": "webpack --mode production",
     "analyze": "webpack --mode=production --env.analyze=true",
-    "lint": "eslint src --ext js,jsx,ts,tsx",
+    "lint": "eslint src --ext js,jsx,ts,tsx --max-warnings=0",
     "typescript": "tsc",
     "test": "cross-env TZ=UTC jest --config jest.config.js --verbose false --passWithNoTests --color",
     "test:watch": "cross-env TZ=UTC jest --watch --config jest.config.js --color",
@@ -52,6 +52,5 @@
     "react-i18next": "11.x",
     "react-router-dom": "6.x",
     "rxjs": "6.x"
-  },
-  "packageManager": "yarn@3.6.1"
+  }
 }

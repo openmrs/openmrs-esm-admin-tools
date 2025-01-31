@@ -17,6 +17,7 @@ import { useScheduledReports } from './reports.resource';
 import { DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZES } from './pagination-constants';
 import ScheduledOverviewCellContent from './scheduled-overview-cell-content.component';
 import Overlay from './overlay.component';
+import classNames from 'classnames';
 
 const ScheduledOverviewComponent: React.FC = () => {
   const { t } = useTranslation();
@@ -62,16 +63,24 @@ const ScheduledOverviewComponent: React.FC = () => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    {headers.map((header) => (
-                      <TableHeader>{header.header?.content ?? header.header}</TableHeader>
+                    {headers.map((header, index) => (
+                      <TableHeader key={header.key ?? `header-${index}`}>
+                        {header.header?.content ?? header.header}
+                      </TableHeader>
                     ))}
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {rows.map((row, index) => (
-                    <TableRow className={styles.tableRow}>
+                    <TableRow key={row.id ?? `row-${index}`} className={styles.tableRow}>
                       {row.cells.map((cell) => (
-                        <TableCell className={index % 2 == 0 ? styles.rowCellEven : styles.rowCellOdd}>
+                        <TableCell
+                          key={cell.id}
+                          className={classNames({
+                            [styles.rowCellEven]: index % 2 === 0,
+                            [styles.rowCellOdd]: index % 2 !== 0,
+                          })}
+                        >
                           <ScheduledOverviewCellContent cell={cell} mutate={mutateScheduledReports} />
                         </TableCell>
                       ))}

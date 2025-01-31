@@ -1,11 +1,11 @@
-@use '@carbon/styles/scss/spacing';
-@use '@carbon/styles/scss/type';
-@import '~@openmrs/esm-styleguide/src/vars';
+@use '@carbon/layout';
+@use '@carbon/type';
+@use '~@openmrs/esm-styleguide/src/vars' as *;
 @import './../root.scss';
 
 .desktopOverlay {
   position: fixed;
-  top: spacing.$spacing-09;
+  top: layout.$spacing-09;
   width: 700px;
   right: 0;
   bottom: 0;
@@ -39,7 +39,7 @@
   }
 
   & > div {
-    margin-top: spacing.$spacing-09;
+    margin-top: layout.$spacing-09;
   }
 }
 
@@ -68,7 +68,7 @@
 
 .headerContent {
   @include type.type-style('heading-compact-02');
-  padding: 0 spacing.$spacing-05;
+  padding: 0 layout.$spacing-05;
   color: $ui-05;
 }
 

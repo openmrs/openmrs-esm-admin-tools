@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Select, SelectItem } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
-import { CronField, DAYS_OF_MONTH } from './commons';
+import { CronField, DAYS_OF_MONTH, DAYS_OF_MONTH_DEFAULT_LABELS } from './commons';
 import { isEqual } from 'lodash-es';
 
 interface CronDayOfMonthSelectProps {
@@ -41,7 +41,7 @@ const CronDayOfMonthSelect: React.FC<CronDayOfMonthSelectProps> = ({ value, onCh
     if (!!valueInternal) {
       setValidationState({ invalid: false, invalidText: null });
     } else {
-      setValidationState({ invalid: true, invalidText: 'dayOfMonthRequired' });
+      setValidationState({ invalid: true, invalidText: t('dayOfMonthRequired', 'Required') });
     }
   };
 
@@ -55,9 +55,13 @@ const CronDayOfMonthSelect: React.FC<CronDayOfMonthSelectProps> = ({ value, onCh
       invalid={validationState.invalid}
       invalidText={t(validationState.invalidText)}
     >
-      <SelectItem text={''} value={null} />
+      <SelectItem text="" value={''} />
       {DAYS_OF_MONTH.map((dayOfMonth) => (
-        <SelectItem key={dayOfMonth.value} text={t('dayOfMonth_' + dayOfMonth.name)} value={dayOfMonth.value} />
+        <SelectItem
+          key={dayOfMonth.value}
+          text={t('dayOfMonth_' + dayOfMonth.name, DAYS_OF_MONTH_DEFAULT_LABELS[dayOfMonth.name] || dayOfMonth.name)}
+          value={dayOfMonth.value}
+        />
       ))}
     </Select>
   );

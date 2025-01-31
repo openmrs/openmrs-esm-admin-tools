@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from './reports.scss';
 import { useTranslation } from 'react-i18next';
+import classNames from 'classnames';
 
 interface ReportStatusProps {
   hasSchedule: string;
@@ -9,15 +10,16 @@ interface ReportStatusProps {
 const ScheduledReportStatus: React.FC<ReportStatusProps> = ({ hasSchedule }) => {
   const { t } = useTranslation();
 
-  const renderStatusLabel = () => {
-    if (hasSchedule) {
-      return <span className={styles.scheduledStatusText}>{t('scheduled', 'Scheduled')}</span>;
-    } else {
-      return <span className={styles.notScheduledStatusText}>{t('notScheduled', 'Not Scheduled')}</span>;
-    }
-  };
-
-  return renderStatusLabel();
+  return (
+    <span
+      className={classNames({
+        [styles.scheduledStatusText]: hasSchedule,
+        [styles.notScheduledStatusText]: !hasSchedule,
+      })}
+    >
+      {hasSchedule ? t('scheduled', 'Scheduled') : t('notScheduled', 'Not Scheduled')}
+    </span>
+  );
 };
 
 export default ScheduledReportStatus;
