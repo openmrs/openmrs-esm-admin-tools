@@ -2,6 +2,7 @@ const path = require('path');
 
 /** @type {import('jest').Config} */
 module.exports = {
+  clearMocks: true,
   transform: {
     '^.+\\.(j|t)sx?$': '@swc/jest',
   },
@@ -11,6 +12,7 @@ module.exports = {
     '@openmrs/esm-framework': '@openmrs/esm-framework/mock',
     '^dexie$': require.resolve('dexie'),
     '^lodash-es/(.*)$': 'lodash/$1',
+    '^lodash-es$': 'lodash',
     '^react-i18next$': path.resolve(__dirname, '__mocks__', 'react-i18next.js'),
   },
   collectCoverageFrom: [
@@ -18,7 +20,7 @@ module.exports = {
     '!**/node_modules/**',
     '!**/vendor/**',
     '!**/src/**/*.test.*',
-    '!**/src/declarations.d.tsx',
+    '!**/src/declarations.d.ts',
     '!**/e2e/**',
   ],
   coverageThreshold: {
@@ -29,7 +31,7 @@ module.exports = {
       lines: 80,
     },
   },
-  setupFilesAfterEnv: [path.resolve(__dirname, 'tools', 'setupTests.ts')],
+  setupFilesAfterEnv: [path.resolve(__dirname, 'tools', 'setup-tests.ts')],
   testEnvironment: 'jsdom',
   testEnvironmentOptions: {
     url: 'http://localhost/',

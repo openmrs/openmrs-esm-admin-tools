@@ -1,6 +1,6 @@
-:wave:	*New to our project? Be sure to review the [OpenMRS 3 Frontend Developer Documentation](https://openmrs.github.io/openmrs-esm-core/#/). You may find the [Map of the Project](https://openmrs.github.io/openmrs-esm-core/#/main/map) especially helpful.* :teacher:	
+:wave:	*New to our project? Be sure to review the [OpenMRS 3 Frontend Developer Documentation](https://om.rs/o3docs/#/)* :teacher:
 
-![Node.js CI](https://github.com/openmrs/openmrs-esm-admin-tools/workflows/Node.js%20CI/badge.svg)
+[![OpenMRS CI](https://github.com/openmrs/openmrs-esm-admin-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/openmrs/openmrs-esm-admin-tools/actions/workflows/ci.yml)
 
 # OpenMRS ESM Admin Tools
 
@@ -8,26 +8,15 @@
 
 openmrs-esm-admin-tools provides microfrontends for various administrative functions and administrative modules in the OpenMRS ecosystem. It provides tools to allow admin users to effectively manage their 3.x installation without needing to drop to the v1 console.
 
-Please note that at this time, these microfrontends currently aren't deployed or running anywhere.
+## How do I configure this module?
+ 
+Please see the [O3 Docs config guide](https://o3-docs.openmrs.org/docs/configure-o3/overview#configuring-individual-frontend-modules) for information about configuring modules.
 
 ## Setup
 
-See the guidance in the [Developer Documentation](https://o3-dev.docs.openmrs.org/#/getting_started/prerequisites).
-This repository uses Yarn and Lerna.
+See the guidance in the [Developer Documentation](https://o3-docs.openmrs.org/docs/prerequisite-knowledge).
 
-To set up environment variables for the project, follow these steps:
-
-1. Create a copy of the .env.example file by running the following command:
-
-  ```bash
-  cp example.env .env
-  ```
-  
-2. Open the newly created .env file in the root of the project.
-
-3. Add the environment variables you need.
-
-Note: These variables are currently only used for end-to-end tests.
+This repository uses Yarn.
 
 To start the dev server for a specific package, run
 
@@ -44,11 +33,6 @@ yarn start-all
 ```
 
 Note that this is very much not recommended.
-
-## How do I configure this module?
-
-Please see the [Implementer Documentation](https://wiki.openmrs.org/display/projects/Frontend+3.0+Documentation+for+Implementers#Frontend3.0DocumentationforImplementers-Configuringtheapplication)
-for information about configuring modules.
 
 ## Running tests
 
@@ -98,6 +82,20 @@ yarn turbo test --force
 
 ### E2E tests
 
+To set up environment variables for the project, follow these steps:
+
+1. Create a copy of the .env.example file by running the following command:
+
+  ```bash
+  cp example.env .env
+  ```
+  
+2. Open the newly created .env file in the root of the project.
+
+3. Add the environment variables you need.
+
+Note: These variables are currently only used for end-to-end tests.
+
 To run E2E tests, make sure the dev server is running by using:
 
 ```sh
@@ -115,5 +113,4 @@ Please read [our e2e docs](e2e/README.md) for more information about E2E testing
 ## Deployment
 
 See the
-[Frontend Implementer Documentation](https://wiki.openmrs.org/display/projects/Frontend+3.0+Documentation+for+Implementers)
-for information about adding microfrontends to a distribution.
+[Frontend Implementer Documentation](https://wiki.openmrs.org/display/projects/Frontend+3.0+Documentation+for+Implementers) for information about adding microfrontends to a distribution.

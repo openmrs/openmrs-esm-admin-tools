@@ -1,8 +1,8 @@
 {
   "name": "@openmrs/esm-openconceptlab-app",
-  "version": "4.0.1",
+  "version": "4.0.5",
   "license": "MPL-2.0",
-  "description": "An app to manage the openconceptlab module",
+  "description": "Open Concept Lab management frontend module for O3",
   "browser": "dist/openmrs-esm-openconceptlab-app.js",
   "main": "src/index.ts",
   "source": true,
@@ -40,10 +40,10 @@
   "dependencies": {
     "@carbon/react": "^1.37.0",
     "lodash-es": "^4.17.21",
-    "swr": "^2.2.2"
+    "swr": "^2.2.5"
   },
   "peerDependencies": {
-    "@openmrs/esm-framework": "4.x",
+    "@openmrs/esm-framework": "6.x",
     "dayjs": "1.x",
     "react": "18.x",
     "react-dom": "18.x",

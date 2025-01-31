@@ -1,15 +1,15 @@
 import React from 'react';
-import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import Import from './import.component';
-import { openmrsFetch, showNotification } from '@openmrs/esm-framework';
+import { screen, waitFor } from '@testing-library/react';
+import { type FetchResponse, openmrsFetch, showNotification } from '@openmrs/esm-framework';
+import { mockSubscription } from '../../../../__mocks__/openconceptlab.mock';
 import { renderWithSwr } from '../../../../tools/test-helpers';
 import { startImportWithSubscription } from './import.resource';
-import { mockSubscription } from '../../../../__mocks__/openconceptlab.mock';
+import Import from './import.component';
 
 const mockOpenmrsFetch = openmrsFetch as jest.Mock;
-const mockStartImportWithSubscription = startImportWithSubscription as jest.Mock;
-const mockShowNotification = showNotification as jest.Mock;
+const mockShowNotification = jest.mocked(showNotification);
+const mockStartImportWithSubscription = jest.mocked(startImportWithSubscription);
 
 jest.mock('./import.resource', () => {
   const originalModule = jest.requireActual('./import.resource');
@@ -21,27 +21,10 @@ jest.mock('./import.resource', () => {
   };
 });
 
-jest.mock('@openmrs/esm-framework', () => {
-  const originalModule = jest.requireActual('@openmrs/esm-framework');
-
-  return {
-    ...originalModule,
-    showNotification: jest.fn(),
-  };
-});
-
-describe(`Import component`, () => {
-  afterEach(() => {
-    mockShowNotification.mockReset();
-  });
-
-  it(`renders without dying`, () => {
-    renderImportComponent();
-  });
-
-  it(`renders the form elements`, async () => {
+describe('Import component', () => {
+  it('renders the form elements', async () => {
     mockOpenmrsFetch.mockReturnValueOnce({ data: { results: [] } });
-    renderImportComponent();
+    renderWithSwr(<Import />);
     await waitForLoadingToFinish();
 
     expect(screen.getByText('Import Concepts')).toBeVisible();
@@ -52,30 +35,30 @@ describe(`Import component`, () => {
     expect(screen.queryByText('File Added')).not.toBeInTheDocument();
   });
 
-  it(`renders correctly when there is no subscription`, async () => {
+  it('renders correctly when there is no subscription', async () => {
     mockOpenmrsFetch.mockReturnValueOnce({ data: { results: [] } });
-    renderImportComponent();
+    renderWithSwr(<Import />);
     await waitForLoadingToFinish();
 
     expect(screen.getByText('Import from Subscription')).toBeDisabled();
     expect(screen.getByText('Import from file')).toBeEnabled();
   });
 
-  it(`renders correctly when when a subscription exists`, async () => {
+  it('renders correctly when when a subscription exists', async () => {
     mockOpenmrsFetch.mockReturnValueOnce({ data: { results: [mockSubscription] } });
-    renderImportComponent();
+    renderWithSwr(<Import />);
     await waitForLoadingToFinish();
 
     await waitFor(() => expect(screen.getByText('Import from Subscription')).toBeEnabled(), { timeout: 2000 });
     expect(screen.getByText('Import from file')).toBeEnabled();
   });
 
-  it(`allows starting an import using the subscription`, async () => {
+  it('allows starting an import using the subscription', async () => {
     mockOpenmrsFetch.mockReturnValueOnce({ data: { results: [mockSubscription] } });
-    renderImportComponent();
+    renderWithSwr(<Import />);
     await waitForLoadingToFinish();
 
-    mockStartImportWithSubscription.mockReturnValueOnce({ status: 201 });
+    mockStartImportWithSubscription.mockResolvedValue({ status: 201 } as unknown as FetchResponse);
 
     await waitFor(() => userEvent.click(screen.getByText('Import from Subscription')));
 
@@ -91,10 +74,6 @@ describe(`Import component`, () => {
     expect(mockShowNotification).toHaveBeenCalledTimes(1);
   });
 });
-
-function renderImportComponent() {
-  renderWithSwr(<Import />);
-}
 
 function waitForLoadingToFinish() {
   return waitFor(() => {

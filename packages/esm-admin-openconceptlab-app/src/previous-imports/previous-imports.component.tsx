@@ -28,7 +28,7 @@ const PreviousImports: React.FC = () => {
   const { t } = useTranslation();
   const [pageSize, setPageSize] = useState(10);
 
-  const { data: prevImports, isLoading, isError } = usePreviousImports();
+  const { data: prevImports, isLoading, error } = usePreviousImports();
   const { results, currentPage, goTo } = usePagination(prevImports, pageSize);
 
   if (isLoading) {
@@ -43,7 +43,7 @@ const PreviousImports: React.FC = () => {
     );
   }
 
-  if (isError) {
+  if (error) {
     showNotification({
       kind: 'error',
       description: t('previousImportsFetchError', 'Error occured while fetching the imports'),
@@ -76,7 +76,7 @@ const PreviousImports: React.FC = () => {
 
   return (
     !isLoading &&
-    !isError && (
+    !error && (
       <Grid className={styles.grid}>
         <Column sm={4} md={8} lg={10}>
           <h3 className={styles.productiveHeading03}>{t('previousImports', 'Previous Imports')}</h3>
