@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import styles from './run-report/run-report-form.scss';
+import { isEqual } from 'lodash-es';
 import { DatePicker, DatePickerInput, Select, SelectItem, TextInput } from '@carbon/react';
 import { useLocations } from './reports.resource';
-import { isEqual } from 'lodash-es';
+import styles from './run-report/run-report-form.scss';
 
 interface ReportParameterInputProps {
   parameter: any;

@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import classNames from 'classnames';
+import { take } from 'rxjs/operators';
+import { Button, ButtonSet, DatePicker, DatePickerInput, Form, Select, SelectItem, TextInput } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
-import styles from './run-report-form.scss';
+import { getCoreTranslation, showSnackbar, useLayoutType } from '@openmrs/esm-framework';
 import { useLocations, useReportDefinitions, useReportDesigns, runReportObservable } from '../reports.resource';
 import { closeOverlay } from '../../hooks/useOverlay';
-import { Button, ButtonSet, DatePicker, DatePickerInput, Form, Select, SelectItem, TextInput } from '@carbon/react';
-import { showSnackbar, useLayoutType } from '@openmrs/esm-framework';
-import { take } from 'rxjs/operators';
-import classNames from 'classnames';
+import styles from './run-report-form.scss';
 
 interface RunReportForm {
   closePanel: () => void;
@@ -221,7 +221,7 @@ const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
       <div className={styles.buttonsDiv}>
         <ButtonSet className={classNames({ [styles.tablet]: isTablet, [styles.desktop]: !isTablet })}>
           <Button onClick={closeOverlay} kind="secondary" size="xl" className={styles.reportButton}>
-            {t('cancel', 'Cancel')}
+            {t(getCoreTranslation('cancel', 'Cancel'))}
           </Button>
           <Button
             disabled={!isFormValid || isSubmitting}

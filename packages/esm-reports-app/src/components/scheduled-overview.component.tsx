@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { ExtensionSlot, isDesktop, useLayoutType, usePagination } from '@openmrs/esm-framework';
-import styles from './reports.scss';
+import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import {
   DataTable,
@@ -13,11 +12,12 @@ import {
   TableHeader,
   TableRow,
 } from '@carbon/react';
-import { useScheduledReports } from './reports.resource';
+import { ExtensionSlot, isDesktop, useLayoutType, usePagination } from '@openmrs/esm-framework';
 import { DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZES } from './pagination-constants';
-import ScheduledOverviewCellContent from './scheduled-overview-cell-content.component';
+import { useScheduledReports } from './reports.resource';
 import Overlay from './overlay.component';
-import classNames from 'classnames';
+import ScheduledOverviewCellContent from './scheduled-overview-cell-content.component';
+import styles from './reports.scss';
 
 const ScheduledOverviewComponent: React.FC = () => {
   const { t } = useTranslation();

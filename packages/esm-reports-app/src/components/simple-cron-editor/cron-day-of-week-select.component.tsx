@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { isEqual } from 'lodash-es';
 import { FilterableMultiSelect } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
 import { type CronField, DAYS_OF_WEEK, DAYS_OF_WEEK_DEFAULT_LABELS } from './commons';
-import { isEqual } from 'lodash-es';
 
 interface CronDayOfWeekSelectProps {
   value: CronField[];
@@ -47,19 +47,19 @@ const CronDayOfWeekSelect: React.FC<CronDayOfWeekSelectProps> = ({ value, onChan
 
   return (
     <FilterableMultiSelect
-      hideLabel={true}
-      items={DAYS_OF_WEEK}
       compareItems={(item1, item2) => item1.value < item2.value}
+      hideLabel
+      initialSelectedItems={valueInternal ? valueInternal : []}
+      invalid={validationState.invalid}
+      invalidText={t(validationState.invalidText)}
+      items={DAYS_OF_WEEK}
       itemToString={(item) =>
         item ? t('dayOfWeek_' + item.name, DAYS_OF_WEEK_DEFAULT_LABELS[item.name] || item.name) : ''
       }
-      selectionFeedback="fixed"
-      initialSelectedItems={valueInternal ? valueInternal : []}
       onChange={(event) => {
         setValueInternal(event.selectedItems);
       }}
-      invalid={validationState.invalid}
-      invalidText={t(validationState.invalidText)}
+      selectionFeedback="fixed"
     />
   );
 };

@@ -1,3 +1,5 @@
+@use '@carbon/layout';
+
 .statusIcon {
   margin-bottom: -2px;
   margin-right: 5px;
@@ -44,7 +46,7 @@
 
 .mainActionButtonsDiv {
   text-align: right;
-  height: 48px;
+  height: layout.$spacing-09;
 }
 
 .reportsLabelDiv {
@@ -70,11 +72,11 @@
 }
 
 .rowCellEven {
-  background-color: #FFFFFF !important;
+  background-color: #ffffff !important;
 }
 
 .rowCellOdd {
-  background-color: #F4F4F4 !important;
+  background-color: #f4f4f4 !important;
 }
 
 .scheduledStatusText {

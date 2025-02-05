@@ -8,11 +8,11 @@
 }
 
 .desktop {
-  padding: 0rem;
+  padding: 0;
 }
 
 .button {
-  height: 4rem;
+  height: layout.$spacing-10;
   display: flex;
   align-content: flex-start;
   align-items: baseline;
@@ -20,7 +20,7 @@
 }
 
 .container {
-  margin: layout.$spacing-05 0rem;
+  margin: layout.$spacing-05 0;
   background-color: $ui-background;
 
   & section {

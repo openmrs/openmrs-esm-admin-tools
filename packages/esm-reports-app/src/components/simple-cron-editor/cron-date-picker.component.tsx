@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { isEqual } from 'lodash-es';
 import { DatePicker, DatePickerInput } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
 import styles from './simple-cron-editor.scss';
-import { isEqual } from 'lodash-es';
 
 interface CronDatePickerProps {
   value: Date;
@@ -55,7 +55,7 @@ const CronDatePicker: React.FC<CronDatePickerProps> = ({ value, onChange }) => {
           setValueInternal(selectedDate);
         }}
       >
-        <DatePickerInput hideLabel={true} />
+        <DatePickerInput hideLabel />
       </DatePicker>
       {validationState.invalid && (
         <span className={styles.dangerLabel01}>{validationState.invalidText && t(validationState.invalidText)}</span>

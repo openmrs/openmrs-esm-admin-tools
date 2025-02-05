@@ -1,3 +1,5 @@
+import React, { useCallback, useEffect, useState } from 'react';
+import classNames from 'classnames';
 import {
   Button,
   Checkbox,
@@ -11,9 +13,8 @@ import {
   TableHeader,
   TableRow,
 } from '@carbon/react';
-import React, { useCallback, useEffect, useState } from 'react';
+import { Calendar, Download, Play, Save, TrashCan } from '@carbon/react/icons';
 import { useTranslation } from 'react-i18next';
-import { downloadMultipleReports, downloadReport, preserveReport, useReports } from './reports.resource';
 import {
   ExtensionSlot,
   isDesktop,
@@ -24,28 +25,33 @@ import {
   userHasAccess,
   useSession,
 } from '@openmrs/esm-framework';
-import { Calendar, Download, Play, Save, TrashCan } from '@carbon/react/icons';
-import styles from './reports.scss';
 import { DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZES } from './pagination-constants';
-import { closeOverlay, launchOverlay } from '../hooks/useOverlay';
-import RunReportForm from './run-report/run-report-form.component';
-import Overlay from './overlay.component';
-import ReportStatus from './report-status.component';
 import { COMPLETED, RAN_REPORT_STATUSES, SAVED } from './report-statuses-constants';
-import ReportOverviewButton from './report-overview-button.component';
 import { PRIVILEGE_SYSTEM_DEVELOPER } from '../constants';
-import classNames from 'classnames';
+import { closeOverlay, launchOverlay } from '../hooks/useOverlay';
+import { downloadMultipleReports, downloadReport, preserveReport, useReports } from './reports.resource';
+import Overlay from './overlay.component';
+import ReportOverviewButton from './report-overview-button.component';
+import ReportStatus from './report-status.component';
+import RunReportForm from './run-report/run-report-form.component';
+import styles from './reports.scss';
 
 const OverviewComponent: React.FC = () => {
   const { t } = useTranslation();
   const currentSession = useSession();
+  const layout = useLayoutType();
+
+  const [currentPage, setCurrentPage] = useState(DEFAULT_PAGE_NUMBER);
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
 
   let [checkedReportUuidsArray, setCheckedReportUuidsArray] = useState([]);
   const [downloadReportButtonVisible, setDownloadReportButtonVisible] = useState(false);
 
-  useEffect(() => {
-    setDownloadReportButtonVisible(checkedReportUuidsArray.length > 0);
-  }, [checkedReportUuidsArray]);
+  const { reports, reportsTotalCount, mutateReports } = useReports(
+    RAN_REPORT_STATUSES.join(','),
+    currentPage,
+    pageSize,
+  );
 
   const tableHeaders = [
     { key: 'reportName', header: t('reportName', 'Report Name') },
@@ -57,16 +63,9 @@ const OverviewComponent: React.FC = () => {
     { key: 'actions', header: t('actions', 'Actions') },
   ];
 
-  const [currentPage, setCurrentPage] = useState(DEFAULT_PAGE_NUMBER);
-  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
-
-  const { reports, reportsTotalCount, mutateReports } = useReports(
-    RAN_REPORT_STATUSES.join(','),
-    currentPage,
-    pageSize,
-  );
-
-  const layout = useLayoutType();
+  useEffect(() => {
+    setDownloadReportButtonVisible(checkedReportUuidsArray.length > 0);
+  }, [checkedReportUuidsArray]);
 
   function getReportStatus(row) {
     return row?.cells.find((cell) => cell.info?.header === 'status')?.value;
@@ -91,6 +90,7 @@ const OverviewComponent: React.FC = () => {
   function renderRowCheckbox(row, index) {
     const statusCell = row?.cells.find((cell) => cell.info?.header === 'status');
     const statusValue = statusCell?.value;
+
     if (statusValue === COMPLETED || statusValue === SAVED) {
       return (
         <td className={classNames({ [styles.rowCellEven]: index % 2 === 0, [styles.rowCellOdd]: index % 2 !== 0 })}>
@@ -150,8 +150,8 @@ const OverviewComponent: React.FC = () => {
         dispose();
         mutateReports();
       },
-      reportRequestUuid,
       modalType: 'delete',
+      reportRequestUuid,
     });
   };
 
@@ -162,14 +162,14 @@ const OverviewComponent: React.FC = () => {
       clearReportCheckboxes();
       showSnackbar({
         kind: 'success',
-        title: t('downloadReport', 'Download report'),
+        title: t('reportDownloaded', 'Report downloaded'),
         subtitle: t('reportDownloadedSuccessfully', 'Report downloaded successfully'),
       });
     } catch (error) {
       showSnackbar({
         kind: 'error',
-        title: t('downloadReport', 'Download report'),
-        subtitle: t('reportDownloadError', 'Error downloading report'),
+        title: t('errorDownloadingReport', 'Error downloading report'),
+        subtitle: error?.message,
       });
     }
   }, []);
@@ -181,14 +181,14 @@ const OverviewComponent: React.FC = () => {
       clearReportCheckboxes();
       showSnackbar({
         kind: 'success',
-        title: t('downloadReport', 'Download report(s)'),
-        subtitle: t('reportDownloadedSuccessfully', 'Report(s) downloaded successfully'),
+        title: t('reportsDownloaded', 'Reports downloaded'),
+        subtitle: t('reportsDownloadedSuccessfully', 'Reports downloaded successfully'),
       });
     } catch (error) {
       showSnackbar({
         kind: 'error',
-        title: t('downloadReport', 'Download report(s)s'),
-        subtitle: t('reportDownloadingErrorMsg', 'Error during report(s) downloading'),
+        title: t('errorDownloadingReports', 'Error downloading reports'),
+        subtitle: error?.message,
       });
     }
   }, []);

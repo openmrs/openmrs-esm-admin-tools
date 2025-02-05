@@ -1,3 +1,5 @@
+# directories
+.husky/
 dist/
 node_modules/
 **/*.md

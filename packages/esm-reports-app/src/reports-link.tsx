@@ -1,11 +1,12 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { spaBasePath } from './constants';
 import { ClickableTile, Layer } from '@carbon/react';
 import { ArrowRight } from '@carbon/react/icons';
+import { spaBasePath } from './constants';
 
 export default function ReportsLink() {
   const { t } = useTranslation();
+
   return (
     <Layer>
       <ClickableTile href={`${spaBasePath}`}>

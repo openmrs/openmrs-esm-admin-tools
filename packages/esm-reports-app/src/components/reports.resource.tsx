@@ -1,11 +1,10 @@
-import { openmrsFetch, openmrsObservableFetch } from '@openmrs/esm-framework';
-import type { FetchResponse } from '@openmrs/esm-framework';
-import { type Observable } from 'rxjs';
+import dayjs from 'dayjs';
 import useSWR from 'swr';
+import { type Observable } from 'rxjs';
+import { openmrsFetch, openmrsObservableFetch, type FetchResponse } from '@openmrs/esm-framework';
 import type { ReportDefinition } from '../types/report-definition';
 import type { ReportDesign } from '../types/report-design';
 import type { ReportRequest } from '../types/report-request';
-import dayjs from 'dayjs';
 
 interface ReportModel {
   reportName: string;
@@ -55,7 +54,7 @@ export function useReports(statuses: string, pageNumber: number, pageSize: numbe
     reports: reportsArray,
     reportsTotalCount: totalCount,
     error,
-    isValidating: isValidating,
+    isValidating,
     mutateReports: mutate,
   };
 }
@@ -68,7 +67,7 @@ export function useReportRequest(reportRequestUuid: string): any {
   return {
     reportRequest: data?.data,
     error,
-    isValidating: isValidating,
+    isValidating,
     mutate,
   };
 }
@@ -90,7 +89,7 @@ export function useScheduledReports(sortBy?: string): any {
   return {
     scheduledReports: scheduledReportsArray,
     error,
-    isValidating: isValidating,
+    isValidating,
     mutateScheduledReports: mutate,
   };
 }

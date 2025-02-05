@@ -1,14 +1,14 @@
 import React from 'react';
-import { Header } from '@carbon/react';
+import classNames from 'classnames';
+import { IconButton, Header } from '@carbon/react';
 import { ArrowLeft, Close } from '@carbon/react/icons';
+import { useTranslation } from 'react-i18next';
 import { useLayoutType } from '@openmrs/esm-framework';
 import { closeOverlay, useOverlay } from '../hooks/useOverlay';
 import styles from './overlay.scss';
-import { IconButton } from '@carbon/react';
-import { t } from 'i18next';
-import classNames from 'classnames';
 
 const Overlay: React.FC = () => {
+  const { t } = useTranslation();
   const { header, component, isOverlayOpen } = useOverlay();
   const layout = useLayoutType();
 
@@ -35,9 +35,9 @@ const Overlay: React.FC = () => {
               <div className={styles.headerContent}>{header}</div>
               <IconButton
                 className={styles.closePanelButton}
-                onClick={() => closeOverlay()}
                 kind="ghost"
                 label={t('close', 'Close')}
+                onClick={closeOverlay}
               >
                 <Close size={16} />
               </IconButton>

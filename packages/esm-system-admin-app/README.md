@@ -24,3 +24,4 @@ extensions: [
     offline: true,
   },
 ]
+```

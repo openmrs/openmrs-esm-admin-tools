@@ -44,15 +44,15 @@ const CronTimePicker: React.FC<CronTimePickerProps> = ({ value, onChange }) => {
 
   return (
     <TimePicker
-      hideLabel={true}
-      pattern={TIME_PATTERN}
-      value={valueInternal}
+      hideLabel
       invalid={validationState.invalid}
       invalidText={t(validationState.invalidText)}
+      onBlur={validate}
       onChange={(event) => {
         setValueInternal(event.target.value);
       }}
-      onBlur={validate}
+      pattern={TIME_PATTERN}
+      value={valueInternal}
     />
   );
 };

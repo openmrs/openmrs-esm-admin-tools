@@ -12,7 +12,7 @@
   border-left: 1px solid $text-03;
   background-color: $ui-01;
   overflow-y: auto;
-  height: calc(100vh - 3rem);
+  height: calc(100vh - layout.$spacing-09);
   z-index: 3;
 }
 

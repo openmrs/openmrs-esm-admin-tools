@@ -1,14 +1,14 @@
 import React, { useCallback, useState } from 'react';
-import { ModalBody, Button, ModalFooter, ModalHeader, InlineLoading } from '@carbon/react';
-import { useTranslation } from 'react-i18next';
-import { cancelReportRequest } from '../reports.resource';
-import { showSnackbar } from '@openmrs/esm-framework';
 import { mutate } from 'swr';
+import { useTranslation } from 'react-i18next';
+import { Button, InlineLoading, ModalBody, ModalFooter, ModalHeader } from '@carbon/react';
+import { showSnackbar } from '@openmrs/esm-framework';
 import {
   PROCESSING_REPORT_STATUSES,
   RAN_REPORT_STATUSES,
   SCHEDULED_REPORT_STATUSES,
 } from '../report-statuses-constants';
+import { cancelReportRequest } from '../reports.resource';
 
 interface CancelReportModalProps {
   closeModal: () => void;

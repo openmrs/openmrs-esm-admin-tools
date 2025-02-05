@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { take } from 'rxjs/operators';
-import styles from './edit-scheduled-report-form.scss';
-import SimpleCronEditor from '../simple-cron-editor/simple-cron-editor.component';
-import { useReportDefinition, useReportDesigns, useReportRequest, runReportObservable } from '../reports.resource';
-import ReportParameterInput from '../report-parameter-input.component';
-import { Button, ButtonSet, Form, Select, SelectItem, Stack } from '@carbon/react';
-import { useTranslation } from 'react-i18next';
-import { showSnackbar, useLayoutType } from '@openmrs/esm-framework';
 import classNames from 'classnames';
+import { take } from 'rxjs/operators';
+import { useTranslation } from 'react-i18next';
+import { Button, ButtonSet, Form, Select, SelectItem, Stack } from '@carbon/react';
+import { getCoreTranslation, showSnackbar, useLayoutType } from '@openmrs/esm-framework';
+import { useReportDefinition, useReportDesigns, useReportRequest, runReportObservable } from '../reports.resource';
+import SimpleCronEditor from '../simple-cron-editor/simple-cron-editor.component';
+import ReportParameterInput from '../report-parameter-input.component';
+import styles from './edit-scheduled-report-form.scss';
 
 interface EditScheduledReportForm {
   reportDefinitionUuid: string;
@@ -27,14 +27,13 @@ const EditScheduledReportForm: React.FC<EditScheduledReportForm> = ({
   const { reportDesigns } = useReportDesigns(reportDefinitionUuid);
   const { reportRequest } = useReportRequest(reportRequestUuid);
 
-  const [reportParameters, setReportParameters] = useState({});
-  const [renderModeUuid, setRenderModeUuid] = useState();
-  const [initialCron, setInitialCron] = useState();
-  const [schedule, setSchedule] = useState('');
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmittable, setIsSubmittable] = useState(false);
   const [ignoreChanges, setIgnoreChanges] = useState(true);
+  const [initialCron, setInitialCron] = useState();
+  const [isSubmittable, setIsSubmittable] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [renderModeUuid, setRenderModeUuid] = useState();
+  const [reportParameters, setReportParameters] = useState({});
+  const [schedule, setSchedule] = useState('');
 
   useEffect(() => {
     setInitialCron(reportRequest?.schedule);
@@ -106,14 +105,14 @@ const EditScheduledReportForm: React.FC<EditScheduledReportForm> = ({
         {reportDefinition?.parameters.map((parameter) => (
           <ReportParameterInput
             key={`${reportDefinition.name}-${parameter.name}-param-input`}
-            parameter={parameter}
-            value={reportRequest?.parameterMappings[parameter.name]}
             onChange={(parameterValue) => {
               setReportParameters((state) => ({
                 ...state,
                 [parameter.name]: parameterValue,
               }));
             }}
+            parameter={parameter}
+            value={reportRequest?.parameterMappings[parameter.name]}
           />
         ))}
         <div className={styles.outputFormatDiv}>
@@ -132,13 +131,13 @@ const EditScheduledReportForm: React.FC<EditScheduledReportForm> = ({
           </Select>
         </div>
       </Stack>
-      <div className={styles.buttonsDiv}>
+      <div className={styles.buttonSet}>
         <ButtonSet className={classNames({ [styles.tablet]: isTablet, [styles.desktop]: !isTablet })}>
           <Button className={styles.button} kind="secondary" onClick={closePanel}>
-            {t('cancel', 'Cancel')}
+            {getCoreTranslation('cancel')}
           </Button>
           <Button className={styles.button} disabled={isSubmitting || !isSubmittable} kind="primary" type="submit">
-            {t('save', 'Save')}
+            {getCoreTranslation('save')}
           </Button>
         </ButtonSet>
       </div>

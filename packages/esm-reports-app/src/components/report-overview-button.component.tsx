@@ -5,7 +5,7 @@ import styles from './reports.scss';
 interface ReportOverviewButtonProps {
   shouldBeDisplayed: boolean;
   label: string;
-  icon: any;
+  icon: () => React.ReactNode;
   reportRequestUuid: string;
   onClick: () => void;
 }
@@ -14,7 +14,7 @@ const ReportOverviewButton: React.FC<ReportOverviewButtonProps> = ({ shouldBeDis
   if (shouldBeDisplayed) {
     return (
       <div className={styles.actionButtonsWrapperDiv}>
-        <Button kind="ghost" renderIcon={icon} iconDescription={label} onClick={onClick} className={styles.actionButon}>
+        <Button kind="ghost" iconDescription={label} onClick={onClick} renderIcon={icon} className={styles.actionButon}>
           {label}
         </Button>
       </div>

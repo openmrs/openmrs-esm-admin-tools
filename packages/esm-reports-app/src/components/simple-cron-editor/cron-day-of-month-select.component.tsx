@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { isEqual } from 'lodash-es';
 import { Select, SelectItem } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
 import { type CronField, DAYS_OF_MONTH, DAYS_OF_MONTH_DEFAULT_LABELS } from './commons';
-import { isEqual } from 'lodash-es';
 
 interface CronDayOfMonthSelectProps {
   value: CronField;
@@ -56,7 +56,7 @@ const CronDayOfMonthSelect: React.FC<CronDayOfMonthSelectProps> = ({ value, onCh
 
   return (
     <Select
-      hideLabel={true}
+      hideLabel
       onChange={(event) => {
         setValueInternal(event.target.value);
       }}
