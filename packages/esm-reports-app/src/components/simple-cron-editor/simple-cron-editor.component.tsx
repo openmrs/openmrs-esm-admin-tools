@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Select, SelectItem, TextInput } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
-import { Time } from '../../utils/time-utils';
+import type { Time } from '../../utils/time-utils';
 import CronDatePicker from './cron-date-picker.component';
 import CronTimePicker from './cron-time-picker.component';
 import CronDayOfWeekSelect from './cron-day-of-week-select.component';
+import type { CronField } from './commons';
 import {
-  CronField,
   DAYS_OF_MONTH,
   DAYS_OF_WEEK,
   SCHEDULE_TYPE_DEFAULT_LABELS,
@@ -32,11 +32,11 @@ interface SimpleCronEditorProps {
 
 interface EditorState {
   scheduleType: string;
-  date: Date;
-  time: Time;
+  date: Date | null;
+  time: Time | null;
   selectedDaysOfWeek: CronField[];
-  selectedDayOfMonth: CronField;
-  cron: string;
+  selectedDayOfMonth: CronField | null;
+  cron: string | null;
 }
 
 const EMPTY_EDITOR_STATE: EditorState = {
@@ -65,6 +65,7 @@ function getEditorState(initialCron: string): EditorState {
     return {
       scheduleType,
       date: dayjs()
+        .utc()
         .set('year', parseInt(openMRSCron.year))
         .set('month', parseInt(openMRSCron.month) - 1)
         .set('date', parseInt(openMRSCron.day))
@@ -125,7 +126,7 @@ function detectSchedulingType(expression: string) {
   if (everyWeekRegexp.test(expression)) {
     return ST_EVERY_WEEK;
   }
-  const everyMonthRegexp = new RegExp('^0\\s\\d{1,2}\\s\\d{1,2}\\s[1|L]\\s[*]\\s[?]');
+  const everyMonthRegexp = new RegExp('^0\\s\\d{1,2}\\s\\d{1,2}\\s(1|L)\\s[*]\\s[?]');
   if (everyMonthRegexp.test(expression)) {
     return ST_EVERY_MONTH;
   }
@@ -165,9 +166,9 @@ const SimpleCronEditor: React.FC<SimpleCronEditorProps> = ({ initialCron, onChan
       setCron(editorState.cron);
     } else if (selectedScheduleType == ST_ONCE) {
       setCron(
-        `0 ${selectedTime.minutes} ${selectedTime.hours} ${editorState.date.getDate()} ${
-          editorState.date.getMonth() + 1
-        } ? ${editorState.date.getFullYear()}`,
+        `0 ${selectedTime.minutes} ${selectedTime.hours} ${editorState.date.getUTCDate()} ${
+          editorState.date.getUTCMonth() + 1
+        } ? ${editorState.date.getUTCFullYear()}`,
       );
     } else if (selectedScheduleType == ST_EVERY_DAY) {
       setCron(`0 ${selectedTime.minutes} ${selectedTime.hours} * * ?`);

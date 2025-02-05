@@ -1,6 +1,6 @@
 @use '@carbon/layout';
 @use '@carbon/type';
-@use '~@openmrs/esm-styleguide/src/vars' as *;
+@use '@openmrs/esm-styleguide/src/vars' as *;
 
 .tablet {
   padding: layout.$spacing-06 layout.$spacing-05;
@@ -20,10 +20,10 @@
 
 .runReportInnerDivElement {
   display: flex;
-  padding: 16px;
+  padding: layout.$spacing-05;
   flex-direction: column;
   align-items: flex-start;
-  gap: 16px;
+  gap: layout.$spacing-05;
 }
 
 .basicInputElement {
@@ -35,10 +35,10 @@
 .outputFormatDiv {
   margin-bottom: 50px;
   display: flex;
-  padding: 32px 16px 16px 16px;
+  padding: layout.$spacing-07 layout.$spacing-05 layout.$spacing-05 layout.$spacing-05;
   flex-direction: column;
   align-items: flex-start;
-  gap: 16px;
+  gap: layout.$spacing-05;
 }
 
 .buttonsDiv {
@@ -71,7 +71,7 @@
 }
 
 .reportButton {
-  height: 4rem;
+  height: layout.$spacing-10;
   display: flex;
   align-content: flex-start;
   align-items: baseline;
