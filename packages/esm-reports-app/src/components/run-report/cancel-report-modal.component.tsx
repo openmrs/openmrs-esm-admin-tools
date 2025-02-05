@@ -13,35 +13,38 @@ import {
 interface CancelReportModalProps {
   closeModal: () => void;
   reportRequestUuid: string;
-  modalType: string;
+  modalType: ModalType;
 }
+
+type ModalType = 'delete' | 'cancel' | 'schedule';
 
 const CancelReportModal: React.FC<CancelReportModalProps> = ({ closeModal, reportRequestUuid, modalType }) => {
   const { t } = useTranslation();
   const [isCanceling, setIsCanceling] = useState(false);
 
   const handleCancel = useCallback(async () => {
-    setIsCanceling(true);
-    cancelReportRequest(reportRequestUuid)
-      .then(() => {
-        callMutates(modalType);
-        closeModal();
-        showSnackbar({
-          kind: 'success',
-          title: getModalTitleByType(modalType),
-          subtitle: getSuccessToastMessageByType(modalType),
-        });
-      })
-      .catch(() => {
-        showSnackbar({
-          kind: 'error',
-          title: getModalTitleByType(modalType),
-          subtitle: getFailedToastMessageByType(modalType),
-        });
+    try {
+      setIsCanceling(true);
+      await cancelReportRequest(reportRequestUuid);
+      callMutates(modalType);
+      closeModal();
+      showSnackbar({
+        kind: 'success',
+        title: getModalTitleByType(modalType),
+        subtitle: getSuccessToastMessageByType(modalType),
       });
+    } catch (error) {
+      showSnackbar({
+        kind: 'error',
+        title: getModalTitleByType(modalType),
+        subtitle: getFailedToastMessageByType(modalType),
+      });
+    } finally {
+      setIsCanceling(false);
+    }
   }, [closeModal]);
 
-  const callMutates = (modalType) => {
+  const callMutates = (modalType: ModalType) => {
     let baseUrl = '/ws/rest/v1/reportingrest/reportRequest?status=';
     if (modalType === 'delete') {
       mutate(baseUrl + RAN_REPORT_STATUSES.join(','));
@@ -53,7 +56,7 @@ const CancelReportModal: React.FC<CancelReportModalProps> = ({ closeModal, repor
     }
   };
 
-  const getModalTitleByType = (modalType) => {
+  const getModalTitleByType = (modalType: ModalType) => {
     if (modalType === 'delete') {
       return t('deleteReport', 'Delete report');
     } else if (modalType === 'cancel') {
@@ -63,7 +66,7 @@ const CancelReportModal: React.FC<CancelReportModalProps> = ({ closeModal, repor
     }
   };
 
-  const getModalBodyByType = (modalType) => {
+  const getModalBodyByType = (modalType: ModalType) => {
     if (modalType === 'delete') {
       return t('deleteReportModalText', 'Are you sure you want to delete this report?');
     } else if (modalType === 'cancel') {
@@ -73,7 +76,7 @@ const CancelReportModal: React.FC<CancelReportModalProps> = ({ closeModal, repor
     }
   };
 
-  const getSuccessToastMessageByType = (modalType) => {
+  const getSuccessToastMessageByType = (modalType: ModalType) => {
     if (modalType === 'delete') {
       return t('reportDeletedSuccessfully', 'Report deleted successfully');
     } else if (modalType === 'cancel') {
@@ -83,7 +86,7 @@ const CancelReportModal: React.FC<CancelReportModalProps> = ({ closeModal, repor
     }
   };
 
-  const getFailedToastMessageByType = (modalType) => {
+  const getFailedToastMessageByType = (modalType: ModalType) => {
     if (modalType === 'delete') {
       return t('reportDeletingErrorMsg', 'Error during report deleting');
     } else if (modalType === 'cancel') {
@@ -93,7 +96,7 @@ const CancelReportModal: React.FC<CancelReportModalProps> = ({ closeModal, repor
     }
   };
 
-  const getLoadingMessageByType = (modalType) => {
+  const getLoadingMessageByType = (modalType: ModalType) => {
     if (modalType === 'delete' || modalType === 'schedule') {
       return t('deleting', 'Deleting');
     } else if (modalType === 'cancel') {

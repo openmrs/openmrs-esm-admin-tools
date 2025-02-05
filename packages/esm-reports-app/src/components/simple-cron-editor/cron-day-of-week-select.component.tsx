@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FilterableMultiSelect } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
-import { CronField, DAYS_OF_WEEK, DAYS_OF_WEEK_DEFAULT_LABELS } from './commons';
+import { type CronField, DAYS_OF_WEEK, DAYS_OF_WEEK_DEFAULT_LABELS } from './commons';
 import { isEqual } from 'lodash-es';
 
 interface CronDayOfWeekSelectProps {

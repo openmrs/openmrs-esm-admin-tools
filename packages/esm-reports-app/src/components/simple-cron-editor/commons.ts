@@ -37,6 +37,7 @@ export const DAYS_OF_WEEK_DEFAULT_LABELS: Record<string, string> = {
   saturday: 'Saturday',
 };
 export const DAYS_OF_MONTH: CronField[] = [
+  { name: '', value: '' },
   { name: 'firstDay', value: '1' },
   { name: 'lastDay', value: 'L' },
 ];

@@ -1,9 +1,10 @@
-import { openmrsFetch, type FetchResponse, openmrsObservableFetch } from '@openmrs/esm-framework';
-import { Observable } from 'rxjs';
+import { openmrsFetch, openmrsObservableFetch } from '@openmrs/esm-framework';
+import type { FetchResponse } from '@openmrs/esm-framework';
+import { type Observable } from 'rxjs';
 import useSWR from 'swr';
-import { ReportDefinition } from '../types/report-definition';
-import { ReportDesign } from '../types/report-design';
-import { ReportRequest } from '../types/report-request';
+import type { ReportDefinition } from '../types/report-definition';
+import type { ReportDesign } from '../types/report-design';
+import type { ReportRequest } from '../types/report-request';
 import dayjs from 'dayjs';
 
 interface ReportModel {
