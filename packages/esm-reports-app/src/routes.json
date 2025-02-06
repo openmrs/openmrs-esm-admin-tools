@@ -3,8 +3,8 @@
   "backendDependencies": {
     "fhir2": ">=1.2",
     "webservices.rest": "^2.24.0",
-    "reportingrest": ">=1.15.0-SNAPSHOT",
-    "reporting": ">=1.27.0-SNAPSHOT"
+    "reportingrest": ">=1.14.0",
+    "reporting": ">=1.26.0"
   },
   "extensions": [
     {
