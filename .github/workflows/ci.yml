@@ -1,10 +1,5 @@
 name: OpenMRS CI
 
-env:
-  TURBO_API: 'http://127.0.0.1:9080'
-  TURBO_TOKEN: ${{ secrets.TURBO_SERVER_TOKEN }}
-  TURBO_TEAM: ${{ github.repository_owner }}
-
 on:
   push:
     branches: [main]
@@ -14,42 +9,46 @@ on:
     types:
       - created
 
-jobs:
+env:
+  TURBO_API: 'http://127.0.0.1:9080'
+  TURBO_TOKEN: ${{ secrets.TURBO_SERVER_TOKEN }}
+  TURBO_TEAM: ${{ github.repository_owner }}
 
+jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js
+      - name: 🛠️ Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: '18'
 
-      - name: Cache dependencies
+      - name: 💾 Cache dependencies
         id: cache
         uses: actions/cache@v4
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
-      - name: Install dependencies
+      - name: 📦 Install dependencies
         if: steps.cache.outputs.cache-hit != 'true'
         run: yarn install --immutable
 
-      - name: Setup a local cache server for Turborepo
+      - name: 🚀 Setup local cache server for Turborepo
         uses: felixmosh/turborepo-gh-artifacts@v3
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
+          server-token: ${{ env.TURBO_TOKEN }}
 
-      - name: Run lint, typecheck and tests
+      - name: 🧪 Run tests, lint and type checks
         run: yarn verify
 
-      - name: Run build
-        run: yarn turbo run build --color --concurrency=5
+      - name: 🏗️ Run build
+        run: yarn turbo run build
 
-      - name: Upload build artifacts
+      - name: 📤 Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: packages
@@ -60,42 +59,49 @@ jobs:
   pre_release:
     runs-on: ubuntu-latest
     needs: build
+
     if: ${{ github.event_name == 'push' }}
 
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js
+      - name: 🛠️ Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
-          registry-url: "https://registry.npmjs.org"
+          node-version: '18'
 
-      - name: Cache dependencies
+      - name: 💾 Cache dependencies
         id: cache
         uses: actions/cache@v4
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
-      - name: Install dependencies
+      - name: 📦 Install dependencies
         if: steps.cache.outputs.cache-hit != 'true'
         run: yarn install --immutable
 
-      - name: Version
+      - name: 🚀 Setup local cache server for Turborepo
+        uses: felixmosh/turborepo-gh-artifacts@v3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          server-token: ${{ env.TURBO_TOKEN }}
+
+      - name: 🏷️ Version
         run: yarn workspaces foreach --worktree --topological --exclude @openmrs/esm-admin-tools version "$(node -e "console.log(require('semver').inc(require('./package.json').version, 'patch'))")-pre.${{ github.run_number }}"
 
-      - name: Build
-        run: yarn turbo run build --color --concurrency=5
+      - name: 🏗️ Build
+        run: yarn turbo run build
 
-      - run: git config user.email "info@openmrs.org" && git config user.name "OpenMRS CI"
-      - run: git add . && git commit -m "Prerelease version" --no-verify
+      - name: 🔧 Configure Git
+        run: git config user.email "info@openmrs.org" && git config user.name "OpenMRS CI"
+      - name: 💾 Commit changes
+        run: git add . && git commit -m "Prerelease version" --no-verify
 
-      - name: Pre-release
+      - name: 🚀 Pre-release
         run: yarn config set npmAuthToken "${NODE_AUTH_TOKEN}" && yarn run ci:prepublish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
-
-      - name: Upload Artifacts
+      - name: 📤 Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: packages
@@ -105,44 +111,63 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
+
     needs: build
+
     if: ${{ github.event_name == 'release' }}
 
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js
+      - name: 📥 Download Artifacts
+        uses: actions/download-artifact@v4
+      - name: 🛠️ Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
-          registry-url: "https://registry.npmjs.org"
+          node-version: '18'
 
-      - name: Cache dependencies
+      - name: 💾 Cache dependencies
         id: cache
         uses: actions/cache@v4
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
-      - name: Install dependencies
+      - name: 📦 Install dependencies
         if: steps.cache.outputs.cache-hit != 'true'
         run: yarn install --immutable
 
-      - name: Build
-        run: yarn turbo run build --color --concurrency=5
+      - name: 🚀 Setup local cache server for Turborepo
+        uses: felixmosh/turborepo-gh-artifacts@v3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          server-token: ${{ env.TURBO_TOKEN }}
 
-      - run: yarn config set npmAuthToken "${NODE_AUTH_TOKEN}" && yarn run ci:publish
+      - name: 🏗️ Build
+        run: yarn turbo run build
+
+      - name: 🚀 Publish to NPM
+        run: yarn config set npmAuthToken "${NODE_AUTH_TOKEN}" && yarn run ci:publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+
+      - name: 📤 Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: |
+            dist
+          overwrite: true
 
   deploy_admin_tools:
     runs-on: ubuntu-latest
     needs: pre_release
+
     if: ${{ github.event_name == 'push' }}
 
     steps:
-      - name: Trigger RefApp Build
+      - name: 🚀 Trigger RefApp Build
         uses: fjogeleit/http-request-action@v1
         with:
           url: https://ci.openmrs.org/rest/api/latest/queue/O3-BF
-          method: "POST"
+          method: 'POST'
           customHeaders: '{ "Authorization": "Bearer ${{ secrets.BAMBOO_TOKEN }}" }'

@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-
 import { SystemAdministrationDashboard } from './dashboard/index.component';
 
 const RootComponent: React.FC = () => {

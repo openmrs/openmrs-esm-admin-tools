@@ -3,8 +3,8 @@ import userEvent from '@testing-library/user-event';
 import { screen, waitFor } from '@testing-library/react';
 import { type FetchResponse, openmrsFetch, showNotification } from '@openmrs/esm-framework';
 import { renderWithSwr } from '../../../../tools/test-helpers';
-import { deleteSubscription, updateSubscription } from './subscription.resource';
 import { mockSubscription } from '../../../../__mocks__/openconceptlab.mock';
+import { deleteSubscription, updateSubscription } from './subscription.resource';
 import Subscription from './subscription.component';
 
 const mockOpenmrsFetch = openmrsFetch as jest.Mock;
@@ -49,6 +49,7 @@ describe('Subscription component', () => {
   });
 
   xit('allows adding a new subscription', async () => {
+    const user = userEvent.setup();
     mockOpenmrsFetch.mockReturnValueOnce({ data: { results: [] } });
     renderWithSwr(<Subscription />);
     await waitForLoadingToFinish();
@@ -59,9 +60,9 @@ describe('Subscription component', () => {
 
     mockUpdateSubscription.mockResolvedValueOnce({ status: 201, ok: true } as unknown as FetchResponse);
 
-    await waitFor(() => userEvent.type(urlInputField, mockSubscription.url));
-    await waitFor(() => userEvent.type(tokenInputField, mockSubscription.token));
-    await waitFor(() => userEvent.click(saveButton));
+    await user.type(urlInputField, mockSubscription.url);
+    await user.type(tokenInputField, mockSubscription.token);
+    await user.click(saveButton);
 
     expect(mockUpdateSubscription).toHaveBeenCalledWith(
       expect.objectContaining(mockSubscription),
@@ -79,6 +80,7 @@ describe('Subscription component', () => {
   });
 
   xit('allows changing the saved subscription', async () => {
+    const user = userEvent.setup();
     mockOpenmrsFetch.mockReturnValueOnce({ data: { results: [mockSubscription] } });
     renderWithSwr(<Subscription />);
     await waitForLoadingToFinish();
@@ -90,13 +92,11 @@ describe('Subscription component', () => {
 
     mockUpdateSubscription.mockResolvedValueOnce({ status: 200, ok: true } as unknown as FetchResponse);
 
-    await waitFor(() => userEvent.clear(urlInputField));
-    await waitFor(() => userEvent.clear(tokenInputField));
-    await waitFor(() =>
-      userEvent.type(urlInputField, 'https://api.openconceptlab.org/orgs/openmrs/collections/DemoQueueConcepts/2'),
-    );
-    await waitFor(() => userEvent.type(tokenInputField, 'token123'));
-    await waitFor(() => userEvent.click(saveButton));
+    await user.clear(urlInputField);
+    await user.clear(tokenInputField);
+    await user.type(urlInputField, 'https://api.openconceptlab.org/orgs/openmrs/collections/DemoQueueConcepts/2');
+    await user.type(tokenInputField, 'token123');
+    await user.click(saveButton);
 
     expect(mockUpdateSubscription).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -118,6 +118,7 @@ describe('Subscription component', () => {
   });
 
   xit('allows removing the saved subscription', async () => {
+    const user = userEvent.setup();
     mockOpenmrsFetch.mockReturnValueOnce({ data: { results: [mockSubscription] } });
     renderWithSwr(<Subscription />);
     await waitForLoadingToFinish();
@@ -127,7 +128,7 @@ describe('Subscription component', () => {
 
     mockDeleteSubscription.mockResolvedValueOnce({ status: 204 } as unknown as FetchResponse);
 
-    await waitFor(() => userEvent.click(unsubscribeButton));
+    await user.click(unsubscribeButton);
 
     expect(mockDeleteSubscription).toHaveBeenCalledWith(
       expect.objectContaining(mockSubscription),

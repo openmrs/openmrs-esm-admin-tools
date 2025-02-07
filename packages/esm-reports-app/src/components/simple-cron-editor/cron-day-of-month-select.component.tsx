@@ -1,8 +1,8 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Select, SelectItem } from '@carbon/react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { type CronField, DAYS_OF_MONTH, DAYS_OF_MONTH_DEFAULT_LABELS } from './commons';
+import { Select, SelectItem } from '@carbon/react';
 import { isEqual } from 'lodash-es';
+import { type CronField, DAYS_OF_MONTH, DAYS_OF_MONTH_DEFAULT_LABELS } from './commons';
 
 interface CronDayOfMonthSelectProps {
   value: CronField;
@@ -23,27 +23,27 @@ const CronDayOfMonthSelect: React.FC<CronDayOfMonthSelectProps> = ({ value, onCh
     invalidText: null,
   });
 
-  useEffect(() => {
-    if (!isEqual(value, valueInternal)) {
-      setValueInternal(value?.value);
-    }
-  }, [value]);
-
-  useEffect(() => {
-    validate();
-  }, [valueInternal]);
-
-  useEffect(() => {
-    onChange(validationState.invalid ? null : DAYS_OF_MONTH.find((dayOfMonth) => dayOfMonth.value == valueInternal));
-  }, [validationState]);
-
-  const validate = () => {
+  const validate = useCallback(() => {
     if (!!valueInternal) {
       setValidationState({ invalid: false, invalidText: null });
     } else {
       setValidationState({ invalid: true, invalidText: t('dayOfMonthRequired', 'Required') });
     }
-  };
+  }, [t, valueInternal]);
+
+  useEffect(() => {
+    if (!isEqual(value, valueInternal)) {
+      setValueInternal(value?.value);
+    }
+  }, [value, valueInternal]);
+
+  useEffect(() => {
+    validate();
+  }, [validate, valueInternal]);
+
+  useEffect(() => {
+    onChange(validationState.invalid ? null : DAYS_OF_MONTH.find((dayOfMonth) => dayOfMonth.value === valueInternal));
+  }, [onChange, validationState, valueInternal]);
 
   const translatedOptions = useMemo(
     () =>
@@ -56,7 +56,7 @@ const CronDayOfMonthSelect: React.FC<CronDayOfMonthSelectProps> = ({ value, onCh
 
   return (
     <Select
-      hideLabel={true}
+      hideLabel
       onChange={(event) => {
         setValueInternal(event.target.value);
       }}

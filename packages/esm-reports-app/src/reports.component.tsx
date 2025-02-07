@@ -1,9 +1,9 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import styles from './root.scss';
+import { spaBasePath } from './constants';
 import OverviewComponent from './components/overview.component';
 import ScheduledOverviewComponent from './components/scheduled-overview.component';
-import { spaBasePath } from './constants';
+import styles from './root.scss';
 
 const RootComponent: React.FC = () => {
   return (

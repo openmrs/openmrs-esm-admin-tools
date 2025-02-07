@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import styles from './run-report/run-report-form.scss';
+import React, { useCallback, useEffect, useState } from 'react';
+import { isEqual } from 'lodash-es';
 import { DatePicker, DatePickerInput, Select, SelectItem, TextInput } from '@carbon/react';
 import { useLocations } from './reports.resource';
-import { isEqual } from 'lodash-es';
+import styles from './run-report/run-report-form.scss';
 
 interface ReportParameterInputProps {
   parameter: any;
@@ -24,20 +24,23 @@ const ReportParameterInput: React.FC<ReportParameterInputProps> = ({ parameter, 
   const { locations } = useLocations();
   const [valueInternal, setValueInternal] = useState<string | number | Date>(getInitialValue(parameter, value));
 
+  const isValueEqual = useCallback(
+    (valueA, valueB) => {
+      if (parameter.type === 'java.util.Date') {
+        return isEqual(new Date(valueA), new Date(valueB));
+      } else {
+        return isEqual(valueA, valueB);
+      }
+    },
+    [parameter.type],
+  );
+
   useEffect(() => {
     const newInternalValue = getInitialValue(parameter, value);
     if (!isValueEqual(newInternalValue, valueInternal)) {
       setValueInternal(newInternalValue);
     }
-  }, [value]);
-
-  const isValueEqual = (valueA, valueB) => {
-    if (parameter.type === 'java.util.Date') {
-      return isEqual(new Date(valueA), new Date(valueB));
-    } else {
-      return isEqual(valueA, valueB);
-    }
-  };
+  }, [isValueEqual, parameter, value, valueInternal]);
 
   useEffect(() => {
     if (parameter.type === 'java.util.Date') {
@@ -45,7 +48,7 @@ const ReportParameterInput: React.FC<ReportParameterInputProps> = ({ parameter, 
     } else {
       onChange(valueInternal);
     }
-  }, [valueInternal]);
+  }, [onChange, parameter.type, valueInternal]);
 
   const renderParameterElementBasedOnType = () => {
     switch (parameter.type) {
@@ -102,7 +105,7 @@ const ReportParameterInput: React.FC<ReportParameterInputProps> = ({ parameter, 
 
   function handleOnChange(event) {
     let eventValue = null;
-    if (event.target.type == 'checkbox') {
+    if (event.target.type === 'checkbox') {
       eventValue = event.target.checked;
     } else {
       eventValue = event.target.value;
