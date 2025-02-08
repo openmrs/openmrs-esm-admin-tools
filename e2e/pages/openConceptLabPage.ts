@@ -13,6 +13,7 @@ export class OpenConceptLabPage {
   }
 
   async addOclSubscription() {
+    await expect(this.page.getByRole('heading', { name: /ocl subscription module/i })).toBeVisible();
     await this.page.getByLabel('Subscription URL').fill(process.env.E2E_OCL_SUBSCRIPTION_URL);
     await this.page.getByLabel('Token').fill(process.env.E2E_OCL_TOKEN);
     await this.page.getByRole('button', { name: 'Save Changes' }).click();
