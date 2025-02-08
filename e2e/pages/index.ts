@@ -1,1 +1,1 @@
-export * from './openConceptLabPage';
+export * from './ocl-page';
