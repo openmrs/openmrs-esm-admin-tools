@@ -1,4 +1,4 @@
-import { APIRequestContext, expect } from '@playwright/test';
+import { type APIRequestContext, expect } from '@playwright/test';
 
 export interface Subscription {
   uuid: string;

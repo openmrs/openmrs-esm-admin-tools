@@ -64,16 +64,12 @@
     "webpack": "^5.90.3",
     "webpack-cli": "^5.1.4"
   },
- bddsteps
-  "packageManager": "yarn@3.6.3",
   "dependencies": {
     "playwright": "^1.49.1"
-  }
-
+  },
   "lint-staged": {
     "*.{ts,tsx}": "eslint --cache --fix --max-warnings 0",
     "*.{css,scss,ts,tsx}": "prettier --write --list-different"
   },
-  "packageManager": "yarn@4.4.1"
-main
+  "packageManager": "yarn@4.6.0"
 }
