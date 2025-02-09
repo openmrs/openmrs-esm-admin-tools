@@ -11,7 +11,7 @@ test.beforeEach(async ({ api }) => {
   }
 });
 
-test('OpenConceptLabPage', async ({ page }) => {
+test('Visit OCL Page', async ({ page }) => {
   const openConceptLabPage = new OpenConceptLabPage(page);
 
   await test.step('When I go to the "OCL module page"', async () => {
