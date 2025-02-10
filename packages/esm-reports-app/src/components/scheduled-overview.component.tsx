@@ -14,9 +14,9 @@ import {
 } from '@carbon/react';
 import { ExtensionSlot, isDesktop, useLayoutType, usePagination } from '@openmrs/esm-framework';
 import { useScheduledReports } from './reports.resource';
-import { DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZES } from './pagination-constants';
-import ScheduledOverviewCellContent from './scheduled-overview-cell-content.component';
 import Overlay from './overlay.component';
+import ScheduledOverviewCellContent from './scheduled-overview-cell-content.component';
+import { DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZES } from './pagination-constants';
 import styles from './reports.scss';
 
 const ScheduledOverviewComponent: React.FC = () => {

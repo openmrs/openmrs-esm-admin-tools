@@ -3,12 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import { ModalBody, Button, ModalFooter, ModalHeader, InlineLoading } from '@carbon/react';
 import { showSnackbar } from '@openmrs/esm-framework';
+import { cancelReportRequest } from '../reports.resource';
 import {
   PROCESSING_REPORT_STATUSES,
   RAN_REPORT_STATUSES,
   SCHEDULED_REPORT_STATUSES,
 } from '../report-statuses-constants';
-import { cancelReportRequest } from '../reports.resource';
 
 interface CancelReportModalProps {
   closeModal: () => void;
