@@ -6,10 +6,10 @@
 
 ## What is this?
 
-openmrs-esm-admin-tools provides microfrontends for various administrative functions and administrative modules in the OpenMRS ecosystem. It provides tools to allow admin users to effectively manage their 3.x installation without needing to drop to the v1 console.
+Admin Tools provides microfrontends for various administrative functions and administrative modules in the OpenMRS ecosystem. It provides tools to allow admin users to effectively manage their 3.x installation without needing to drop to the v1 console.
 
 ## How do I configure this module?
- 
+
 Please see the [O3 Docs config guide](https://o3-docs.openmrs.org/docs/configure-o3/overview#configuring-individual-frontend-modules) for information about configuring modules.
 
 ## Setup
@@ -18,7 +18,7 @@ See the guidance in the [Developer Documentation](https://o3-docs.openmrs.org/do
 
 This repository uses Yarn.
 
-To start the dev server for a specific package, run
+To start the dev server for a specific package, run:
 
 ```bash
 yarn start --sources 'packages/esm-<package>-app'
@@ -26,7 +26,7 @@ yarn start --sources 'packages/esm-<package>-app'
 
 This will start a dev server for that package.
 
-To start a dev server running all the packages, run
+To start a dev server running all the packages, run:
 
 ```bash
 yarn start-all
@@ -86,9 +86,9 @@ To set up environment variables for the project, follow these steps:
 
 1. Create a copy of the .env.example file by running the following command:
 
-  ```bash
-  cp example.env .env
-  ```
+    ```bash
+    cp example.env .env
+    ```
   
 2. Open the newly created .env file in the root of the project.
 

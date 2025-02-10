@@ -1,6 +1,6 @@
+/** @type {import('jest').Config} */
 const path = require('path');
 
-/** @type {import('jest').Config} */
 module.exports = {
   clearMocks: true,
   transform: {

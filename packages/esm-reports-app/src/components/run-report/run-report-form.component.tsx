@@ -1,12 +1,12 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import classNames from 'classnames';
+import { take } from 'rxjs/operators';
 import { useTranslation } from 'react-i18next';
-import styles from './run-report-form.scss';
-import { useLocations, useReportDefinitions, useReportDesigns, runReportObservable } from '../reports.resource';
-import { closeOverlay } from '../../hooks/useOverlay';
 import { Button, ButtonSet, DatePicker, DatePickerInput, Form, Select, SelectItem, TextInput } from '@carbon/react';
 import { showSnackbar, useLayoutType } from '@openmrs/esm-framework';
-import { take } from 'rxjs/operators';
-import classNames from 'classnames';
+import { closeOverlay } from '../../hooks/useOverlay';
+import { useLocations, useReportDefinitions, useReportDesigns, runReportObservable } from '../reports.resource';
+import styles from './run-report-form.scss';
 
 interface RunReportForm {
   closePanel: () => void;
@@ -24,9 +24,14 @@ const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
 
   const { reportDesigns, mutateReportDesigns } = useReportDesigns(reportUuid);
 
+  const supportedParameterTypes = useMemo(
+    () => ['java.util.Date', 'java.lang.String', 'java.lang.Integer', 'org.openmrs.Location'],
+    [],
+  );
+
   useEffect(() => {
     mutateReportDesigns();
-  }, [reportUuid]);
+  }, [mutateReportDesigns, reportUuid]);
 
   useEffect(() => {
     const paramTypes = currentReport?.parameters.map((param) => param.type);
@@ -40,9 +45,7 @@ const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
     } else {
       setIsFormValid(false);
     }
-  }, [reportParameters, reportUuid, renderModeUuid]);
-
-  const supportedParameterTypes = ['java.util.Date', 'java.lang.String', 'java.lang.Integer', 'org.openmrs.Location'];
+  }, [reportParameters, reportUuid, renderModeUuid, currentReport?.parameters, supportedParameterTypes]);
 
   const { reportDefinitions } = useReportDefinitions();
   const { locations } = useLocations();
@@ -111,7 +114,7 @@ const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
   function handleOnChange(event) {
     const key = event.target.name;
     let value = null;
-    if (event.target.type == 'checkbox') {
+    if (event.target.type === 'checkbox') {
       value = event.target.checked;
     } else {
       value = event.target.value;
@@ -153,8 +156,7 @@ const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
             setTimeout(() => {
               showSnackbar({
                 kind: 'success',
-                title: t('reportRunning', 'Report running'),
-                subtitle: t('reportRanSuccessfullyMsg', 'Report ran successfully'),
+                title: t('reportRanSuccessfully', 'Report ran successfully'),
               });
               closePanel();
               setIsSubmitting(false);
@@ -164,14 +166,14 @@ const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
             console.error(error);
             showSnackbar({
               kind: 'error',
-              title: t('reportRunningErrorMsg', 'Error while running the report'),
-              subtitle: t('reportRunningErrorMsg', 'Error while running the report'),
+              title: t('errorRunningReport', 'Error running report'),
+              subtitle: error?.message,
             });
             setIsSubmitting(false);
           },
         );
     },
-    [reportUuid, renderModeUuid, reportParameters],
+    [closePanel, reportParameters, reportUuid, renderModeUuid, t],
   );
 
   return (

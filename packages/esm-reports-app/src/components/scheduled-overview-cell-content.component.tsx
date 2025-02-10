@@ -1,15 +1,15 @@
 import React from 'react';
 import { Edit, TrashCan } from '@carbon/react/icons';
-import { showModal, userHasAccess, useSession } from '@openmrs/esm-framework';
-import ReportScheduleDescription from './report-schedule-description.component';
-import NextReportExecution from './next-report-execution.component';
-import ReportOverviewButton from './report-overview-button.component';
 import { useTranslation } from 'react-i18next';
+import { showModal, userHasAccess, useSession } from '@openmrs/esm-framework';
 import { closeOverlay, launchOverlay } from '../hooks/useOverlay';
-import styles from './reports.scss';
 import { PRIVILEGE_SYSTEM_DEVELOPER } from '../constants';
 import EditScheduledReportForm from './edit-scheduled-report/edit-scheduled-report-form.component';
+import NextReportExecution from './next-report-execution.component';
+import ReportOverviewButton from './report-overview-button.component';
+import ReportScheduleDescription from './report-schedule-description.component';
 import ScheduledReportStatus from './scheduled-report-status.component';
+import styles from './reports.scss';
 
 interface ScheduledOverviewCellContentProps {
   cell: { info: { header: string }; value: any };
@@ -40,7 +40,7 @@ const ScheduledOverviewCellContent: React.FC<ScheduledOverviewCellContentProps> 
               reportRequestUuid={null}
               onClick={() => {
                 launchOverlay(
-                  t('editScheduledReport', 'Edit Scheduled Report'),
+                  t('editScheduledReport', 'Edit scheduled report'),
                   <EditScheduledReportForm
                     reportDefinitionUuid={cell.value.reportDefinitionUuid}
                     reportRequestUuid={cell.value.reportRequestUuid}

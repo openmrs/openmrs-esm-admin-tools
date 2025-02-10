@@ -122,13 +122,13 @@ const Import: React.FC = () => {
       <Grid className={styles.grid}>
         <Column sm={4} md={8} lg={10}>
           <Form>
-            <SkeletonText className={styles.productiveHeading03} heading={true} />
-            <SkeletonText className={styles.formText} paragraph={true} lineCount={2} />
+            <SkeletonText className={styles.productiveHeading03} heading />
+            <SkeletonText className={styles.formText} paragraph lineCount={2} />
             <ButtonSkeleton />
           </Form>
 
           <Form className={styles.form}>
-            <SkeletonText className={styles.productiveHeading03} heading={true} />
+            <SkeletonText className={styles.productiveHeading03} heading />
             <SkeletonText className={styles.formText} />
             <FileUploaderSkeleton style={{ marginBottom: '1.5rem' }} />
             <ButtonSkeleton />

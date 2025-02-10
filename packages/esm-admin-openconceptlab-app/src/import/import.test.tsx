@@ -54,13 +54,14 @@ describe('Import component', () => {
   });
 
   it('allows starting an import using the subscription', async () => {
+    const user = userEvent.setup();
     mockOpenmrsFetch.mockReturnValueOnce({ data: { results: [mockSubscription] } });
     renderWithSwr(<Import />);
     await waitForLoadingToFinish();
 
     mockStartImportWithSubscription.mockResolvedValue({ status: 201 } as unknown as FetchResponse);
 
-    await waitFor(() => userEvent.click(screen.getByText('Import from Subscription')));
+    await user.click(screen.getByText('Import from Subscription'));
 
     expect(mockStartImportWithSubscription).toHaveBeenCalledWith(new AbortController());
     expect(mockStartImportWithSubscription).toHaveBeenCalledTimes(1);

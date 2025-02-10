@@ -1,12 +1,10 @@
 import React from 'react';
-import { Header } from '@carbon/react';
+import classNames from 'classnames';
+import { Header, IconButton } from '@carbon/react';
 import { ArrowLeft, Close } from '@carbon/react/icons';
-import { useLayoutType } from '@openmrs/esm-framework';
+import { getCoreTranslation, useLayoutType } from '@openmrs/esm-framework';
 import { closeOverlay, useOverlay } from '../hooks/useOverlay';
 import styles from './overlay.scss';
-import { IconButton } from '@carbon/react';
-import { t } from 'i18next';
-import classNames from 'classnames';
 
 const Overlay: React.FC = () => {
   const { header, component, isOverlayOpen } = useOverlay();
@@ -22,7 +20,7 @@ const Overlay: React.FC = () => {
           })}
         >
           {layout === 'tablet' && (
-            <Header onClick={() => closeOverlay()} aria-label="Tablet overlay" className={styles.tabletOverlayHeader}>
+            <Header aria-label="Tablet overlay" className={styles.tabletOverlayHeader} onClick={closeOverlay}>
               <IconButton>
                 <ArrowLeft size={16} />
               </IconButton>
@@ -35,9 +33,9 @@ const Overlay: React.FC = () => {
               <div className={styles.headerContent}>{header}</div>
               <IconButton
                 className={styles.closePanelButton}
-                onClick={() => closeOverlay()}
                 kind="ghost"
-                label={t('close', 'Close')}
+                label={getCoreTranslation('close')}
+                onClick={closeOverlay}
               >
                 <Close size={16} />
               </IconButton>

@@ -1,7 +1,7 @@
 import React from 'react';
-import styles from './reports.scss';
-import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
+import { useTranslation } from 'react-i18next';
+import styles from './reports.scss';
 
 interface ReportStatusProps {
   hasSchedule: string;
@@ -17,7 +17,7 @@ const ScheduledReportStatus: React.FC<ReportStatusProps> = ({ hasSchedule }) => 
         [styles.notScheduledStatusText]: !hasSchedule,
       })}
     >
-      {hasSchedule ? t('scheduled', 'Scheduled') : t('notScheduled', 'Not Scheduled')}
+      {hasSchedule ? t('scheduled', 'Scheduled') : t('notScheduled', 'Not scheduled')}
     </span>
   );
 };
