@@ -2,7 +2,7 @@ import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { screen, waitFor } from '@testing-library/react';
 import { type FetchResponse, openmrsFetch, showNotification } from '@openmrs/esm-framework';
-import { mockSubscription } from '__mocks__/openconceptlab.mock';
+import { mockSubscription } from '@mocks/openconceptlab.mock';
 import { renderWithSwr } from '@tools/test-helpers';
 import { startImportWithSubscription } from './import.resource';
 import Import from './import.component';

@@ -21,7 +21,7 @@
     "skipLibCheck": true,
     "target": "esnext",
     "paths": {
-      "__mocks__/*": ["./__mocks__/*"],
+      "@mocks/*": ["./__mocks__/*"],
       "@tools/*": ["./tools/*"],
     }
   }
