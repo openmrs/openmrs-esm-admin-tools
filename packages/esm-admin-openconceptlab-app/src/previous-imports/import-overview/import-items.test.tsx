@@ -1,8 +1,8 @@
 import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import { usePagination } from '@openmrs/esm-framework';
-import { renderWithSwr } from '../../../../../tools/test-helpers';
-import { mockImportItems, mockPreviousImports } from '../../../../../__mocks__/openconceptlab.mock';
+import { renderWithSwr } from '@tools/test-helpers';
+import { mockImportItems, mockPreviousImports } from '@mocks/openconceptlab.mock';
 import { getImportDetails } from './import-items.resource';
 import ImportItems from './import-items.component';
 
