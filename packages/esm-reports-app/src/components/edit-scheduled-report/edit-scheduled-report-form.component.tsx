@@ -27,7 +27,7 @@ const EditScheduledReportForm: React.FC<EditScheduledReportForm> = ({
   const { reportDesigns } = useReportDesigns(reportDefinitionUuid);
   const { reportRequest } = useReportRequest(reportRequestUuid);
 
-  const [reportParameters, setReportParameters] = useState({});
+  const [reportParameters, setReportParameters] = useState(reportRequest?.parameterMappings || {});
   const [renderModeUuid, setRenderModeUuid] = useState();
   const [initialCron, setInitialCron] = useState();
   const [schedule, setSchedule] = useState('');
@@ -39,6 +39,10 @@ const EditScheduledReportForm: React.FC<EditScheduledReportForm> = ({
   useEffect(() => {
     setInitialCron(reportRequest?.schedule);
     setRenderModeUuid(reportRequest?.renderingMode?.argument);
+
+    if (reportRequest?.parameterMappings) {
+      setReportParameters(reportRequest.parameterMappings);
+    }
   }, [reportRequest]);
 
   const handleSubmit = useCallback(

@@ -37,18 +37,13 @@ const ReportParameterInput: React.FC<ReportParameterInputProps> = ({ parameter, 
 
   useEffect(() => {
     const newInternalValue = getInitialValue(parameter, value);
-    if (!isValueEqual(newInternalValue, valueInternal)) {
-      setValueInternal(newInternalValue);
-    }
-  }, [isValueEqual, parameter, value, valueInternal]);
-
-  useEffect(() => {
-    if (parameter.type === 'java.util.Date') {
-      onChange(new Date(valueInternal).toLocaleDateString());
-    } else {
-      onChange(valueInternal);
-    }
-  }, [onChange, parameter.type, valueInternal]);
+    setValueInternal((prevValue) => {
+      if (!isValueEqual(newInternalValue, prevValue)) {
+        return newInternalValue;
+      }
+      return prevValue;
+    });
+  }, [value, isValueEqual, parameter]);
 
   const renderParameterElementBasedOnType = () => {
     switch (parameter.type) {
@@ -112,10 +107,18 @@ const ReportParameterInput: React.FC<ReportParameterInputProps> = ({ parameter, 
     }
 
     setValueInternal(eventValue);
+
+    if (parameter.type === 'java.util.Date') {
+      onChange(new Date(eventValue).toLocaleDateString());
+    } else {
+      onChange(eventValue);
+    }
   }
 
   function handleOnDateChange(dateValue) {
-    setValueInternal(new Date(dateValue));
+    const newDate = new Date(dateValue);
+    setValueInternal(newDate);
+    onChange(newDate.toLocaleDateString());
   }
 
   return <div className={styles.runReportInnerDivElement}>{renderParameterElementBasedOnType()}</div>;
