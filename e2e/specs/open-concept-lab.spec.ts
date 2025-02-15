@@ -34,17 +34,16 @@ test('Setup a subscription and import concepts', async ({ page }) => {
     await openConceptLabPage.importTab().click();
   });
 
-  await test.step('And I drag and drop a file or upload a file', async () => {
+  await test.step('And I click the Import from Subscription button', async () => {
     await openConceptLabPage.startImport();
   });
 
-  await test.step('And I click the previous imports tab', async () => {
+  await test.step('And I refresh the page and go to the previous imports tab', async () => {
+    await openConceptLabPage.goto();
     await openConceptLabPage.previousImportsTab().click();
   });
 
   await test.step('Then I should see the previous imports', async () => {
-    await openConceptLabPage.goto();
-    await openConceptLabPage.previousImportsTab().click();
     await expect(openConceptLabPage.previousImportsTable()).toHaveText(/\d+ items fetched/);
   });
 
