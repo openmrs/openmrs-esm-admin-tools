@@ -19,7 +19,7 @@ test('Setup a subscription and import concepts', async ({ page }) => {
   });
 
   await test.step('And I enter the subscription URL', async () => {
-    await openConceptLabPage.page.getByLabel('Subscription URL').fill(process.env.E2E_OCL_SUBSCRIPTION_URL || '');
+    await openConceptLabPage.page.getByLabel('Subscription URL').fill(process.env.E2E_OCL_SUBSCRIPTION_URL);
   });
 
   await test.step('And I enter the token', async () => {
@@ -28,6 +28,28 @@ test('Setup a subscription and import concepts', async ({ page }) => {
 
   await test.step('And I click the save button', async () => {
     await openConceptLabPage.page.getByRole('button', { name: 'Save Changes' }).click();
+  });
+
+  await test.step('And I click the Import tab', async () => {
+    await openConceptLabPage.importTab().click();
+  });
+
+  await test.step('And I drag and drop a file or upload a file', async () => {
+    await openConceptLabPage.startImport();
+  });
+
+  await test.step('And I click the previous imports tab', async () => {
+    await openConceptLabPage.previousImportsTab().click();
+  });
+
+  await test.step('Then I should see the previous imports', async () => {
+    await openConceptLabPage.goto();
+    await openConceptLabPage.previousImportsTab().click();
+    await expect(openConceptLabPage.previousImportsTable()).toHaveText(/\d+ items fetched/);
+  });
+
+  await test.step('And I click the Subscription Tab', async () => {
+    await openConceptLabPage.subscriptionTab().click();
   });
 
   await test.step('And I unsubscribe', async () => {
