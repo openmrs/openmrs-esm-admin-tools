@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DatePicker, DatePickerInput } from '@carbon/react';
-import { isEqual } from 'lodash-es';
 import styles from './simple-cron-editor.scss';
 
 interface CronDatePickerProps {
@@ -23,26 +22,22 @@ const CronDatePicker: React.FC<CronDatePickerProps> = ({ value, onChange }) => {
   });
 
   const validate = useCallback(() => {
-    if (!(valueInternal instanceof Date)) {
-      setValidationState({ invalid: true, invalidText: t('dateRequired', 'Required') });
-    } else {
+    if (valueInternal instanceof Date) {
       setValidationState({ invalid: false, invalidText: null });
+      onChange(valueInternal);
+    } else {
+      setValidationState({ invalid: true, invalidText: t('dateRequired', 'Required') });
+      onChange(null);
     }
-  }, [t, valueInternal]);
+  }, [t, valueInternal, onChange]);
 
   useEffect(() => {
-    if (!isEqual(value, valueInternal)) {
-      setValueInternal(value);
-    }
-  }, [value, valueInternal]);
+    setValueInternal(value);
+  }, [value]);
 
   useEffect(() => {
     validate();
   }, [validate, valueInternal]);
-
-  useEffect(() => {
-    onChange(validationState.invalid ? null : valueInternal);
-  }, [onChange, validationState, valueInternal]);
 
   return (
     <div>

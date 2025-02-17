@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Select, SelectItem } from '@carbon/react';
-import { isEqual } from 'lodash-es';
 import { type CronField, DAYS_OF_MONTH, DAYS_OF_MONTH_DEFAULT_LABELS } from './commons';
 
 interface CronDayOfMonthSelectProps {
@@ -26,24 +25,20 @@ const CronDayOfMonthSelect: React.FC<CronDayOfMonthSelectProps> = ({ value, onCh
   const validate = useCallback(() => {
     if (!!valueInternal) {
       setValidationState({ invalid: false, invalidText: null });
+      onChange(DAYS_OF_MONTH.find((dayOfMonth) => dayOfMonth.value === valueInternal));
     } else {
       setValidationState({ invalid: true, invalidText: t('dayOfMonthRequired', 'Required') });
+      onChange(null);
     }
-  }, [t, valueInternal]);
+  }, [t, valueInternal, onChange]);
 
   useEffect(() => {
-    if (!isEqual(value, valueInternal)) {
-      setValueInternal(value?.value);
-    }
-  }, [value, valueInternal]);
+    setValueInternal(value?.value);
+  }, [value]);
 
   useEffect(() => {
     validate();
   }, [validate, valueInternal]);
-
-  useEffect(() => {
-    onChange(validationState.invalid ? null : DAYS_OF_MONTH.find((dayOfMonth) => dayOfMonth.value === valueInternal));
-  }, [onChange, validationState, valueInternal]);
 
   const translatedOptions = useMemo(
     () =>

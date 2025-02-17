@@ -100,7 +100,7 @@ function getEditorState(initialCron: string): EditorState {
     return {
       scheduleType,
       date: undefined,
-      selectedDayOfMonth: DAYS_OF_MONTH.find((dayOfMonth) => dayOfMonth.value === openMRSCron.day),
+      selectedDayOfMonth: DAYS_OF_MONTH.find((dayOfMonth) => dayOfMonth?.value === openMRSCron.day),
       selectedDaysOfWeek: [],
       time: { hours: parseInt(openMRSCron.hours), minutes: parseInt(openMRSCron.minutes) },
       cron: null,
@@ -202,26 +202,26 @@ const SimpleCronEditor: React.FC<SimpleCronEditorProps> = ({ initialCron, onChan
       setCron(editorState.cron);
     } else if (selectedScheduleType === ST_ONCE) {
       setCron(
-        `0 ${selectedTime.minutes} ${selectedTime.hours} ${editorState.date.getUTCDate()} ${
-          editorState.date.getUTCMonth() + 1
-        } ? ${editorState.date.getUTCFullYear()}`,
+        `0 ${selectedTime.minutes} ${selectedTime.hours} ${editorState.date.getDate()} ${
+          editorState.date.getMonth() + 1
+        } ? ${editorState.date.getFullYear()}`,
       );
     } else if (selectedScheduleType === ST_EVERY_DAY) {
       setCron(`0 ${selectedTime.minutes} ${selectedTime.hours} * * ?`);
     } else if (selectedScheduleType === ST_EVERY_WEEK) {
       setCron(
         `0 ${selectedTime.minutes} ${selectedTime.hours} ? * ${editorState.selectedDaysOfWeek.map(
-          (dayOfWeek) => dayOfWeek.value,
+          (dayOfWeek) => dayOfWeek?.value,
         )}`,
       );
     } else if (selectedScheduleType === ST_EVERY_MONTH) {
-      setCron(`0 ${selectedTime.minutes} ${selectedTime.hours} ${editorState.selectedDayOfMonth.value} * ?`);
+      setCron(`0 ${selectedTime.minutes} ${selectedTime.hours} ${editorState.selectedDayOfMonth?.value} * ?`);
     }
   }, [
     editorState.cron,
     editorState.date,
     editorState.scheduleType,
-    editorState.selectedDayOfMonth.value,
+    editorState.selectedDayOfMonth?.value,
     editorState.selectedDaysOfWeek,
     editorState.time,
     validateEditor,
@@ -267,49 +267,53 @@ const SimpleCronEditor: React.FC<SimpleCronEditorProps> = ({ initialCron, onChan
     );
   }, [editorState.scheduleType, initialScheduleType, t]);
 
+  const handleDateChange = useCallback((selectedDate: Date | null) => {
+    setEditorState((state) => ({ ...state, date: selectedDate }));
+  }, []);
+
   const renderDatePicker = useCallback(() => {
     return (
       <div className={styles.cronEditorField}>
-        <CronDatePicker
-          onChange={(selectedDate) => setEditorState((state) => ({ ...state, date: selectedDate }))}
-          value={editorState.date}
-        />
+        <CronDatePicker value={editorState.date} onChange={handleDateChange} />
       </div>
     );
-  }, [editorState.date]);
+  }, [editorState.date, handleDateChange]);
+
+  const handleDayOfWeekChange = useCallback((selectedDaysOfWeek: CronField[]) => {
+    setEditorState((state) => ({ ...state, selectedDaysOfWeek }));
+  }, []);
 
   const renderDayOfWeekSelect = useCallback(() => {
     return (
       <div className={styles.cronEditorField}>
-        <CronDayOfWeekSelect
-          onChange={(selectedDaysOfWeek) => setEditorState((state) => ({ ...state, selectedDaysOfWeek }))}
-          value={editorState.selectedDaysOfWeek}
-        />
+        <CronDayOfWeekSelect value={editorState.selectedDaysOfWeek} onChange={handleDayOfWeekChange} />
       </div>
     );
-  }, [editorState.selectedDaysOfWeek]);
+  }, [editorState.selectedDaysOfWeek, handleDayOfWeekChange]);
+
+  const handleTimeChange = useCallback((time: Time | null) => {
+    setEditorState((state) => ({ ...state, time }));
+  }, []);
 
   const renderTimePicker = useCallback(() => {
     return (
       <div className={styles.cronTimePickerField}>
-        <CronTimePicker
-          onChange={(selectedTime) => setEditorState((state) => ({ ...state, time: selectedTime }))}
-          value={editorState.time}
-        />
+        <CronTimePicker value={editorState.time} onChange={handleTimeChange} />
       </div>
     );
-  }, [editorState.time]);
+  }, [editorState.time, handleTimeChange]);
+
+  const handleDayOfMonthChange = useCallback((selectedDayOfMonth: CronField | null) => {
+    setEditorState((state) => ({ ...state, selectedDayOfMonth }));
+  }, []);
 
   const renderDayOfMonthSelect = useCallback(() => {
     return (
       <div className={styles.cronEditorField}>
-        <CronDayOfMonthSelect
-          onChange={(selectedDayOfMonth) => setEditorState((state) => ({ ...state, selectedDayOfMonth }))}
-          value={editorState.selectedDayOfMonth}
-        />
+        <CronDayOfMonthSelect value={editorState.selectedDayOfMonth} onChange={handleDayOfMonthChange} />
       </div>
     );
-  }, [editorState.selectedDayOfMonth]);
+  }, [editorState.selectedDayOfMonth, handleDayOfMonthChange]);
 
   const renderCronInput = useCallback(() => {
     return (

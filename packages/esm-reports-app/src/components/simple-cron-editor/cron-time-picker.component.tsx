@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { TimePicker } from '@carbon/react';
 import { parseTime, TIME_PATTERN, TIME_PATTERN_REG_EXP, to24HTime, type Time } from '../../utils/time-utils';
-import { isEqual } from 'lodash-es';
 import { useTranslation } from 'react-i18next';
 
 interface CronTimePickerProps {
@@ -26,21 +25,17 @@ const CronTimePicker: React.FC<CronTimePickerProps> = ({ value, onChange }) => {
   const validate = useCallback(() => {
     if (TIME_PATTERN_REG_EXP.test(valueInternal)) {
       setValidationState({ invalid: false, invalidText: null });
+      onChange(parseTime(valueInternal));
     } else {
       setValidationState({ invalid: true, invalidText: t('notATimeText', 'hh:mm 24-hr pattern required') });
+      onChange(null);
     }
-  }, [t, valueInternal]);
+  }, [t, valueInternal, onChange]);
 
   useEffect(() => {
     const newInternalValue = to24HTime(value);
-    if (!isEqual(value, newInternalValue)) {
-      setValueInternal(newInternalValue);
-    }
+    setValueInternal(newInternalValue);
   }, [value]);
-
-  useEffect(() => {
-    onChange(validationState.invalid ? null : parseTime(valueInternal));
-  }, [onChange, validationState, valueInternal]);
 
   return (
     <TimePicker
