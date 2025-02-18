@@ -15,8 +15,4 @@ export class OpenConceptLabPage {
   async startImport() {
     await this.page.getByRole('button', { name: 'Import from Subscription' }).click();
   }
-
-  async unsubscribe() {
-    await this.page.getByRole('button', { name: 'Unsubscribe' }).click();
-  }
 }
