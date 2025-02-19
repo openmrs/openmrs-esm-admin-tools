@@ -31,24 +31,24 @@ test('Setup a subscription and import concepts', async ({ page }) => {
   });
 
   await test.step('And I click the Import tab', async () => {
-    await openConceptLabPage.importTab().click();
+    await openConceptLabPage.page.getByRole('tab', { name: 'Import', exact: true }).click();
   });
 
   await test.step('And I click the Import from Subscription button', async () => {
-    await openConceptLabPage.startImport();
+    await openConceptLabPage.page.getByRole('button', { name: 'Import from Subscription' }).click();
   });
 
   await test.step('And I refresh the page and go to the previous imports tab', async () => {
     await openConceptLabPage.goto();
-    await openConceptLabPage.previousImportsTab().click();
+    await openConceptLabPage.page.getByRole('tab', { name: 'Previous Imports' }).click();
   });
 
   await test.step('Then I should see the previous imports', async () => {
-    await expect(openConceptLabPage.previousImportsTable()).toHaveText(/\d+ items fetched/);
+    await expect(openConceptLabPage.page.getByRole('table')).toHaveText(/\d+ items fetched/);
   });
 
   await test.step('And I click the Subscription Tab', async () => {
-    await openConceptLabPage.subscriptionTab().click();
+    await openConceptLabPage.page.getByRole('tab', { name: 'Subscription' }).click();
   });
 
   await test.step('And I unsubscribe', async () => {
