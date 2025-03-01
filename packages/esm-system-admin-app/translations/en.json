@@ -1,5 +1,23 @@
 {
+  "atLeastOneDigit": "At least one digit",
+  "atLeastOneLowercase": "At least one Lowercase",
+  "atLeastOneUppercase": "At least one Uppercase",
+  "cancel": "Cancel",
+  "changePassword": "Change Password",
   "config": "Configurations",
+  "confirmPassword": "Confirm Password",
+  "confirmPasswordMustBeTheSameAsNew": "Confirm password must be the same as new",
+  "invalidPasswordCredentials": "",
   "legacyAdmin": "Legacy Admin",
   "systemAdmin": "System Administration"
+  "minimum8Characters": "Minimum 8 characters",
+  "newPassword": "New Password",
+  "newPasswordMustNotBeTheSameAsOld": "New password must not be the same as password",
+  "oldPassword": "Old Password",
+  "oldPasswordMustNotBeTheSameAsNew": "Old password must not be the same as new",
+  "passwordIsEmpty": "Password is empty",
+  "systemAdmin": "System Administration",
+  "updatePassword": "Update Password",
+  "userPassword": "User password",
+  "userPasswordUpdated": "User password updated successfully"
 }

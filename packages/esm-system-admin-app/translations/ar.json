@@ -1,5 +1,23 @@
 {
+  "atLeastOneDigit": "رقم واحد على الأقل",
+  "atLeastOneLowercase": "حرف صغير واحد على الأقل",
+  "atLeastOneUppercase": "حرف كبير واحد على الأقل",
+  "cancel": "يلغي",
+  "changePassword": "تغيير كلمة المرور",
   "config": "الإعدادات",
+  "confirmPassword": "تأكيد كلمة المرور",
+  "confirmPasswordMustBeTheSameAsNew": "تأكيد كلمة المرور يجب أن تكون هي نفسها الجديدة",
+  "invalidPasswordCredentials": "",
   "legacyAdmin": "إدارة النظام القديم",
   "systemAdmin": "إدارة النظام"
+  "minimum8Characters": "الحد الأدنى 8 أحرف",
+  "newPassword": "كلمة المرور الجديدة",
+  "newPasswordMustNotBeTheSameAsOld": "كلمة المرور الجديدة يجب ألا تكون نفس كلمة المرور",
+  "oldPassword": "كلمة المرور القديمة",
+  "oldPasswordMustNotBeTheSameAsNew": "يجب ألا تكون كلمة المرور القديمة هي نفس كلمة المرور الجديدة",
+  "passwordIsEmpty": "كلمة المرور فارغة",
+  "systemAdmin": "إدارة النظام",
+  "updatePassword": "تطوير كلمة السر",
+  "userPassword": "كلمة مرور المستخدم",
+  "userPasswordUpdated": "تم تحديث كلمة مرور المستخدم بنجاح"
 }
