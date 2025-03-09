@@ -7,6 +7,7 @@ import { showSnackbar, useLayoutType } from '@openmrs/esm-framework';
 import { closeOverlay } from '../../hooks/useOverlay';
 import { useLocations, useReportDefinitions, useReportDesigns, runReportObservable } from '../reports.resource';
 import styles from './run-report-form.scss';
+import dayjs from 'dayjs';
 
 interface RunReportForm {
   closePanel: () => void;
@@ -59,7 +60,7 @@ const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
               datePickerType="single"
               name={parameter.name}
               onChange={([date]) => handleOnDateChange(parameter.name, date)}
-              dateFormat="Y-m-d"
+              dateFormat="d/m/Y"
               className={styles.datePicker}
             >
               <DatePickerInput id={parameter.name} name={parameter.name} labelText={parameter.label} type="date" />
@@ -124,7 +125,7 @@ const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
   }
 
   function handleOnDateChange(fieldName, dateValue) {
-    const date = new Date(dateValue).toLocaleDateString();
+    const date = dayjs(dateValue).format();
     setReportParameters((state) => ({ ...state, [fieldName]: date }));
   }
 
