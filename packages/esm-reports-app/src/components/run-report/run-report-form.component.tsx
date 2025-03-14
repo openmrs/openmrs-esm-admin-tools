@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { take } from 'rxjs/operators';
 import { useTranslation } from 'react-i18next';
 import { Button, ButtonSet, DatePicker, DatePickerInput, Form, Select, SelectItem, TextInput } from '@carbon/react';
-import { showSnackbar, useLayoutType } from '@openmrs/esm-framework';
+import { formatDate, showSnackbar, toOmrsDateFormat, toOmrsIsoString, useLayoutType } from '@openmrs/esm-framework';
 import { closeOverlay } from '../../hooks/useOverlay';
 import { useLocations, useReportDefinitions, useReportDesigns, runReportObservable } from '../reports.resource';
 import styles from './run-report-form.scss';
@@ -59,16 +59,9 @@ const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
               datePickerType="single"
               name={parameter.name}
               onChange={([date]) => handleOnDateChange(parameter.name, date)}
-              dateFormat="Y-m-d"
               className={styles.datePicker}
             >
-              <DatePickerInput
-                id={parameter.name}
-                name={parameter.name}
-                labelText={parameter.label}
-                type="text"
-                pattern="\d{4}-\d{2}-\d{2}"
-              />
+              <DatePickerInput id={parameter.name} name={parameter.name} labelText={parameter.label} type="date" />
             </DatePicker>
           </div>
         );
@@ -130,17 +123,8 @@ const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
   }
 
   function handleOnDateChange(fieldName, dateValue) {
-    const formattedDate = formatLocalDateToString(dateValue);
+    const formattedDate = toOmrsIsoString(dateValue, false).split('T')[0];
     setReportParameters((state) => ({ ...state, [fieldName]: formattedDate }));
-  }
-
-  function formatLocalDateToString(dateValue) {
-    const date = new Date(dateValue);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-
-    return `${year}-${month}-${day}`;
   }
 
   const handleSubmit = useCallback(
