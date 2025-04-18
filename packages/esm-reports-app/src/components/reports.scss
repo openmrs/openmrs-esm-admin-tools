@@ -70,11 +70,11 @@
 }
 
 .rowCellEven {
-  background-color: #FFFFFF !important;
+  background-color: #ffffff !important;
 }
 
 .rowCellOdd {
-  background-color: #F4F4F4 !important;
+  background-color: #f4f4f4 !important;
 }
 
 .scheduledStatusText {
@@ -87,4 +87,82 @@
 
 .notScheduledStatusText {
   color: red;
+}
+
+.filterForm {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background-color: #f4f4f4;
+  border-radius: 0.25rem;
+
+  .formField {
+    flex: 1;
+    min-width: 12.5rem;
+    max-width: 18.75rem;
+    position: relative;
+
+    .cds--date-picker {
+      width: 100%;
+    }
+
+    .cds--select {
+      width: 100%;
+    }
+
+    .cds--select-input {
+      width: 100%;
+    }
+
+    .cds--date-picker__input {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 48rem) {
+    flex-direction: column;
+    align-items: stretch;
+
+    .formField {
+      max-width: 100%;
+    }
+  }
+}
+
+.reportDataViewer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: var(--cds-background);
+}
+
+.reportDataViewerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid var(--cds-border-subtle);
+}
+
+.reportDataViewerContent {
+  flex: 1;
+  overflow: auto;
+  padding: 1rem;
+}
+
+.reportDataViewerContainer {
+  margin: 1rem 0;
+  border: 1px solid var(--cds-border-subtle);
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+
+.emptyTableMessage {
+  text-align: center;
+  padding: 2rem;
+  color: var(--cds-text-secondary);
 }

@@ -17,17 +17,31 @@ export function startupApp() {
     },
     {
       path: `${window.spaBase}/system-administration`,
-      title: () => Promise.resolve(window.i18next.t('systemAdmin', 'System Administration')),
+      title: () =>
+        Promise.resolve(
+          window.i18next.t('systemAdmin', { ns: '@openmrs/esm-reports-app', default: 'System Administration' }),
+        ),
       parent: `${window.spaBase}/home`,
     },
     {
-      title: () => Promise.resolve(window.i18next.t('reports', 'Reports')),
+      title: () => Promise.resolve(window.i18next.t('reports', { ns: '@openmrs/esm-reports-app', default: 'Reports' })),
       path: `${window.spaBase}/reports`,
       parent: `${window.spaBase}/system-administration`,
     },
     {
-      title: () => Promise.resolve(window.i18next.t('scheduledReports', 'Scheduled Reports')),
+      title: () =>
+        Promise.resolve(
+          window.i18next.t('scheduledReports', { ns: '@openmrs/esm-reports-app', default: 'Scheduled Reports' }),
+        ),
       path: `${window.spaBase}/reports/scheduled-overview`,
+      parent: `${window.spaBase}/reports`,
+    },
+    {
+      title: () =>
+        Promise.resolve(
+          window.i18next.t('reportsDataOverview', { ns: '@openmrs/esm-reports-app', default: 'Reports Data Overview' }),
+        ),
+      path: `${window.spaBase}/reports/reports-data-overview`,
       parent: `${window.spaBase}/reports`,
     },
   ]);

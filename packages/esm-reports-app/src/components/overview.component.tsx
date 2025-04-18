@@ -270,6 +270,15 @@ const OverviewComponent: React.FC = () => {
           >
             {t('reportSchedule', 'Report schedule')}
           </Button>
+          <Button
+            className={styles.mainActionButton}
+            iconDescription="Report schedule"
+            kind="ghost"
+            onClick={() => navigate({ to: `\${openmrsSpaBase}/reports/reports-data-overview` })}
+            renderIcon={() => <Calendar size={16} style={{ fill: '#0F62FE' }} className={styles.actionButtonIcon} />}
+          >
+            {t('viewReports', 'View Reports')}
+          </Button>
         </div>
       </div>
       <DataTable rows={reports} headers={tableHeaders} isSortable>

@@ -6,6 +6,8 @@ import type { ReportDefinition } from '../types/report-definition';
 import type { ReportDesign } from '../types/report-design';
 import type { ReportRequest } from '../types/report-request';
 import dayjs from 'dayjs';
+import { useTranslation } from 'react-i18next';
+import { useState, useMemo, useEffect } from 'react';
 
 interface ReportModel {
   reportName: string;
@@ -39,7 +41,7 @@ export function useLocations() {
 
 export function useReports(statuses: string, pageNumber: number, pageSize: number, sortBy?: string): any {
   const reportsUrl =
-    `/ws/rest/v1/reportingrest/reportRequest?status=${statuses}&startIndex=${pageNumber}&limit=${pageSize}&totalCount=true` +
+    `/ws/rest/v1/reportingrest/reportDefinition?status=${statuses}&startIndex=${pageNumber}&limit=${pageSize}&totalCount=true` +
     (sortBy ? `&sortBy=${sortBy}` : '');
 
   const { data, error, isValidating, mutate } = useSWR<{ data: { results: Array<any>; totalCount: number } }, Error>(
@@ -221,4 +223,56 @@ function convertParametersToString(data: any): string {
   }
 
   return finalString;
+}
+
+export function useReportData(reportUuid: string, parameters: Record<string, string>) {
+  const { t } = useTranslation();
+  const [shouldFetch, setShouldFetch] = useState(false);
+  const [lastReportUuid, setLastReportUuid] = useState('');
+
+  // Reset shouldFetch when reportUuid changes
+  useEffect(() => {
+    if (reportUuid !== lastReportUuid) {
+      setShouldFetch(false);
+      setLastReportUuid(reportUuid);
+    }
+  }, [reportUuid, lastReportUuid]);
+
+  // Only fetch when shouldFetch is true and we have a reportUuid
+  const { data, error, isLoading, mutate } = useSWR(
+    shouldFetch && reportUuid ? ['reportData', reportUuid, parameters] : null,
+    async () => {
+      if (!reportUuid) return null;
+
+      // Build query string only if we have parameters
+      let url = `/ws/rest/v1/reportingrest/reportdata/${reportUuid}`;
+      if (Object.keys(parameters).length > 0) {
+        const queryParams = new URLSearchParams();
+        Object.entries(parameters).forEach(([key, value]) => {
+          if (value) {
+            queryParams.append(key, value);
+          }
+        });
+        url += `?${queryParams.toString()}`;
+      }
+
+      const response = await openmrsFetch(url);
+      return response.data;
+    },
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      shouldRetryOnError: false,
+    },
+  );
+
+  return {
+    reportData: data,
+    error,
+    isLoading,
+    mutate: () => {
+      setShouldFetch(true);
+      mutate();
+    },
+  };
 }
