@@ -141,17 +141,15 @@ const ReportDataViewer: React.FC<ReportDataViewerProps> = ({ reportData }) => {
   return (
     <div className={styles.reportDataViewer}>
       <div className={styles.reportDataViewerHeader}>
-        <h3>
-          {reportData?.definition?.name || t('reportData', { ns: '@openmrs/esm-reports-app', default: 'Report Data' })}
-        </h3>
+        <h3>{reportData?.definition?.name || t('reportData', 'Report Data')}</h3>
         <Button
           kind="ghost"
           size="sm"
           renderIcon={Download}
-          iconDescription={t('exportCSV', { ns: '@openmrs/esm-reports-app', default: 'Export CSV' })}
+          iconDescription={t('exportCSV', 'Export CSV')}
           onClick={() => setShowExportModal(true)}
         >
-          {t('exportCSV', { ns: '@openmrs/esm-reports-app', default: 'Export CSV' })}
+          {t('exportCSV', 'Export CSV')}
         </Button>
       </div>
       <div className={styles.reportDataViewerContent}>
@@ -178,7 +176,7 @@ const ReportDataViewer: React.FC<ReportDataViewerProps> = ({ reportData }) => {
                   ) : (
                     <TableRow>
                       <TableCell colSpan={headers.length} className={styles.emptyTableMessage}>
-                        {t('noDataAvailable', { ns: '@openmrs/esm-reports-app', default: 'No data available' })}
+                        {t('noDataAvailable', 'No data available')}
                       </TableCell>
                     </TableRow>
                   )}
@@ -188,8 +186,8 @@ const ReportDataViewer: React.FC<ReportDataViewerProps> = ({ reportData }) => {
           )}
         </DataTable>
         <Pagination
-          backwardText={t('previousPage', { ns: '@openmrs/esm-reports-app', default: 'Previous page' })}
-          forwardText={t('nextPage', { ns: '@openmrs/esm-reports-app', default: 'Next page' })}
+          backwardText={t('previousPage', 'Previous page')}
+          forwardText={t('nextPage', 'Next page')}
           page={currentPage}
           pageSize={pageSize}
           pageSizes={DEFAULT_PAGE_SIZES}
@@ -209,13 +207,13 @@ const ReportDataViewer: React.FC<ReportDataViewerProps> = ({ reportData }) => {
 
       <Modal
         open={showExportModal}
-        modalHeading={t('selectColumns', { ns: '@openmrs/esm-reports-app', default: 'Select Columns to Export' })}
-        primaryButtonText={t('export', { ns: '@openmrs/esm-reports-app', default: 'Export' })}
+        modalHeading={t('selectColumns', 'Select Columns to Export')}
+        primaryButtonText={t('export', 'Export')}
         secondaryButtonText={getCoreTranslation('cancel')}
         onRequestClose={() => setShowExportModal(false)}
         onRequestSubmit={exportToCSV}
       >
-        <FormGroup legendText={t('availableColumns', { ns: '@openmrs/esm-reports-app', default: 'Available Columns' })}>
+        <FormGroup legendText={t('availableColumns', 'Available Columns')}>
           {columns.map((column) => (
             <Checkbox
               key={column.name}

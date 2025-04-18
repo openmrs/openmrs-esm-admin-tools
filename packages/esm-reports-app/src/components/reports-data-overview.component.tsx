@@ -43,7 +43,7 @@ const ReportsDataOverviewComponent: React.FC = () => {
       showSnackbar({
         kind: 'error',
         title: getCoreTranslation('error'),
-        subtitle: t('selectReportFirst', { ns: '@openmrs/esm-reports-app', default: 'Please select a report first' }),
+        subtitle: t('selectReportFirst', 'Please select a report first'),
       });
       return;
     }
@@ -61,9 +61,7 @@ const ReportsDataOverviewComponent: React.FC = () => {
         showSnackbar({
           kind: 'error',
           title: getCoreTranslation('error'),
-          subtitle: t('missingParameters', {
-            ns: '@openmrs/esm-reports-app',
-            default: 'Please provide the following parameters: {parameters}',
+          subtitle: t('missingParameters', 'Please provide the following parameters: {parameters}', {
             parameters: missingParameters.join(', '),
           }),
         });
@@ -81,9 +79,7 @@ const ReportsDataOverviewComponent: React.FC = () => {
       showSnackbar({
         kind: 'error',
         title: getCoreTranslation('error'),
-        subtitle:
-          error?.message ||
-          t('errorFetchingReport', { ns: '@openmrs/esm-reports-app', default: 'Error fetching report' }),
+        subtitle: error?.message || t('errorFetchingReport', 'Error fetching report'),
       });
     }
   }, [error, t]);
@@ -92,7 +88,7 @@ const ReportsDataOverviewComponent: React.FC = () => {
     if (reportData) {
       showSnackbar({
         kind: 'success',
-        title: t('reportFetched', { ns: '@openmrs/esm-reports-app', default: 'Report fetched successfully' }),
+        title: t('reportFetched', 'Report fetched successfully'),
       });
     }
   }, [reportData, t]);
@@ -102,20 +98,17 @@ const ReportsDataOverviewComponent: React.FC = () => {
       <ExtensionSlot name="breadcrumbs-slot" className={styles.breadcrumb} />
       <div className={styles.mainPanelDiv}>
         <div className={styles.reportsLabelDiv}>
-          <h3>{t('reports', { ns: '@openmrs/esm-reports-app', default: 'Reports' })}</h3>
+          <h3>{t('reports', 'Reports')}</h3>
         </div>
         <div className={styles.filterForm}>
           <div className={styles.formField}>
             <Select
               id="report-select"
-              labelText={t('selectReport', { ns: '@openmrs/esm-reports-app', default: 'Select Report' })}
+              labelText={t('selectReport', 'Select Report')}
               value={selectedReport}
               onChange={handleReportChange}
             >
-              <SelectItem
-                text={t('selectReport', { ns: '@openmrs/esm-reports-app', default: 'Select Report' })}
-                value=""
-              />
+              <SelectItem text={t('selectReport', 'Select Report')} value="" />
               {reportDefinitions?.map((report) => (
                 <SelectItem key={report.uuid} text={report.name} value={report.uuid} />
               ))}
@@ -133,9 +126,7 @@ const ReportsDataOverviewComponent: React.FC = () => {
           ))}
           <div className={styles.formField}>
             <Button onClick={handleFetchReport} disabled={isLoading}>
-              {isLoading
-                ? getCoreTranslation('loading')
-                : t('fetchReport', { ns: '@openmrs/esm-reports-app', default: 'Fetch Report' })}
+              {isLoading ? getCoreTranslation('loading') : t('fetchReport', 'Fetch Report')}
             </Button>
           </div>
         </div>

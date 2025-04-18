@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { type ChangeEvent, useCallback, useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import {
@@ -96,7 +96,7 @@ const OverviewComponent: React.FC = () => {
         <td className={classNames({ [styles.rowCellEven]: index % 2 === 0, [styles.rowCellOdd]: index % 2 !== 0 })}>
           <Checkbox
             id={`checkbox-${row.id}`}
-            onChange={(e) => handleOnCheckboxClick(e)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => handleOnCheckboxClick(e)}
             checked={checkedReportUuidsArray.includes(row.id)}
           />
         </td>
@@ -231,7 +231,7 @@ const OverviewComponent: React.FC = () => {
         <div className={styles.mainActionButtonsDiv}>
           <Button
             kind="ghost"
-            renderIcon={() => <Download size={16} style={{ fill: '#0F62FE' }} className={styles.actionButtonIcon} />}
+            renderIcon={() => <Download size={16} className={styles.actionButtonIcon} />}
             iconDescription="Download reports"
             onClick={() => handleDownloadMultipleReports(checkedReportUuidsArray.join(','))}
             className={classNames(styles.mainActionButton, {
@@ -243,7 +243,7 @@ const OverviewComponent: React.FC = () => {
           </Button>
           <Button
             kind="ghost"
-            renderIcon={() => <Play size={16} style={{ fill: '#0F62FE' }} className={styles.actionButtonIcon} />}
+            renderIcon={() => <Play size={16} className={styles.actionButtonIcon} />}
             iconDescription="Run reports"
             onClick={() => {
               launchOverlay(
@@ -266,7 +266,7 @@ const OverviewComponent: React.FC = () => {
             iconDescription="Report schedule"
             kind="ghost"
             onClick={() => navigate({ to: `\${openmrsSpaBase}/reports/scheduled-overview` })}
-            renderIcon={() => <Calendar size={16} style={{ fill: '#0F62FE' }} className={styles.actionButtonIcon} />}
+            renderIcon={() => <Calendar size={16} className={styles.actionButtonIcon} />}
           >
             {t('reportSchedule', 'Report schedule')}
           </Button>
@@ -275,7 +275,7 @@ const OverviewComponent: React.FC = () => {
             iconDescription="Report schedule"
             kind="ghost"
             onClick={() => navigate({ to: `\${openmrsSpaBase}/reports/reports-data-overview` })}
-            renderIcon={() => <Calendar size={16} style={{ fill: '#0F62FE' }} className={styles.actionButtonIcon} />}
+            renderIcon={() => <Calendar size={16} className={styles.actionButtonIcon} />}
           >
             {t('viewReports', 'View Reports')}
           </Button>

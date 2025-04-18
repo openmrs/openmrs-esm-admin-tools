@@ -1,15 +1,14 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { spaBasePath } from './constants';
-import OverviewComponent from './components/overview.component';
 import ScheduledOverviewComponent from './components/scheduled-overview.component';
 import ReportsDataOverviewComponent from './components/reports-data-overview.component';
 import styles from './root.scss';
+import { basePath } from './constants';
 
 const RootComponent: React.FC = () => {
   return (
     <div className={styles.container}>
-      <BrowserRouter basename={spaBasePath}>
+      <BrowserRouter basename={`${window.getOpenmrsSpaBase().slice(0, -1)}${basePath}`}>
         <Routes>
           {/* TODO: OverviewComponent should be the default route, but is not working at the moment. We will rev */}
           {/* <Route path="/" element={<OverviewComponent />} /> */}
