@@ -48,6 +48,7 @@
   "peerDependencies": {
     "@openmrs/esm-framework": "*",
     "dayjs": "1.x",
+    "i18next": "*",
     "react": "18.x",
     "react-i18next": "11.x",
     "react-router-dom": "6.x",

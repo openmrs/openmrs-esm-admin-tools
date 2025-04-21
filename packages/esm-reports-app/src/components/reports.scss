@@ -1,6 +1,10 @@
+@use '@carbon/colors';
+@use '@carbon/layout';
+@use '@carbon/themes';
+
 .statusIcon {
-  margin-bottom: -2px;
-  margin-right: 5px;
+  margin-bottom: calc(-1 * layout.$spacing-01);
+  margin-right: layout.$spacing-02;
 }
 
 .failedIcon {
@@ -17,15 +21,16 @@
 
 .actionButon {
   padding-left: 0px;
+  fill: colors.$blue-60;
   color: inherit;
 }
 
 .actionButtonIcon {
-  margin-left: 5px;
+  margin-left: layout.$spacing-02;
 }
 
 .mainActionButton {
-  margin-top: 25px;
+  margin-top: layout.$spacing-06;
 }
 
 .mainPanelDiv {
@@ -48,8 +53,8 @@
 }
 
 .reportsLabelDiv {
-  margin-left: 20px;
-  padding-top: 20px;
+  margin-left: layout.$spacing-05;
+  padding-top: layout.$spacing-05;
 }
 
 .breadcrumbsSlot {
@@ -66,25 +71,103 @@
 }
 
 .breadcrumb {
-  margin-top: -30px;
+  margin-top: calc(-1 * layout.$spacing-07);
 }
 
 .rowCellEven {
-  background-color: #FFFFFF !important;
+  background-color: colors.$white !important;
 }
 
 .rowCellOdd {
-  background-color: #F4F4F4 !important;
+  background-color: colors.$gray-10 !important;
 }
 
 .scheduledStatusText {
-  color: green;
+  color: themes.$support-success;
 }
 
 .scheduleCompletedStatusText {
-  color: red;
+  color: themes.$support-error;
 }
 
 .notScheduledStatusText {
-  color: red;
+  color: themes.$support-error;
+}
+
+.filterForm {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: layout.$spacing-05;
+  margin-bottom: layout.$spacing-05;
+  padding: layout.$spacing-05;
+  background-color: colors.$gray-10;
+  border-radius: layout.$spacing-02;
+
+  .formField {
+    flex: 1;
+    min-width: 12.5rem;
+    max-width: 18.75rem;
+    position: relative;
+
+    .cds--date-picker {
+      width: 100%;
+    }
+
+    .cds--select {
+      width: 100%;
+    }
+
+    .cds--select-input {
+      width: 100%;
+    }
+
+    .cds--date-picker__input {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 48rem) {
+    flex-direction: column;
+    align-items: stretch;
+
+    .formField {
+      max-width: 100%;
+    }
+  }
+}
+
+.reportDataViewer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: var(--cds-background);
+}
+
+.reportDataViewerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: layout.$spacing-05;
+  border-bottom: 1px solid var(--cds-border-subtle);
+}
+
+.reportDataViewerContent {
+  flex: 1;
+  overflow: auto;
+  padding: layout.$spacing-05;
+}
+
+.reportDataViewerContainer {
+  margin: layout.$spacing-05 0;
+  border: 1px solid var(--cds-border-subtle);
+  border-radius: layout.$spacing-02;
+  overflow: hidden;
+}
+
+.emptyTableMessage {
+  text-align: center;
+  padding: layout.$spacing-07;
+  color: var(--cds-text-secondary);
 }

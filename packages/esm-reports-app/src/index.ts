@@ -1,6 +1,6 @@
 import { getAsyncLifecycle, registerBreadcrumbs } from '@openmrs/esm-framework';
-
-const moduleName = '@openmrs/esm-reports-app';
+import { getFixedT } from 'i18next';
+import { basePath, moduleName } from './constants';
 
 const options = {
   featureName: 'reports',
@@ -10,25 +10,32 @@ const options = {
 export const importTranslation = require.context('../translations', false, /.json$/, 'lazy');
 
 export function startupApp() {
+  const t = getFixedT(undefined, moduleName);
+
   registerBreadcrumbs([
     {
       title: 'Home',
-      path: `${window.openmrsBase}`,
+      path: `${window.getOpenmrsSpaBase().slice(0, -1)}${basePath}`,
     },
     {
-      path: `${window.spaBase}/system-administration`,
-      title: () => Promise.resolve(window.i18next.t('systemAdmin', 'System Administration')),
-      parent: `${window.spaBase}/home`,
+      path: `${window.getOpenmrsSpaBase()}system-administration`,
+      title: () => Promise.resolve(t('systemAdmin', 'System Administration')),
+      parent: `${window.getOpenmrsSpaBase()}home`,
     },
     {
-      title: () => Promise.resolve(window.i18next.t('reports', 'Reports')),
-      path: `${window.spaBase}/reports`,
-      parent: `${window.spaBase}/system-administration`,
+      title: () => Promise.resolve(t('reports', 'Reports')),
+      path: `${window.getOpenmrsSpaBase()}reports`,
+      parent: `${window.getOpenmrsSpaBase()}system-administration`,
     },
     {
-      title: () => Promise.resolve(window.i18next.t('scheduledReports', 'Scheduled Reports')),
-      path: `${window.spaBase}/reports/scheduled-overview`,
-      parent: `${window.spaBase}/reports`,
+      title: () => Promise.resolve(t('scheduledReports', 'Scheduled Reports')),
+      path: `${window.getOpenmrsSpaBase()}reports/scheduled-overview`,
+      parent: `${window.getOpenmrsSpaBase()}reports`,
+    },
+    {
+      title: () => Promise.resolve(t('reportsDataOverview', 'Reports Data Overview')),
+      path: `${window.getOpenmrsSpaBase()}reports/reports-data-overview`,
+      parent: `${window.getOpenmrsSpaBase()}reports`,
     },
   ]);
 }

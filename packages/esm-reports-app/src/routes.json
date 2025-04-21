@@ -29,6 +29,10 @@
     {
       "component": "scheduled-overview",
       "route": "scheduled-overview"
+    },
+    {
+      "component": "reports-data-overview",
+      "route": "reports-data-overview"
     }
   ],
   "modals": [
