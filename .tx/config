@@ -1,0 +1,29 @@
+[main]
+host = https://app.transifex.com
+
+[o:openmrs:p:openmrs3:r:esm-admin-openconceptlab-app]
+file_filter            = packages/esm-admin-openconceptlab-app/translations/<lang>.json
+source_file            = packages/esm-admin-openconceptlab-app/translations/en.json
+source_lang            = en
+type                   = KEYVALUEJSON
+replace_edited_strings = false
+keep_translations      = false
+resource_name          = esm-admin-openconceptlab-app
+
+[o:openmrs:p:openmrs3:r:esm-reports-app]
+file_filter            = packages/esm-reports-app/translations/<lang>.json
+source_file            = packages/esm-reports-app/translations/en.json
+source_lang            = en
+type                   = KEYVALUEJSON
+replace_edited_strings = false
+keep_translations      = false
+resource_name          = esm-reports-app
+
+[o:openmrs:p:openmrs3:r:esm-system-admin-app]
+file_filter            = packages/esm-system-admin-app/translations/<lang>.json
+source_file            = packages/esm-system-admin-app/translations/en.json
+source_lang            = en
+type                   = KEYVALUEJSON
+replace_edited_strings = false
+keep_translations      = false
+resource_name          = esm-system-admin-app
