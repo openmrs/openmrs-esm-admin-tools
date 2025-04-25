@@ -277,7 +277,7 @@ const OverviewComponent: React.FC = () => {
             onClick={() => navigate({ to: `\${openmrsSpaBase}/reports/reports-data-overview` })}
             renderIcon={() => <Calendar size={16} className={styles.actionButtonIcon} />}
           >
-            {t('viewReports', 'View Reports')}
+            {t('viewReports', 'Reports Webview')}
           </Button>
         </div>
       </div>

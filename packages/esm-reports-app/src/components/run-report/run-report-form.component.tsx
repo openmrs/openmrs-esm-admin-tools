@@ -2,8 +2,8 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import classNames from 'classnames';
 import { take } from 'rxjs/operators';
 import { useTranslation } from 'react-i18next';
-import { Button, ButtonSet, DatePicker, DatePickerInput, Form, Select, SelectItem, TextInput } from '@carbon/react';
-import { showSnackbar, useLayoutType } from '@openmrs/esm-framework';
+import { Button, ButtonSet, Form, Select, SelectItem, TextInput } from '@carbon/react';
+import { showSnackbar, useLayoutType, OpenmrsDatePicker } from '@openmrs/esm-framework';
 import { closeOverlay } from '../../hooks/useOverlay';
 import { useLocations, useReportDefinitions, useReportDesigns, runReportObservable } from '../reports.resource';
 import styles from './run-report-form.scss';
@@ -54,22 +54,19 @@ const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
     switch (parameter.type) {
       case 'java.util.Date':
         return (
-          <div className={styles.runReportInnerDivElement}>
-            <DatePicker
-              datePickerType="single"
-              name={parameter.name}
-              onChange={([date]) => handleOnDateChange(parameter.name, date)}
-              dateFormat="Y-m-d"
-              className={styles.datePicker}
-            >
-              <DatePickerInput id={parameter.name} name={parameter.name} labelText={parameter.label} type="date" />
-            </DatePicker>
+          <div key={`${reportUuid}-${parameter.name}`} className={styles.runReportInnerDivElement}>
+            <OpenmrsDatePicker
+              id={parameter.name}
+              labelText={parameter.label}
+              onChange={(date) => handleOnDateChange(parameter.name, date)}
+              value={reportParameters[parameter.name]}
+            />
           </div>
         );
       case 'java.lang.String':
       case 'java.lang.Integer':
         return (
-          <div className={styles.runReportInnerDivElement}>
+          <div key={`${reportUuid}-${parameter.name}`} className={styles.runReportInnerDivElement}>
             <TextInput
               id={parameter.name}
               name={parameter.name}
@@ -82,7 +79,7 @@ const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
         );
       case 'org.openmrs.Location':
         return (
-          <div className={styles.runReportInnerDivElement}>
+          <div key={`${reportUuid}-${parameter.name}`} className={styles.runReportInnerDivElement}>
             <Select
               id={parameter.name}
               name={parameter.name}
@@ -102,7 +99,7 @@ const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
         );
       default:
         return (
-          <div className={styles.runReportInnerDivElement}>
+          <div key={`${reportUuid}-${parameter.name}`} className={styles.runReportInnerDivElement}>
             <span className={styles.unknownParameterTypeSpan}>
               {`Unknown parameter type: ${parameter.type} for parameter: ${parameter.label}`}
             </span>
@@ -124,8 +121,7 @@ const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
   }
 
   function handleOnDateChange(fieldName, dateValue) {
-    const date = new Date(dateValue).toLocaleDateString();
-    setReportParameters((state) => ({ ...state, [fieldName]: date }));
+    setReportParameters((state) => ({ ...state, [fieldName]: dateValue }));
   }
 
   const handleSubmit = useCallback(

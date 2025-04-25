@@ -41,7 +41,7 @@ export function useLocations() {
 
 export function useReports(statuses: string, pageNumber: number, pageSize: number, sortBy?: string): any {
   const reportsUrl =
-    `/ws/rest/v1/reportingrest/reportDefinition?status=${statuses}&startIndex=${pageNumber}&limit=${pageSize}&totalCount=true` +
+    `/ws/rest/v1/reportingrest/reportRequest?status=${statuses}&startIndex=${pageNumber}&limit=${pageSize}&totalCount=true` +
     (sortBy ? `&sortBy=${sortBy}` : '');
 
   const { data, error, isValidating, mutate } = useSWR<{ data: { results: Array<any>; totalCount: number } }, Error>(
