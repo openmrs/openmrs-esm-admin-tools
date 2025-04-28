@@ -12,6 +12,86 @@ interface RunReportForm {
   closePanel: () => void;
 }
 
+interface ReportParameter {
+  name: string;
+  type: string;
+  label: string;
+}
+
+interface ParameterElementProps {
+  parameter: ReportParameter;
+  reportUuid: string;
+  reportParameters: Record<string, any>;
+  locations: Array<any>;
+  handleOnChange: (event: any) => void;
+  handleOnDateChange: (fieldName: string, dateValue: Date) => void;
+}
+
+function renderParameterElementBasedOnType({
+  parameter,
+  reportUuid,
+  reportParameters,
+  locations,
+  handleOnChange,
+  handleOnDateChange,
+}: ParameterElementProps) {
+  switch (parameter.type) {
+    case 'java.util.Date':
+      return (
+        <div key={`${reportUuid}-${parameter.name}`} className={styles.runReportInnerDivElement}>
+          <OpenmrsDatePicker
+            id={parameter.name}
+            labelText={parameter.label}
+            onChange={(date) => handleOnDateChange(parameter.name, date)}
+            value={reportParameters[parameter.name]}
+          />
+        </div>
+      );
+    case 'java.lang.String':
+    case 'java.lang.Integer':
+      return (
+        <div key={`${reportUuid}-${parameter.name}`} className={styles.runReportInnerDivElement}>
+          <TextInput
+            id={parameter.name}
+            name={parameter.name}
+            labelText={parameter.label}
+            className={styles.basicInputElement}
+            onChange={handleOnChange}
+            value={reportParameters[parameter.name] ?? ''}
+          />
+        </div>
+      );
+    case 'org.openmrs.Location':
+      return (
+        <div key={`${reportUuid}-${parameter.name}`} className={styles.runReportInnerDivElement}>
+          <Select
+            id={parameter.name}
+            name={parameter.name}
+            labelText={parameter.label}
+            className={styles.basicInputElement}
+            onChange={handleOnChange}
+            value={reportParameters[parameter.name] ?? ''}
+          >
+            <SelectItem value="" />
+            {locations?.map((location) => (
+              <SelectItem key={location.uuid} text={location.display} value={location.uuid}>
+                {location.display}
+              </SelectItem>
+            ))}
+          </Select>
+        </div>
+      );
+    default:
+      return (
+        <div key={`${reportUuid}-${parameter.name}`} className={styles.runReportInnerDivElement}>
+          <span className={styles.unknownParameterTypeSpan}>
+            {`Unknown parameter type: ${parameter.type} for parameter: ${parameter.label}`}
+          </span>
+        </div>
+      );
+  }
+}
+
 const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
   const { t } = useTranslation();
   const [reportUuid, setReportUuid] = useState('');
@@ -49,64 +129,6 @@ const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
 
   const { reportDefinitions } = useReportDefinitions();
   const { locations } = useLocations();
-
-  function renderParameterElementBasedOnType(parameter: any) {
-    switch (parameter.type) {
-      case 'java.util.Date':
-        return (
-          <div key={`${reportUuid}-${parameter.name}`} className={styles.runReportInnerDivElement}>
-            <OpenmrsDatePicker
-              id={parameter.name}
-              labelText={parameter.label}
-              onChange={(date) => handleOnDateChange(parameter.name, date)}
-              value={reportParameters[parameter.name]}
-            />
-          </div>
-        );
-      case 'java.lang.String':
-      case 'java.lang.Integer':
-        return (
-          <div key={`${reportUuid}-${parameter.name}`} className={styles.runReportInnerDivElement}>
-            <TextInput
-              id={parameter.name}
-              name={parameter.name}
-              labelText={parameter.label}
-              className={styles.basicInputElement}
-              onChange={(e) => handleOnChange(e)}
-              value={reportParameters[parameter.name] ?? ''}
-            />
-          </div>
-        );
-      case 'org.openmrs.Location':
-        return (
-          <div key={`${reportUuid}-${parameter.name}`} className={styles.runReportInnerDivElement}>
-            <Select
-              id={parameter.name}
-              name={parameter.name}
-              labelText={parameter.label}
-              className={styles.basicInputElement}
-              onChange={(e) => handleOnChange(e)}
-              value={reportParameters[parameter.name] ?? ''}
-            >
-              <SelectItem value="" />
-              {locations?.map((location) => (
-                <SelectItem key={location.uuid} text={location.display} value={location.uuid}>
-                  {location.display}
-                </SelectItem>
-              ))}
-            </Select>
-          </div>
-        );
-      default:
-        return (
-          <div key={`${reportUuid}-${parameter.name}`} className={styles.runReportInnerDivElement}>
-            <span className={styles.unknownParameterTypeSpan}>
-              {`Unknown parameter type: ${parameter.type} for parameter: ${parameter.label}`}
-            </span>
-          </div>
-        );
-    }
-  }
 
   function handleOnChange(event) {
     const key = event.target.name;
@@ -196,9 +218,16 @@ const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
         </Select>
       </div>
       <div id="reportParametersDiv">
-        {currentReport?.parameters?.map((parameter) => (
-          <div key={`param-${parameter.name}`}>{renderParameterElementBasedOnType(parameter)}</div>
-        ))}
+        {currentReport?.parameters?.map((parameter) =>
+          renderParameterElementBasedOnType({
+            parameter,
+            reportUuid,
+            reportParameters,
+            locations,
+            handleOnChange,
+            handleOnDateChange,
+          }),
+        )}
       </div>
       <div className={styles.outputFormatDiv}>
         <Select
