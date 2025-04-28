@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { take } from 'rxjs/operators';
 import { useTranslation } from 'react-i18next';
 import { Button, ButtonSet, DatePicker, DatePickerInput, Form, Select, SelectItem, TextInput } from '@carbon/react';
-import { showSnackbar, useLayoutType } from '@openmrs/esm-framework';
+import { formatDate, showSnackbar, toOmrsDateFormat, toOmrsIsoString, useLayoutType } from '@openmrs/esm-framework';
 import { closeOverlay } from '../../hooks/useOverlay';
 import { useLocations, useReportDefinitions, useReportDesigns, runReportObservable } from '../reports.resource';
 import styles from './run-report-form.scss';
@@ -59,7 +59,6 @@ const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
               datePickerType="single"
               name={parameter.name}
               onChange={([date]) => handleOnDateChange(parameter.name, date)}
-              dateFormat="Y-m-d"
               className={styles.datePicker}
             >
               <DatePickerInput id={parameter.name} name={parameter.name} labelText={parameter.label} type="date" />
@@ -124,8 +123,8 @@ const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
   }
 
   function handleOnDateChange(fieldName, dateValue) {
-    const date = new Date(dateValue).toLocaleDateString();
-    setReportParameters((state) => ({ ...state, [fieldName]: date }));
+    const formattedDate = toOmrsIsoString(dateValue, false).split('T')[0];
+    setReportParameters((state) => ({ ...state, [fieldName]: formattedDate }));
   }
 
   const handleSubmit = useCallback(
