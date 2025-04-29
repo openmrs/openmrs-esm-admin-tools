@@ -1541,7 +1541,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@carbon/react@npm:^1.33.1, @carbon/react@npm:^1.37.0, @carbon/react@npm:^1.76.0":
+"@carbon/react@npm:^1.76.0":
   version: 1.80.1
   resolution: "@carbon/react@npm:1.80.1"
   dependencies:
@@ -4051,7 +4051,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@openmrs/esm-openconceptlab-app@workspace:packages/esm-admin-openconceptlab-app"
   dependencies:
-    "@carbon/react": "npm:^1.37.0"
+    "@carbon/react": "npm:^1.76.0"
     lodash-es: "npm:^4.17.21"
     swr: "npm:^2.2.5"
   peerDependencies:
@@ -4097,7 +4097,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@openmrs/esm-reports-app@workspace:packages/esm-reports-app"
   dependencies:
-    "@carbon/react": "npm:^1.33.1"
+    "@carbon/react": "npm:^1.76.0"
     "@datasert/cronjs-matcher": "npm:^1.2.0"
     "@datasert/cronjs-parser": "npm:^1.2.0"
     cronstrue: "npm:^2.41.0"
@@ -4176,7 +4176,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@openmrs/esm-system-admin-app@workspace:packages/esm-system-admin-app"
   dependencies:
-    "@carbon/react": "npm:^1.37.0"
+    "@carbon/react": "npm:^1.76.0"
     lodash-es: "npm:^4.17.21"
     swr: "npm:^2.2.5"
   peerDependencies:
