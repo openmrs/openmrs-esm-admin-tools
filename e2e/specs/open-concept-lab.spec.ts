@@ -1,3 +1,4 @@
+import { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 import { getSavedSubscription, removeOclSubscription } from '../commands';
 import { test } from '../core';
@@ -10,25 +11,53 @@ test.beforeEach(async ({ api }) => {
   }
 });
 
-test('should be able to setup a subscription and import concepts', async ({ page }) => {
+test('Setup a subscription and import concepts', async ({ page }) => {
   const openConceptLabPage = new OpenConceptLabPage(page);
 
-  // Setup the subscription
-  await openConceptLabPage.goto();
-  await openConceptLabPage.addOclSubscription();
+  await test.step('When I go to the "OCL module page"', async () => {
+    await openConceptLabPage.goto();
+  });
 
-  // Start an Import
-  await openConceptLabPage.importTab().click();
-  await openConceptLabPage.startImport();
+  await test.step('And I enter the subscription URL', async () => {
+    await openConceptLabPage.page.getByLabel('Subscription URL').fill(process.env.E2E_OCL_SUBSCRIPTION_URL);
+  });
 
-  // Check results of the import
-  await openConceptLabPage.goto();
-  await openConceptLabPage.previousImportsTab().click();
-  await expect(openConceptLabPage.previousImportsTable()).toHaveText(/\d+ items fetched/);
+  await test.step('And I enter the token', async () => {
+    await openConceptLabPage.page.getByLabel('Token').fill(process.env.E2E_OCL_TOKEN || '');
+  });
 
-  // Unsubscribe
-  await openConceptLabPage.subscriptionTab().click();
-  await openConceptLabPage.unsubscribe();
+  await test.step('And I click the save button', async () => {
+    await openConceptLabPage.page.getByRole('button', { name: 'Save Changes' }).click();
+  });
+
+  await test.step('And I click the Import tab', async () => {
+    await openConceptLabPage.page.getByRole('tab', { name: 'Import', exact: true }).click();
+  });
+
+  await test.step('And I click the Import from Subscription button', async () => {
+    await openConceptLabPage.page.getByRole('button', { name: 'Import from Subscription' }).click();
+  });
+
+  await test.step('And I refresh the page and go to the previous imports tab', async () => {
+    await openConceptLabPage.goto();
+    await openConceptLabPage.page.getByRole('tab', { name: 'Previous Imports' }).click();
+  });
+
+  await test.step('Then I should see the previous imports', async () => {
+    await expect(openConceptLabPage.page.getByRole('table')).toHaveText(/\d+ items fetched/);
+  });
+
+  await test.step('And I click the Subscription Tab', async () => {
+    await openConceptLabPage.page.getByRole('tab', { name: 'Subscription' }).click();
+  });
+
+  await test.step('And I unsubscribe', async () => {
+    await openConceptLabPage.page.getByRole('button', { name: 'Unsubscribe' }).click();
+  });
+
+  await test.step('Then I should see the unsubscribe message', async () => {
+    await openConceptLabPage.page.getByText('Subscription created successfully');
+  });
 });
 
 test.afterEach(async ({ api }) => {
