@@ -16,7 +16,7 @@ import {
   FormGroup,
 } from '@carbon/react';
 import { Download } from '@carbon/react/icons';
-import { isDesktop, useLayoutType, formatDatetime, getCoreTranslation } from '@openmrs/esm-framework';
+import { isDesktop, useLayoutType, formatDatetime, getCoreTranslation, parseDate } from '@openmrs/esm-framework';
 import styles from './reports.scss';
 
 interface ReportDataViewerProps {
@@ -55,21 +55,23 @@ const ReportDataViewer: React.FC<ReportDataViewerProps> = ({ reportData }) => {
     }));
   };
 
-  const formatCellValue = (value: any) => {
-    if (Array.isArray(value)) {
-      // Handle date arrays [year, month, day, hour, minute, second]
-      if (value.length >= 3 && value.length <= 6) {
-        const [year, month, day, hour = 0, minute = 0, second = 0] = value;
-        const date = new Date(year, month - 1, day, hour, minute, second);
-        return formatDatetime(date);
-      }
-      return value.join(', ');
+  function formatCellValue(value: any): string {
+    if (value === null || value === undefined) {
+      return '';
     }
-    if (value instanceof Date) {
-      return formatDatetime(value);
+
+    // Handle object values that have size and memberIds properties
+    if (typeof value === 'object' && 'size' in value) {
+      return value.size.toString();
     }
-    return value?.toString() ?? '';
-  };
+
+    // Handle date strings
+    if (typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}/)) {
+      return formatDatetime(parseDate(value));
+    }
+
+    return value.toString();
+  }
 
   const exportToCSV = () => {
     // Filter selected columns
