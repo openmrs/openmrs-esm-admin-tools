@@ -23,7 +23,7 @@
   "importFailed": "შემოტანა ჩავარდა",
   "importFromFile": "ფაილიდან შემოტანა",
   "importFromFileDragInfo": "Drag and drop file here or click to upload",
-  "importFromFileHeading": "Import from file (Offline)",
+  "importFromFileHeading": "შემოტანა ფაილიდან (ინტერნეტის გარეშე)",
   "importFromFileInfo": "You can import data without setting up a subscription by using this option.",
   "importFromSubscription": "შემოტანა გამოწერიდან",
   "importInstructions": "Avoid importing during data entry hours, because the operation may significantly slow down the system. You can either use the subscription or a zip file to import concepts.",
