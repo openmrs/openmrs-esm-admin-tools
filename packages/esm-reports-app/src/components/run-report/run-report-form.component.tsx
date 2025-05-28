@@ -1,95 +1,16 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Button, ButtonSet, Form, Select, SelectItem } from '@carbon/react';
 import classNames from 'classnames';
 import { take } from 'rxjs/operators';
 import { useTranslation } from 'react-i18next';
-import { Button, ButtonSet, Form, Select, SelectItem, TextInput } from '@carbon/react';
-import { showSnackbar, useLayoutType, OpenmrsDatePicker } from '@openmrs/esm-framework';
+import { showSnackbar, useLayoutType } from '@openmrs/esm-framework';
+import ReportParameterBasedElement from '../report-parameter-based-element';
 import { closeOverlay } from '../../hooks/useOverlay';
 import { useLocations, useReportDefinitions, useReportDesigns, runReportObservable } from '../reports.resource';
 import styles from './run-report-form.scss';
 
 interface RunReportForm {
   closePanel: () => void;
-}
-
-interface ReportParameter {
-  name: string;
-  type: string;
-  label: string;
-}
-
-interface ParameterElementProps {
-  parameter: ReportParameter;
-  reportUuid: string;
-  reportParameters: Record<string, any>;
-  locations: Array<any>;
-  handleOnChange: (event: any) => void;
-  handleOnDateChange: (fieldName: string, dateValue: Date) => void;
-}
-
-function renderParameterElementBasedOnType({
-  parameter,
-  reportUuid,
-  reportParameters,
-  locations,
-  handleOnChange,
-  handleOnDateChange,
-}: ParameterElementProps) {
-  switch (parameter.type) {
-    case 'java.util.Date':
-      return (
-        <div key={`${reportUuid}-${parameter.name}`} className={styles.runReportInnerDivElement}>
-          <OpenmrsDatePicker
-            id={parameter.name}
-            labelText={parameter.label}
-            onChange={(date) => handleOnDateChange(parameter.name, date)}
-            value={reportParameters[parameter.name]}
-          />
-        </div>
-      );
-    case 'java.lang.String':
-    case 'java.lang.Integer':
-      return (
-        <div key={`${reportUuid}-${parameter.name}`} className={styles.runReportInnerDivElement}>
-          <TextInput
-            id={parameter.name}
-            name={parameter.name}
-            labelText={parameter.label}
-            className={styles.basicInputElement}
-            onChange={handleOnChange}
-            value={reportParameters[parameter.name] ?? ''}
-          />
-        </div>
-      );
-    case 'org.openmrs.Location':
-      return (
-        <div key={`${reportUuid}-${parameter.name}`} className={styles.runReportInnerDivElement}>
-          <Select
-            id={parameter.name}
-            name={parameter.name}
-            labelText={parameter.label}
-            className={styles.basicInputElement}
-            onChange={handleOnChange}
-            value={reportParameters[parameter.name] ?? ''}
-          >
-            <SelectItem value="" />
-            {locations?.map((location) => (
-              <SelectItem key={location.uuid} text={location.display} value={location.uuid}>
-                {location.display}
-              </SelectItem>
-            ))}
-          </Select>
-        </div>
-      );
-    default:
-      return (
-        <div key={`${reportUuid}-${parameter.name}`} className={styles.runReportInnerDivElement}>
-          <span className={styles.unknownParameterTypeSpan}>
-            {`Unknown parameter type: ${parameter.type} for parameter: ${parameter.label}`}
-          </span>
-        </div>
-      );
-  }
 }
 
 const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
@@ -217,17 +138,17 @@ const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
           ))}
         </Select>
       </div>
-      <div id="reportParametersDiv">
-        {currentReport?.parameters?.map((parameter) =>
-          renderParameterElementBasedOnType({
-            parameter,
-            reportUuid,
-            reportParameters,
-            locations,
-            handleOnChange,
-            handleOnDateChange,
-          }),
-        )}
+      <div id="reportParametersDiv" className={styles.runReportInnerDivElement}>
+        {currentReport?.parameters?.map((parameter) => (
+          <ReportParameterBasedElement
+            parameter={parameter}
+            reportUuid={reportUuid}
+            reportParameters={reportParameters}
+            locations={locations}
+            handleOnChange={handleOnChange}
+            handleOnDateChange={handleOnDateChange}
+          />
+        ))}
       </div>
       <div className={styles.outputFormatDiv}>
         <Select
