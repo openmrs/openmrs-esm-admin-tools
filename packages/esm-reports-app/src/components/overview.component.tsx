@@ -1,4 +1,4 @@
-import React, { type ChangeEvent, useCallback, useEffect, useState } from 'react';
+import React, { type ChangeEvent, useCallback, useEffect, useState, useMemo } from 'react';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import {
@@ -47,15 +47,18 @@ const OverviewComponent: React.FC = () => {
     setDownloadReportButtonVisible(checkedReportUuidsArray.length > 0);
   }, [checkedReportUuidsArray]);
 
-  const tableHeaders = [
-    { key: 'reportName', header: t('reportName', 'Report name') },
-    { key: 'status', header: t('status', 'Status') },
-    { key: 'requestedBy', header: t('requestedBy', 'Requested by') },
-    { key: 'requestedOn', header: t('requestedOn', 'Requested on') },
-    { key: 'outputFormat', header: t('outputFormat', 'Output format') },
-    { key: 'parameters', header: t('parameters', 'Parameters') },
-    { key: 'actions', header: t('actions', 'Actions') },
-  ];
+  const tableHeaders = useMemo(
+    () => [
+      { key: 'reportName', header: t('reportName', 'Report name') },
+      { key: 'status', header: t('status', 'Status') },
+      { key: 'requestedBy', header: t('requestedBy', 'Requested by') },
+      { key: 'requestedOn', header: t('requestedOn', 'Requested on') },
+      { key: 'outputFormat', header: t('outputFormat', 'Output format') },
+      { key: 'parameters', header: t('parameters', 'Parameters') },
+      { key: 'actions', header: t('actions', 'Actions') },
+    ],
+    [t],
+  );
 
   const [currentPage, setCurrentPage] = useState(DEFAULT_PAGE_NUMBER);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
@@ -96,6 +99,7 @@ const OverviewComponent: React.FC = () => {
         <td className={classNames({ [styles.rowCellEven]: index % 2 === 0, [styles.rowCellOdd]: index % 2 !== 0 })}>
           <Checkbox
             id={`checkbox-${row.id}`}
+            labelText=""
             onChange={(e: ChangeEvent<HTMLInputElement>) => handleOnCheckboxClick(e)}
             checked={checkedReportUuidsArray.includes(row.id)}
           />
@@ -289,7 +293,7 @@ const OverviewComponent: React.FC = () => {
                 <TableRow>
                   <th></th>
                   {headers.map((header) => (
-                    <TableHeader>{header.header?.content ?? header.header}</TableHeader>
+                    <TableHeader>{header.header}</TableHeader>
                   ))}
                 </TableRow>
               </TableHead>

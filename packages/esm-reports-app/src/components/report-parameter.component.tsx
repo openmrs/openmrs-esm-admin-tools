@@ -81,7 +81,7 @@ const ReportParameter: React.FC<ReportParameterProps> = ({
             onChange={handleOnChange}
             value={reportParameters[parameter.name] ?? ''}
           >
-            <SelectItem value="" />
+            <SelectItem text="" value="" />
             {locations?.map((location) => (
               <SelectItem key={location.uuid} text={location.display} value={location.uuid}>
                 {location.display}

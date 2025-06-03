@@ -7,7 +7,7 @@ import type { ReportDesign } from '../types/report-design';
 import type { ReportRequest } from '../types/report-request';
 import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 interface ReportModel {
   reportName: string;

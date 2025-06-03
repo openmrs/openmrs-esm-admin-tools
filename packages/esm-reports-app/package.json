@@ -37,7 +37,7 @@
     "url": "https://github.com/openmrs/openmrs-esm-admin-tools/issues"
   },
   "dependencies": {
-    "@carbon/react": "^1.76.0",
+    "@carbon/react": "^1.83.0",
     "@datasert/cronjs-matcher": "^1.2.0",
     "@datasert/cronjs-parser": "^1.2.0",
     "cronstrue": "^2.41.0",

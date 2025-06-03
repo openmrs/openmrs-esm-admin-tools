@@ -28,7 +28,7 @@ const EditScheduledReportForm: React.FC<EditScheduledReportForm> = ({
   const { reportRequest } = useReportRequest(reportRequestUuid);
 
   const [reportParameters, setReportParameters] = useState(reportRequest?.parameterMappings || {});
-  const [renderModeUuid, setRenderModeUuid] = useState();
+  const [renderModeUuid, setRenderModeUuid] = useState<string>();
   const [initialCron, setInitialCron] = useState();
   const [schedule, setSchedule] = useState('');
 
@@ -122,6 +122,7 @@ const EditScheduledReportForm: React.FC<EditScheduledReportForm> = ({
         ))}
         <div className={styles.outputFormatDiv}>
           <Select
+            id="outputFormat"
             className={styles.basicInputElement}
             labelText={t('outputFormat', 'Output format')}
             onChange={(e) => setRenderModeUuid(e.target.value)}
