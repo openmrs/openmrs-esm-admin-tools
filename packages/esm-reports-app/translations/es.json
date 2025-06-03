@@ -80,6 +80,7 @@
   "selectReportFirst": "Please select a report first",
   "selectReportLabel": "Report",
   "status": "Estado",
+  "unknownParameterType": "Unknown parameter type: {type} for parameter: {label}",
   "viewReports": "Reports Webview",
   "yes": "Sí"
 }

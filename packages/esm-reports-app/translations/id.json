@@ -80,6 +80,7 @@
   "selectReportFirst": "Harap pilih laporan terlebih dahulu",
   "selectReportLabel": "Laporan",
   "status": "Status",
+  "unknownParameterType": "Unknown parameter type: {type} for parameter: {label}",
   "viewReports": "Tampilan Web Laporan",
   "yes": "Ya"
 }
