@@ -80,6 +80,7 @@
   "selectReportFirst": "Please select a report first",
   "selectReportLabel": "ანგარიში",
   "status": "სტატუსი",
+  "unknownParameterType": "Unknown parameter type: {type} for parameter: {label}",
   "viewReports": "ანგარიშების ვებხედი",
   "yes": "დიახ"
 }

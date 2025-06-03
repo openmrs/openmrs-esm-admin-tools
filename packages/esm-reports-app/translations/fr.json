@@ -80,6 +80,7 @@
   "selectReportFirst": "Veuillez d'abord sélectionner un rapport",
   "selectReportLabel": "Rapport",
   "status": "Statut",
+  "unknownParameterType": "Unknown parameter type: {type} for parameter: {label}",
   "viewReports": "Aperçu web des rapports",
   "yes": "Oui"
 }
