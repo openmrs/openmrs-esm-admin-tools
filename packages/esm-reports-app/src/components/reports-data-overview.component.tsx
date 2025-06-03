@@ -1,15 +1,17 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Select, SelectItem, Button } from '@carbon/react';
-import { ExtensionSlot, showSnackbar, OpenmrsDatePicker, getCoreTranslation } from '@openmrs/esm-framework';
-import { useReportDefinitions, useReportData } from './reports.resource';
+import dayjs from 'dayjs';
+import { ExtensionSlot, showSnackbar, getCoreTranslation } from '@openmrs/esm-framework';
 import Overlay from './overlay.component';
 import ReportDataViewer from './report-data-viewer.component';
+import ReportParameter from './report-parameter.component';
+import { useReportDefinitions, useReportData, useLocations } from './reports.resource';
 import styles from './reports.scss';
-import dayjs from 'dayjs';
 
 const ReportsDataOverviewComponent: React.FC = () => {
   const { t } = useTranslation();
+  const { locations } = useLocations();
   const [selectedReport, setSelectedReport] = useState('');
   const [reportParameters, setReportParameters] = useState<Record<string, string>>({});
 
@@ -20,13 +22,24 @@ const ReportsDataOverviewComponent: React.FC = () => {
     return reportDefinitions?.find((report) => report.uuid === selectedReport);
   }, [selectedReport, reportDefinitions]);
 
-  const handleParameterChange = (parameterName: string, value: Date) => {
+  const handleDateChange = (parameterName: string, value: Date) => {
     const formattedDate = value ? dayjs(value).format('YYYY-MM-DDTHH:mm:ss.SSSZ') : '';
     setReportParameters((prev) => ({
       ...prev,
       [parameterName]: formattedDate,
     }));
   };
+  function handleParameterValueChange(event) {
+    const key = event.target.name;
+    let value = null;
+    if (event.target.type === 'checkbox') {
+      value = event.target.checked;
+    } else {
+      value = event.target.value;
+    }
+
+    setReportParameters((state) => ({ ...state, [key]: value }));
+  }
 
   const handleReportChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newReportUuid = event.target.value;
@@ -114,16 +127,31 @@ const ReportsDataOverviewComponent: React.FC = () => {
               ))}
             </Select>
           </div>
-          {selectedReportDefinition?.parameters?.map((parameter) => (
-            <div key={parameter.name + selectedReportDefinition.uuid} className={styles.formField}>
-              <OpenmrsDatePicker
-                id={parameter.name}
-                labelText={parameter.label}
-                onChange={(date) => handleParameterChange(parameter.name, date)}
-                value={reportParameters[parameter.name]}
-              />
-            </div>
-          ))}
+          {selectedReportDefinition?.parameters?.map((parameter) => {
+            return parameter.type === 'java.util.Date' ? (
+              <div key={parameter.name + selectedReportDefinition.uuid} className={styles.formField}>
+                <ReportParameter
+                  parameter={parameter}
+                  reportUuid={selectedReport}
+                  reportParameters={reportParameters}
+                  locations={locations}
+                  handleOnDateChange={handleDateChange}
+                  handleOnChange={undefined}
+                />
+              </div>
+            ) : (
+              <div key={parameter.name + selectedReportDefinition.uuid} className={styles.formField}>
+                <ReportParameter
+                  parameter={parameter}
+                  reportUuid={selectedReport}
+                  reportParameters={reportParameters}
+                  locations={locations}
+                  handleOnChange={handleParameterValueChange}
+                  handleOnDateChange={undefined}
+                />
+              </div>
+            );
+          })}
           <div className={styles.formField}>
             <Button onClick={handleFetchReport} disabled={isLoading}>
               {isLoading ? getCoreTranslation('loading') : t('fetchReport', 'Fetch Report')}
