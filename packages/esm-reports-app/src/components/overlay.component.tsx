@@ -1,8 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
-import { Header, IconButton } from '@carbon/react';
-import { ArrowLeft, Close } from '@carbon/react/icons';
-import { getCoreTranslation, useLayoutType } from '@openmrs/esm-framework';
+import { IconButton } from '@carbon/react';
+import { ArrowLeftIcon, CloseIcon, getCoreTranslation, useLayoutType } from '@openmrs/esm-framework';
 import { closeOverlay, useOverlay } from '../hooks/useOverlay';
 import styles from './overlay.scss';
 
@@ -20,12 +19,12 @@ const Overlay: React.FC = () => {
           })}
         >
           {layout === 'tablet' && (
-            <Header aria-label="Tablet overlay" className={styles.tabletOverlayHeader} onClick={closeOverlay}>
-              <IconButton>
-                <ArrowLeft size={16} />
+            <header aria-label="Tablet overlay" className={styles.tabletOverlayHeader} onClick={closeOverlay}>
+              <IconButton label="">
+                <ArrowLeftIcon size={16} />
               </IconButton>
               <div className={styles.headerContent}>{header}</div>
-            </Header>
+            </header>
           )}
 
           {layout !== 'tablet' && (
@@ -37,7 +36,7 @@ const Overlay: React.FC = () => {
                 label={getCoreTranslation('close')}
                 onClick={closeOverlay}
               >
-                <Close size={16} />
+                <CloseIcon size={16} />
               </IconButton>
             </div>
           )}

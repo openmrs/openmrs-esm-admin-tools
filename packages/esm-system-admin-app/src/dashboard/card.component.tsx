@@ -1,6 +1,6 @@
 import React from 'react';
-import { Layer, ClickableTile } from '@carbon/react';
-import { ArrowRight } from '@carbon/react/icons';
+import { Layer, ClickableTile, type TileProps } from '@carbon/react';
+import { ArrowRightIcon } from '@openmrs/esm-framework';
 import styles from './card.scss';
 
 export interface LinkCardProps extends TileProps {
@@ -12,15 +12,17 @@ export interface LinkCardProps extends TileProps {
 export const LinkCard: React.FC<LinkCardProps> = ({ header, viewLink, children }) => {
   return (
     <Layer>
-      <ClickableTile className={styles.overviewCard} href={viewLink} target="_blank" rel="norefferer">
-        <div>
-          <div className={styles.heading}>{header}</div>
-          <div className={styles.content}>{children}</div>
-        </div>
-        <div className={styles.iconWrapper}>
-          <ArrowRight size={16} />
-        </div>
-      </ClickableTile>
+      <a className={styles.cardLink} href={viewLink} target="_blank" rel="norefferer">
+        <ClickableTile className={styles.overviewCard}>
+          <div>
+            <div className={styles.heading}>{header}</div>
+            <div className={styles.content}>{children}</div>
+          </div>
+          <div className={styles.iconWrapper}>
+            <ArrowRightIcon size={16} />
+          </div>
+        </ClickableTile>
+      </a>
     </Layer>
   );
 };

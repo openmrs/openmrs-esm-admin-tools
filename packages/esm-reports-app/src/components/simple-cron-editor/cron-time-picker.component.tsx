@@ -39,6 +39,7 @@ const CronTimePicker: React.FC<CronTimePickerProps> = ({ value, onChange }) => {
 
   return (
     <TimePicker
+      id="cronTimePicker"
       hideLabel
       invalid={validationState.invalid}
       invalidText={t(validationState.invalidText)}

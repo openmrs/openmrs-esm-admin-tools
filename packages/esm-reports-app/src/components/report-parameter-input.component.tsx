@@ -22,7 +22,7 @@ function getInitialValue(parameter: any, value: any) {
 
 const ReportParameterInput: React.FC<ReportParameterInputProps> = ({ parameter, value, onChange }) => {
   const { locations } = useLocations();
-  const [valueInternal, setValueInternal] = useState<string | number | Date>(getInitialValue(parameter, value));
+  const [valueInternal, setValueInternal] = useState<string | number>(getInitialValue(parameter, value));
 
   const isValueEqual = useCallback(
     (valueA, valueB) => {
@@ -51,12 +51,11 @@ const ReportParameterInput: React.FC<ReportParameterInputProps> = ({ parameter, 
         return (
           <DatePicker
             datePickerType="single"
-            name={parameter.name}
             onChange={([dateValue]) => handleOnDateChange(dateValue)}
             className={styles.datePicker}
             value={valueInternal}
           >
-            <DatePickerInput id={parameter.name} name={parameter.name} labelText={parameter.label} type="date" />
+            <DatePickerInput id={parameter.name} labelText={parameter.label} type="date" />
           </DatePicker>
         );
       case 'java.lang.String':
@@ -117,8 +116,8 @@ const ReportParameterInput: React.FC<ReportParameterInputProps> = ({ parameter, 
 
   function handleOnDateChange(dateValue) {
     const newDate = new Date(dateValue);
-    setValueInternal(newDate);
-    onChange(newDate.toLocaleDateString());
+    setValueInternal(newDate.toISOString());
+    onChange(newDate.toISOString());
   }
 
   return <div className={styles.runReportInnerDivElement}>{renderParameterElementBasedOnType()}</div>;

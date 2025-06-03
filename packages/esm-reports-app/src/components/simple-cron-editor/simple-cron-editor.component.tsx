@@ -243,6 +243,7 @@ const SimpleCronEditor: React.FC<SimpleCronEditorProps> = ({ initialCron, onChan
     return (
       <div className={styles.cronEditorField}>
         <Select
+          id="scheduleType"
           hideLabel
           onChange={(event) => {
             setEditorState((state) => ({ ...state, scheduleType: event.target.value }));
@@ -319,6 +320,8 @@ const SimpleCronEditor: React.FC<SimpleCronEditorProps> = ({ initialCron, onChan
     return (
       <div className={styles.cronEditorField}>
         <TextInput
+          id="cron"
+          labelText=""
           hideLabel
           onChange={(event) => setEditorState((state) => ({ ...state, cron: event.target.value }))}
           readOnly

@@ -42,7 +42,7 @@ const CronDayOfWeekSelect: React.FC<CronDayOfWeekSelectProps> = ({ value, onChan
 
   return (
     <FilterableMultiSelect
-      compareItems={(item1, item2) => item1.value < item2.value}
+      id="dayOfWeek"
       hideLabel
       selectedItems={valueInternal ? valueInternal : []}
       invalid={validationState.invalid}
@@ -51,6 +51,29 @@ const CronDayOfWeekSelect: React.FC<CronDayOfWeekSelectProps> = ({ value, onChan
       itemToString={(item) =>
         item ? t('dayOfWeek_' + item.name, DAYS_OF_WEEK_DEFAULT_LABELS[item.name] || item.name) : ''
       }
+      sortItems={(items: Array<CronField & { isSelectAll?: boolean }>, { selectedItems }) => {
+        return items.slice(0).sort((item1, item2) => {
+          // Always place "select all" option at the beginning
+          if (item1.isSelectAll) return -1;
+          if (item2.isSelectAll) return 1;
+          const hasItem1 = selectedItems.includes(item1);
+          const hasItem2 = selectedItems.includes(item2);
+          if (hasItem1 && !hasItem2) return -1;
+          if (hasItem2 && !hasItem1) return 1;
+
+          if (typeof item1.value === 'number' && typeof item2.value === 'number') {
+            return item1.value - item2.value;
+          } else if (typeof item1.value === 'string' && typeof item2.value === 'string') {
+            return item1.value.localeCompare(item2.value);
+          } else if (typeof item1.value === 'number' && typeof item2.value === 'string') {
+            return -1;
+          } else if (typeof item1.value === 'string' && typeof item2.value === 'number') {
+            return 1;
+          } else {
+            return 0;
+          }
+        });
+      }}
       onChange={(event) => setValueInternal(event.selectedItems)}
       selectionFeedback="fixed"
     />

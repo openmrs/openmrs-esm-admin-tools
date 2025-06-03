@@ -170,7 +170,7 @@ const Import: React.FC = () => {
             <FileUploaderItem
               key={file.name}
               name={file.name}
-              size="default"
+              size="md"
               status="edit"
               iconDescription={t('fileAdded', 'File Added')}
               onDelete={handleFileUploaderItemClick}

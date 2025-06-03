@@ -51,6 +51,7 @@ const CronDayOfMonthSelect: React.FC<CronDayOfMonthSelectProps> = ({ value, onCh
 
   return (
     <Select
+      id="dayOfMonth"
       hideLabel
       onChange={(event) => {
         setValueInternal(event.target.value);
