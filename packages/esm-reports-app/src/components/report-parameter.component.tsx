@@ -1,39 +1,59 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { TextInput, Select, SelectItem } from '@carbon/react';
 import { OpenmrsDatePicker } from '@openmrs/esm-framework';
-import styles from './report-parameter-based-element.scss';
+import styles from './report-parameter.scss';
 
-interface ReportParameter {
+type DateReportParameter = 'java.util.Date';
+type InputReportParameter = 'java.lang.String' | 'java.lang.Integer';
+type SelectReportParameter = 'org.openmrs.Location';
+type ReportParameterType = DateReportParameter | InputReportParameter | SelectReportParameter | string;
+
+interface ReportParameterInterface {
   name: string;
-  type: string;
+  type: ReportParameterType;
   label: string;
 }
 
-interface ReportParameterProps {
-  parameter: ReportParameter;
+interface ReportParameterPropsBase {
+  parameter: ReportParameterInterface;
   reportUuid: string;
   reportParameters: Record<string, any>;
   locations: Array<any>;
-  handleOnChange: (event: any) => void;
-  handleOnDateChange: (fieldName: string, dateValue: Date) => void;
 }
 
-const ReportParameterBasedElement: React.FC<ReportParameterProps> = ({
+type ReportParameterProps = ReportParameterPropsBase &
+  (
+    | {
+        handleOnChange: (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
+        handleOnDateChange: undefined;
+      }
+    | {
+        handleOnChange: undefined;
+        handleOnDateChange: (fieldName: string, dateValue: Date) => void;
+      }
+  );
+
+const ReportParameter: React.FC<ReportParameterProps> = ({
   parameter,
-  reportUuid,
   reportParameters,
   locations,
   handleOnChange,
   handleOnDateChange,
 }) => {
+  const { t } = useTranslation();
   switch (parameter.type) {
     case 'java.util.Date':
       return (
-        <div key={`${reportUuid}-${parameter.name}`}>
+        <div>
           <OpenmrsDatePicker
             id={parameter.name}
             labelText={parameter.label}
-            onChange={(date) => handleOnDateChange(parameter.name, date)}
+            onChange={(date) => {
+              if (handleOnDateChange) {
+                handleOnDateChange(parameter.name, date);
+              }
+            }}
             value={reportParameters[parameter.name]}
           />
         </div>
@@ -41,7 +61,7 @@ const ReportParameterBasedElement: React.FC<ReportParameterProps> = ({
     case 'java.lang.String':
     case 'java.lang.Integer':
       return (
-        <div key={`${reportUuid}-${parameter.name}`}>
+        <div>
           <TextInput
             id={parameter.name}
             name={parameter.name}
@@ -53,7 +73,7 @@ const ReportParameterBasedElement: React.FC<ReportParameterProps> = ({
       );
     case 'org.openmrs.Location':
       return (
-        <div key={`${reportUuid}-${parameter.name}`}>
+        <div>
           <Select
             id={parameter.name}
             name={parameter.name}
@@ -72,13 +92,16 @@ const ReportParameterBasedElement: React.FC<ReportParameterProps> = ({
       );
     default:
       return (
-        <div key={`${reportUuid}-${parameter.name}`}>
+        <div>
           <span className={styles.unknownParameterTypeSpan}>
-            {`Unknown parameter type: ${parameter.type} for parameter: ${parameter.label}`}
+            {t('unknownParameterType', 'Unknown parameter type: {type} for parameter: {label}', {
+              type: parameter.type,
+              label: parameter.label,
+            })}
           </span>
         </div>
       );
   }
 };
 
-export default ReportParameterBasedElement;
+export default ReportParameter;

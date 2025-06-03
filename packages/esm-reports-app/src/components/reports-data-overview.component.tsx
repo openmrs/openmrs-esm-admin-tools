@@ -5,7 +5,7 @@ import dayjs from 'dayjs';
 import { ExtensionSlot, showSnackbar, getCoreTranslation } from '@openmrs/esm-framework';
 import Overlay from './overlay.component';
 import ReportDataViewer from './report-data-viewer.component';
-import ReportParameterBasedElement from './report-parameter-based-element';
+import ReportParameter from './report-parameter.component';
 import { useReportDefinitions, useReportData, useLocations } from './reports.resource';
 import styles from './reports.scss';
 
@@ -127,18 +127,31 @@ const ReportsDataOverviewComponent: React.FC = () => {
               ))}
             </Select>
           </div>
-          {selectedReportDefinition?.parameters?.map((parameter) => (
-            <div key={parameter.name + selectedReportDefinition.uuid} className={styles.formField}>
-              <ReportParameterBasedElement
-                parameter={parameter}
-                reportUuid={selectedReport}
-                reportParameters={reportParameters}
-                locations={locations}
-                handleOnChange={handleParameterValueChange}
-                handleOnDateChange={handleDateChange}
-              />
-            </div>
-          ))}
+          {selectedReportDefinition?.parameters?.map((parameter) => {
+            return parameter.type === 'java.util.Date' ? (
+              <div key={parameter.name + selectedReportDefinition.uuid} className={styles.formField}>
+                <ReportParameter
+                  parameter={parameter}
+                  reportUuid={selectedReport}
+                  reportParameters={reportParameters}
+                  locations={locations}
+                  handleOnDateChange={handleDateChange}
+                  handleOnChange={undefined}
+                />
+              </div>
+            ) : (
+              <div key={parameter.name + selectedReportDefinition.uuid} className={styles.formField}>
+                <ReportParameter
+                  parameter={parameter}
+                  reportUuid={selectedReport}
+                  reportParameters={reportParameters}
+                  locations={locations}
+                  handleOnChange={handleParameterValueChange}
+                  handleOnDateChange={undefined}
+                />
+              </div>
+            );
+          })}
           <div className={styles.formField}>
             <Button onClick={handleFetchReport} disabled={isLoading}>
               {isLoading ? getCoreTranslation('loading') : t('fetchReport', 'Fetch Report')}

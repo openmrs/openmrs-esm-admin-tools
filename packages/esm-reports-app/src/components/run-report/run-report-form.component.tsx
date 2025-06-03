@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { take } from 'rxjs/operators';
 import { useTranslation } from 'react-i18next';
 import { showSnackbar, useLayoutType } from '@openmrs/esm-framework';
-import ReportParameterBasedElement from '../report-parameter-based-element';
+import ReportParameter from '../report-parameter.component';
 import { closeOverlay } from '../../hooks/useOverlay';
 import { useLocations, useReportDefinitions, useReportDesigns, runReportObservable } from '../reports.resource';
 import styles from './run-report-form.scss';
@@ -139,16 +139,29 @@ const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
         </Select>
       </div>
       <div id="reportParametersDiv" className={styles.runReportInnerDivElement}>
-        {currentReport?.parameters?.map((parameter) => (
-          <ReportParameterBasedElement
-            parameter={parameter}
-            reportUuid={reportUuid}
-            reportParameters={reportParameters}
-            locations={locations}
-            handleOnChange={handleOnChange}
-            handleOnDateChange={handleOnDateChange}
-          />
-        ))}
+        {currentReport?.parameters?.map((parameter) => {
+          return parameter.type === 'java.util.Date' ? (
+            <ReportParameter
+              key={parameter.name + reportUuid}
+              parameter={parameter}
+              reportUuid={reportUuid}
+              reportParameters={reportParameters}
+              locations={locations}
+              handleOnDateChange={handleOnDateChange}
+              handleOnChange={undefined}
+            />
+          ) : (
+            <ReportParameter
+              key={parameter.name + reportUuid}
+              parameter={parameter}
+              reportUuid={reportUuid}
+              reportParameters={reportParameters}
+              locations={locations}
+              handleOnChange={handleOnChange}
+              handleOnDateChange={undefined}
+            />
+          );
+        })}
       </div>
       <div className={styles.outputFormatDiv}>
         <Select
