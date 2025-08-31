@@ -4168,7 +4168,7 @@ __metadata:
     lodash-es: "npm:^4.17.21"
     swr: "npm:^2.2.5"
   peerDependencies:
-    "@openmrs/esm-framework": 7.x
+    "@openmrs/esm-framework": 8.x
     dayjs: 1.x
     react: 18.x
     react-dom: 18.x
@@ -4301,7 +4301,7 @@ __metadata:
     lodash-es: "npm:^4.17.21"
     swr: "npm:^2.2.5"
   peerDependencies:
-    "@openmrs/esm-framework": 7.x
+    "@openmrs/esm-framework": 8.x
     dayjs: 1.x
     react: 18.x
     react-dom: 18.x
