@@ -34,7 +34,7 @@ const Import: React.FC = () => {
   const onAddFiles = useCallback(
     (evt: React.DragEvent<HTMLInputElement>, { addedFiles }) => {
       const fileToUpload: File = addedFiles[0];
-      if (fileToUpload.type !== 'application/zip') {
+      if (fileToUpload.type !== 'application/zip' && fileToUpload.type !== 'application/x-zip-compressed') {
         showNotification({
           kind: 'error',
           description: t('fileFormatError', 'Only .zip files are allowed'),
@@ -178,7 +178,7 @@ const Import: React.FC = () => {
             />
           ) : (
             <FileUploaderDropContainer
-              accept={['application/zip']}
+              accept={['application/zip', 'application/x-zip-compressed']}
               multiple
               labelText={t('importFromFileDragInfo', 'Drag and drop file here or click to upload')}
               onAddFiles={onAddFiles}
