@@ -2,15 +2,17 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Select, SelectItem, Button } from '@carbon/react';
 import dayjs from 'dayjs';
-import { ExtensionSlot, showSnackbar, getCoreTranslation } from '@openmrs/esm-framework';
+import { ExtensionSlot, showSnackbar, getCoreTranslation, useConfig } from '@openmrs/esm-framework';
 import Overlay from './overlay.component';
 import ReportDataViewer from './report-data-viewer.component';
 import ReportParameter from './report-parameter.component';
 import { useReportDefinitions, useReportData, useLocations } from './reports.resource';
+import { type Config } from '../config-schema';
 import styles from './reports.scss';
 
 const ReportsDataOverviewComponent: React.FC = () => {
   const { t } = useTranslation();
+  const config = useConfig<Config>();
   const { locations } = useLocations();
   const [selectedReport, setSelectedReport] = useState('');
   const [reportParameters, setReportParameters] = useState<Record<string, string>>({});
@@ -70,7 +72,7 @@ const ReportsDataOverviewComponent: React.FC = () => {
         ?.filter((param) => !reportParameters[param.name])
         .map((param) => param.label);
 
-      if (missingParameters?.length > 0) {
+      if (config.enableParameterValidation && missingParameters?.length > 0) {
         showSnackbar({
           kind: 'error',
           title: getCoreTranslation('error'),
