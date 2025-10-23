@@ -26,7 +26,14 @@ const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
   const { reportDesigns, mutateReportDesigns } = useReportDesigns(reportUuid);
 
   const supportedParameterTypes = useMemo(
-    () => ['java.util.Date', 'java.lang.String', 'java.lang.Integer', 'org.openmrs.Location'],
+    () => [
+      'java.util.Date',
+      'java.lang.String',
+      'java.lang.Integer',
+      'org.openmrs.Location',
+      'org.openmrs.Concept',
+      'org.openmrs.EncounterType',
+    ],
     [],
   );
 
@@ -36,12 +43,21 @@ const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
 
   useEffect(() => {
     const paramTypes = currentReport?.parameters.map((param) => param.type);
-    const isAnyNotSupportedType = !paramTypes?.every((paramType) => supportedParameterTypes.includes(paramType));
-    const allParametersNotEmpty = currentReport?.parameters.every(
-      (parameter) => !!reportParameters[parameter.name] && reportParameters[parameter.name] !== 'Invalid Date',
-    );
 
-    if (!isAnyNotSupportedType && allParametersNotEmpty && reportUuid !== '' && renderModeUuid !== '') {
+    const isAnyNotSupportedType =
+      paramTypes?.some((paramType) => !supportedParameterTypes.includes(paramType)) ?? false;
+    const allRequiredParametersValid =
+      currentReport?.parameters?.every((parameter) => {
+        if (!parameter.required) {
+          return true;
+        }
+
+        const paramValue = reportParameters[parameter.name];
+        const isValid = !!paramValue && paramValue !== 'Invalid Date' && paramValue !== '';
+        return isValid;
+      }) ?? true;
+
+    if (!isAnyNotSupportedType && allRequiredParametersValid && reportUuid !== '' && renderModeUuid !== '') {
       setIsFormValid(true);
     } else {
       setIsFormValid(false);
