@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { TextInput, Select, SelectItem } from '@carbon/react';
 import { OpenmrsDatePicker } from '@openmrs/esm-framework';
 import styles from './report-parameter.scss';
+import ConceptSearchInput from './concept-search/concept-search-input.component';
 
 type DateReportParameter = 'java.util.Date';
 type InputReportParameter = 'java.lang.String' | 'java.lang.Integer';
@@ -42,6 +43,19 @@ const ReportParameter: React.FC<ReportParameterProps> = ({
   handleOnDateChange,
 }) => {
   const { t } = useTranslation();
+
+  const handleConceptSelect = (conceptUuid: string, conceptDisplay: string) => {
+    if (handleOnChange) {
+      const syntheticEvent = {
+        target: {
+          name: parameter.name,
+          value: conceptUuid,
+        },
+      } as React.ChangeEvent<HTMLInputElement>;
+      handleOnChange(syntheticEvent);
+    }
+  };
+
   switch (parameter.type) {
     case 'java.util.Date':
       return (
@@ -89,6 +103,15 @@ const ReportParameter: React.FC<ReportParameterProps> = ({
             ))}
           </Select>
         </div>
+      );
+    case 'org.openmrs.Concept':
+      return (
+        <ConceptSearchInput
+          parameterName={parameter.name}
+          labelText={parameter.label}
+          placeholder={t('searchFieldPlaceholder', 'Search for a concept')}
+          onConceptSelect={handleConceptSelect}
+        />
       );
     default:
       return (
