@@ -1,6 +1,7 @@
-import { getAsyncLifecycle, registerBreadcrumbs } from '@openmrs/esm-framework';
+import { defineConfigSchema, getAsyncLifecycle, registerBreadcrumbs } from '@openmrs/esm-framework';
 import { getFixedT } from 'i18next';
 import { basePath, moduleName } from './constants';
+import { configSchema } from './config-schema';
 
 const options = {
   featureName: 'reports',
@@ -38,6 +39,7 @@ export function startupApp() {
       parent: `${window.getOpenmrsSpaBase()}reports`,
     },
   ]);
+  defineConfigSchema(moduleName, configSchema);
 }
 
 export const root = getAsyncLifecycle(() => import('./reports.component'), options);
