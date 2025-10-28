@@ -82,6 +82,7 @@
   "selectReportLabel": "Report",
   "status": "Status",
   "unknownParameterType": "Unknown parameter type: {type} for parameter: {label}",
+  "view": "View",
   "viewReports": "Reports Webview",
   "yes": "Yes"
 }
