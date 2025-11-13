@@ -191,12 +191,40 @@ const OverviewComponent: React.FC = () => {
 
   const handleViewReport = useCallback(
     (reportRequestUuid: string) => {
-      if (webPreviewViewReportUrl) {
-        const viewUrl = webPreviewViewReportUrl.replace('{reportRequestUuid}', reportRequestUuid);
-        window.open(viewUrl, '_blank', 'noopener,noreferrer');
+      if (!webPreviewViewReportUrl) {
+        showSnackbar({
+          title: t('error', 'Error'),
+          subtitle: t('noWebPreviewUrlConfigured', 'No web preview URL configured.'),
+          kind: 'error',
+        });
+        return;
       }
+
+      try {
+        // Basic URL validation
+        new URL(webPreviewViewReportUrl.replace('{reportRequestUuid}', 'placeholder'));
+      } catch {
+        showSnackbar({
+          title: t('error', 'Error'),
+          subtitle: t('invalidWebPreviewUrl', 'Configured web preview URL is invalid.'),
+          kind: 'error',
+        });
+        return;
+      }
+
+      if (!webPreviewViewReportUrl.includes('{reportRequestUuid}')) {
+        showSnackbar({
+          title: t('error', 'Error'),
+          subtitle: t('missingPlaceholder', 'Configured web preview URL must include {reportRequestUuid} placeholder.'),
+          kind: 'error',
+        });
+        return;
+      }
+
+      const viewUrl = webPreviewViewReportUrl.replace('{reportRequestUuid}', reportRequestUuid);
+      window.open(viewUrl, '_blank', 'noopener,noreferrer');
     },
-    [webPreviewViewReportUrl],
+    [webPreviewViewReportUrl, t],
   );
 
   const handleDownloadReport = useCallback(
@@ -330,13 +358,13 @@ const OverviewComponent: React.FC = () => {
                 <TableRow>
                   <th></th>
                   {headers.map((header) => (
-                    <TableHeader>{header.header}</TableHeader>
+                    <TableHeader key={header.key}>{header.header}</TableHeader>
                   ))}
                 </TableRow>
               </TableHead>
               <TableBody>
                 {rows.map((row, index) => (
-                  <TableRow className={styles.tableRow}>
+                  <TableRow className={styles.tableRow} key={index}>
                     {renderRowCheckbox(row, index)}
                     {row.cells.map((cell) => (
                       <TableCell
