@@ -75,6 +75,7 @@
   "scheduled": "Programado",
   "scheduledReports": "Scheduled reports",
   "scheduleReport": "Schedule report",
+  "searchFieldPlaceholder": "Search for a concept",
   "selectColumns": "Select Columns to Export",
   "selectReport": "Select Report",
   "selectReportFirst": "Please select a report first",

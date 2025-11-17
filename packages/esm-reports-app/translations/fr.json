@@ -75,6 +75,7 @@
   "scheduled": "Programmé",
   "scheduledReports": "Programmer des rapports",
   "scheduleReport": "Progammer un rapport",
+  "searchFieldPlaceholder": "Search for a concept",
   "selectColumns": "Sélectionner les colonnes à exporter",
   "selectReport": "Sélectionner un rapport",
   "selectReportFirst": "Veuillez d'abord sélectionner un rapport",
