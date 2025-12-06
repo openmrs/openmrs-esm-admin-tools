@@ -42,9 +42,16 @@
   width: 100px;
 }
 
+.actionsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: flex-start;
+}
+
 .actionButtonsWrapperDiv {
-  width: 110px;
-  display: inline-block;
+  flex-shrink: 0;
 }
 
 .mainActionButtonsDiv {
