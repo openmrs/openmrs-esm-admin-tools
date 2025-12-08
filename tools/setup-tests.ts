@@ -7,18 +7,22 @@ declare global {
   }
 }
 
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: jest.fn().mockImplementation((query) => ({
-    matches: false, // Set the desired value (true or false) based on your test case
-    media: query,
-    onchange: null,
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
-  })),
-});
-
 window.openmrsBase = '/openmrs';
 window.spaBase = '/spa';
 window.getOpenmrsSpaBase = () => '/openmrs/spa/';
 window.HTMLElement.prototype.scrollIntoView = jest.fn();
+window.HTMLFormElement.prototype.requestSubmit = jest.fn();
+window.matchMedia = jest.fn().mockImplementation(() => {
+  return {
+    matches: false,
+    addEventListener: () => {},
+    removeEventListener: () => {},
+  };
+});
+
+// Mock ResizeObserver for Carbon components
+global.ResizeObserver = jest.fn().mockImplementation(() => ({
+  observe: jest.fn(),
+  unobserve: jest.fn(),
+  disconnect: jest.fn(),
+}));
