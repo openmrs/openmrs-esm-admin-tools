@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Select, SelectItem, Button } from '@carbon/react';
 import dayjs from 'dayjs';
-import { ExtensionSlot, showSnackbar, getCoreTranslation } from '@openmrs/esm-framework';
+import { ExtensionSlot, showSnackbar, getCoreTranslation, useConfig } from '@openmrs/esm-framework';
 import Overlay from './overlay.component';
 import ReportDataViewer from './report-data-viewer.component';
 import ReportParameter from './report-parameter.component';
@@ -67,7 +67,7 @@ const ReportsDataOverviewComponent: React.FC = () => {
     if (hasParameters) {
       // Check if all parameters have values
       const missingParameters = selectedReportDefinition?.parameters
-        ?.filter((param) => !reportParameters[param.name])
+        ?.filter((param) => !reportParameters[param.name] && param.required)
         .map((param) => param.label);
 
       if (missingParameters?.length > 0) {
