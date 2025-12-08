@@ -14,7 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from '@carbon/react';
-import { Calendar, Download, Play, Save, TrashCan } from '@carbon/react/icons';
+import { Calendar, Download, Play, Save, TrashCan, View } from '@carbon/react/icons';
 import { downloadMultipleReports, downloadReport, preserveReport, useReports } from './reports.resource';
 import {
   ExtensionSlot,
@@ -22,6 +22,7 @@ import {
   navigate,
   showModal,
   showSnackbar,
+  useConfig,
   useLayoutType,
   userHasAccess,
   useSession,
@@ -35,10 +36,12 @@ import { COMPLETED, RAN_REPORT_STATUSES, SAVED } from './report-statuses-constan
 import { DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZES } from './pagination-constants';
 import { PRIVILEGE_SYSTEM_DEVELOPER } from '../constants';
 import styles from './reports.scss';
+import { type ConfigObject } from '../config-schema';
 
 const OverviewComponent: React.FC = () => {
   const { t } = useTranslation();
   const currentSession = useSession();
+  const { webPreviewViewReportUrl } = useConfig<ConfigObject>();
 
   let [checkedReportUuidsArray, setCheckedReportUuidsArray] = useState([]);
   const [downloadReportButtonVisible, setDownloadReportButtonVisible] = useState(false);
@@ -73,6 +76,30 @@ const OverviewComponent: React.FC = () => {
 
   function getReportStatus(row) {
     return row?.cells.find((cell) => cell.info?.header === 'status')?.value;
+  }
+
+  function getReportOutputFormat(row) {
+    return row?.cells.find((cell) => cell.info?.header === 'outputFormat')?.value;
+  }
+
+  function shouldShowDownloadButton(row) {
+    const outputFormat = getReportOutputFormat(row);
+    const status = getReportStatus(row);
+    const isWebPreviewWithUrl = outputFormat === 'Web Preview' && webPreviewViewReportUrl;
+
+    // Don't show download button for web preview when we have a view URL
+    if (isWebPreviewWithUrl) {
+      return false;
+    }
+
+    return status === COMPLETED || status === SAVED;
+  }
+
+  function shouldShowViewButton(row) {
+    const outputFormat = getReportOutputFormat(row);
+    const status = getReportStatus(row);
+
+    return outputFormat === 'Web Preview' && webPreviewViewReportUrl && (status === COMPLETED || status === SAVED);
   }
 
   function isCurrentUserTheSameAsReportRequestedByUser(reportRequestUuid: string) {
@@ -161,6 +188,16 @@ const OverviewComponent: React.FC = () => {
       modalType: 'delete',
     });
   };
+
+  const handleViewReport = useCallback(
+    (reportRequestUuid: string) => {
+      if (webPreviewViewReportUrl) {
+        const viewUrl = webPreviewViewReportUrl.replace('{reportRequestUuid}', reportRequestUuid);
+        window.open(viewUrl, '_blank', 'noopener,noreferrer');
+      }
+    },
+    [webPreviewViewReportUrl],
+  );
 
   const handleDownloadReport = useCallback(
     async (reportRequestUuid: string) => {
@@ -310,13 +347,20 @@ const OverviewComponent: React.FC = () => {
                         })}
                       >
                         {cell.info.header === 'actions' ? (
-                          <div>
+                          <div className={styles.actionsContainer}>
+                            <ReportOverviewButton
+                              icon={() => <View size={16} className={styles.actionButtonIcon} />}
+                              label={t('view', 'View')}
+                              onClick={() => handleViewReport(row.id)}
+                              reportRequestUuid={row.id}
+                              shouldBeDisplayed={shouldShowViewButton(row)}
+                            />
                             <ReportOverviewButton
                               icon={() => <Download size={16} className={styles.actionButtonIcon} />}
                               label={t('download', 'Download')}
                               onClick={() => handleDownloadReport(row.id)}
                               reportRequestUuid={row.id}
-                              shouldBeDisplayed={getReportStatus(row) === COMPLETED || getReportStatus(row) === SAVED}
+                              shouldBeDisplayed={shouldShowDownloadButton(row)}
                             />
                             <ReportOverviewButton
                               icon={() => <Save size={16} className={styles.actionButtonIcon} />}

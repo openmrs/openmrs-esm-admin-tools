@@ -20,7 +20,7 @@ const ReportOverviewButton: React.FC<ReportOverviewButtonProps> = ({ shouldBeDis
       </div>
     );
   } else {
-    return <div className={styles.actionButtonsWrapperDiv}></div>;
+    return null;
   }
 };
 
