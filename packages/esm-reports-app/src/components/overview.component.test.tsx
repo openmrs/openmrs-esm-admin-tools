@@ -9,7 +9,7 @@ import { useReports } from './reports.resource';
 
 // Mock dependencies
 jest.mock('@openmrs/esm-framework', () => ({
-  ...jest.requireActual('@openmrs/esm-framework'),
+  openmrsFetch: jest.fn(),
   useConfig: jest.fn(),
   useSession: jest.fn(),
   useLayoutType: jest.fn(() => 'desktop'),
@@ -18,6 +18,11 @@ jest.mock('@openmrs/esm-framework', () => ({
   ExtensionSlot: jest.fn(({ name }) => <div data-testid={`extension-slot-${name}`} />),
   navigate: jest.fn(),
   showModal: jest.fn(),
+  getGlobalStore: jest.fn(() => ({
+    getState: jest.fn(),
+    setState: jest.fn(),
+    subscribe: jest.fn(),
+  })),
 }));
 
 const mockUseReports = jest.mocked(useReports);
