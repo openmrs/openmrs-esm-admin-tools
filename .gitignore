@@ -83,3 +83,6 @@ e2e/storageState.json
 !.yarn/versions
 
 .turbo
+temp_auto_push.bat
+temp_interactive_push.bat
+branch_structure.json
