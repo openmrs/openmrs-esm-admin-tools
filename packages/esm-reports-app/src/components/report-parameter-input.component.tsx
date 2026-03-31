@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import styles from './run-report/run-report-form.scss';
-import { DatePicker, DatePickerInput, Select, SelectItem, TextInput } from '@carbon/react';
-import { useLocations } from './reports.resource';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { isEqual } from 'lodash-es';
+import { DatePicker, DatePickerInput, Select, SelectItem, TextInput, Search } from '@carbon/react';
+import { useLocations } from './reports.resource';
+import styles from './run-report/run-report-form.scss';
+import { useTranslation } from 'react-i18next';
+import { useDebounce } from '@openmrs/esm-framework';
+import ConceptSearchResults from './concept-search/concept-search-results';
 
 interface ReportParameterInputProps {
   parameter: any;
@@ -21,31 +24,88 @@ function getInitialValue(parameter: any, value: any) {
 }
 
 const ReportParameterInput: React.FC<ReportParameterInputProps> = ({ parameter, value, onChange }) => {
+  const { t } = useTranslation();
   const { locations } = useLocations();
-  const [valueInternal, setValueInternal] = useState<string | number | Date>(getInitialValue(parameter, value));
+  const [valueInternal, setValueInternal] = useState<string | number>(getInitialValue(parameter, value));
+  const searchInputRef = useRef(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedConcept, setSelectedConcept] = useState<{ uuid: string; display?: string } | null>(null);
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
+
+  const focusAndClearSearchInput = useCallback(() => {
+    setSearchTerm('');
+    searchInputRef.current?.focus();
+  }, [setSearchTerm]);
+
+  const handleOnChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+      let eventValue = null;
+      const target = event.target as HTMLInputElement | HTMLSelectElement;
+      if ((target as HTMLInputElement).type === 'checkbox') {
+        eventValue = (target as HTMLInputElement).checked;
+      } else {
+        eventValue = target.value;
+      }
+
+      setValueInternal(eventValue);
+
+      if (parameter.type === 'java.util.Date') {
+        onChange(new Date(eventValue).toLocaleDateString());
+      } else {
+        onChange(eventValue);
+      }
+    },
+    [onChange, parameter.type],
+  );
+
+  const handleConceptSelect = useCallback(
+    (concept: { uuid: string; display?: string }) => {
+      setSelectedConcept(concept);
+      setSearchTerm(concept.display || '');
+      if (handleOnChange) {
+        const syntheticEvent = {
+          target: {
+            name: parameter.name,
+            value: concept.uuid,
+          },
+        } as React.ChangeEvent<HTMLInputElement>;
+        handleOnChange(syntheticEvent);
+      }
+    },
+    [handleOnChange, parameter.name],
+  );
+
+  const isValueEqual = useCallback(
+    (valueA, valueB) => {
+      if (parameter.type === 'java.util.Date') {
+        return isEqual(new Date(valueA), new Date(valueB));
+      } else {
+        return isEqual(valueA, valueB);
+      }
+    },
+    [parameter.type],
+  );
+
+  const handleSearchTermChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchTerm(event.target.value ?? '');
+      // Clear selected concept when user starts typing again
+      if (selectedConcept) {
+        setSelectedConcept(null);
+      }
+    },
+    [setSearchTerm, selectedConcept],
+  );
 
   useEffect(() => {
     const newInternalValue = getInitialValue(parameter, value);
-    if (!isValueEqual(newInternalValue, valueInternal)) {
-      setValueInternal(newInternalValue);
-    }
-  }, [value]);
-
-  const isValueEqual = (valueA, valueB) => {
-    if (parameter.type === 'java.util.Date') {
-      return isEqual(new Date(valueA), new Date(valueB));
-    } else {
-      return isEqual(valueA, valueB);
-    }
-  };
-
-  useEffect(() => {
-    if (parameter.type === 'java.util.Date') {
-      onChange(new Date(valueInternal).toLocaleDateString());
-    } else {
-      onChange(valueInternal);
-    }
-  }, [valueInternal]);
+    setValueInternal((prevValue) => {
+      if (!isValueEqual(newInternalValue, prevValue)) {
+        return newInternalValue;
+      }
+      return prevValue;
+    });
+  }, [value, isValueEqual, parameter]);
 
   const renderParameterElementBasedOnType = () => {
     switch (parameter.type) {
@@ -53,12 +113,11 @@ const ReportParameterInput: React.FC<ReportParameterInputProps> = ({ parameter, 
         return (
           <DatePicker
             datePickerType="single"
-            name={parameter.name}
             onChange={([dateValue]) => handleOnDateChange(dateValue)}
             className={styles.datePicker}
             value={valueInternal}
           >
-            <DatePickerInput id={parameter.name} name={parameter.name} labelText={parameter.label} type="date" />
+            <DatePickerInput id={parameter.name} labelText={parameter.label} type="date" />
           </DatePicker>
         );
       case 'java.lang.String':
@@ -91,6 +150,26 @@ const ReportParameterInput: React.FC<ReportParameterInputProps> = ({ parameter, 
             ))}
           </Select>
         );
+      case 'org.openmrs.Concept':
+        return (
+          <div>
+            <Search
+              size="lg"
+              placeholder={t('searchFieldPlaceholder', 'Search for a concept')}
+              labelText={t('searchFieldPlaceholder', 'Search for a concept')}
+              onChange={handleSearchTermChange}
+              ref={searchInputRef}
+              value={searchTerm}
+            />
+            {!selectedConcept && (
+              <ConceptSearchResults
+                searchTerm={debouncedSearchTerm}
+                focusAndClearSearchInput={focusAndClearSearchInput}
+                onConceptSelect={handleConceptSelect}
+              />
+            )}
+          </div>
+        );
       default:
         return (
           <span className={styles.unknownParameterTypeSpan}>
@@ -100,19 +179,10 @@ const ReportParameterInput: React.FC<ReportParameterInputProps> = ({ parameter, 
     }
   };
 
-  function handleOnChange(event) {
-    let eventValue = null;
-    if (event.target.type == 'checkbox') {
-      eventValue = event.target.checked;
-    } else {
-      eventValue = event.target.value;
-    }
-
-    setValueInternal(eventValue);
-  }
-
   function handleOnDateChange(dateValue) {
-    setValueInternal(new Date(dateValue));
+    const newDate = new Date(dateValue);
+    setValueInternal(newDate.toISOString());
+    onChange(newDate.toISOString());
   }
 
   return <div className={styles.runReportInnerDivElement}>{renderParameterElementBasedOnType()}</div>;

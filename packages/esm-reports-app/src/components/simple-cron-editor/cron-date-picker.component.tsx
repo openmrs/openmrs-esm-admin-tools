@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { DatePicker, DatePickerInput } from '@carbon/react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { DatePicker, DatePickerInput } from '@carbon/react';
 import styles from './simple-cron-editor.scss';
-import { isEqual } from 'lodash-es';
 
 interface CronDatePickerProps {
   value: Date;
@@ -22,27 +21,23 @@ const CronDatePicker: React.FC<CronDatePickerProps> = ({ value, onChange }) => {
     invalidText: null,
   });
 
-  useEffect(() => {
-    if (!isEqual(value, valueInternal)) {
-      setValueInternal(value);
+  const validate = useCallback(() => {
+    if (valueInternal instanceof Date) {
+      setValidationState({ invalid: false, invalidText: null });
+      onChange(valueInternal);
+    } else {
+      setValidationState({ invalid: true, invalidText: t('dateRequired', 'Required') });
+      onChange(null);
     }
+  }, [t, valueInternal, onChange]);
+
+  useEffect(() => {
+    setValueInternal(value);
   }, [value]);
 
   useEffect(() => {
     validate();
-  }, [valueInternal]);
-
-  useEffect(() => {
-    onChange(validationState.invalid ? null : valueInternal);
-  }, [validationState]);
-
-  const validate = () => {
-    if (!(valueInternal instanceof Date)) {
-      setValidationState({ invalid: true, invalidText: t('dateRequired', 'Required') });
-    } else {
-      setValidationState({ invalid: false, invalidText: null });
-    }
-  };
+  }, [validate, valueInternal]);
 
   return (
     <div>
@@ -55,7 +50,7 @@ const CronDatePicker: React.FC<CronDatePickerProps> = ({ value, onChange }) => {
           setValueInternal(selectedDate);
         }}
       >
-        <DatePickerInput hideLabel={true} />
+        <DatePickerInput id="cronDatePicker" labelText="" hideLabel />
       </DatePicker>
       {validationState.invalid && (
         <span className={styles.dangerLabel01}>{validationState.invalidText && t(validationState.invalidText)}</span>

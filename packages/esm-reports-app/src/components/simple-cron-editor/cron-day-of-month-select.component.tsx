@@ -1,8 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Select, SelectItem } from '@carbon/react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Select, SelectItem } from '@carbon/react';
 import { type CronField, DAYS_OF_MONTH, DAYS_OF_MONTH_DEFAULT_LABELS } from './commons';
-import { isEqual } from 'lodash-es';
 
 interface CronDayOfMonthSelectProps {
   value: CronField;
@@ -23,27 +22,23 @@ const CronDayOfMonthSelect: React.FC<CronDayOfMonthSelectProps> = ({ value, onCh
     invalidText: null,
   });
 
-  useEffect(() => {
-    if (!isEqual(value, valueInternal)) {
-      setValueInternal(value?.value);
+  const validate = useCallback(() => {
+    if (!!valueInternal) {
+      setValidationState({ invalid: false, invalidText: null });
+      onChange(DAYS_OF_MONTH.find((dayOfMonth) => dayOfMonth.value === valueInternal));
+    } else {
+      setValidationState({ invalid: true, invalidText: t('dayOfMonthRequired', 'Required') });
+      onChange(null);
     }
+  }, [t, valueInternal, onChange]);
+
+  useEffect(() => {
+    setValueInternal(value?.value);
   }, [value]);
 
   useEffect(() => {
     validate();
-  }, [valueInternal]);
-
-  useEffect(() => {
-    onChange(validationState.invalid ? null : DAYS_OF_MONTH.find((dayOfMonth) => dayOfMonth.value == valueInternal));
-  }, [validationState]);
-
-  const validate = () => {
-    if (!!valueInternal) {
-      setValidationState({ invalid: false, invalidText: null });
-    } else {
-      setValidationState({ invalid: true, invalidText: t('dayOfMonthRequired', 'Required') });
-    }
-  };
+  }, [validate, valueInternal]);
 
   const translatedOptions = useMemo(
     () =>
@@ -56,7 +51,8 @@ const CronDayOfMonthSelect: React.FC<CronDayOfMonthSelectProps> = ({ value, onCh
 
   return (
     <Select
-      hideLabel={true}
+      id="dayOfMonth"
+      hideLabel
       onChange={(event) => {
         setValueInternal(event.target.value);
       }}

@@ -1,5 +1,5 @@
 {
   "config": "Configurations",
-  "legacyAdmin": "Administration héritée",
-  "systemAdmin": "Administration système"
+  "legacyAdmin": "Administration du module Legacy",
+  "systemAdmin": "Administration du système"
 }

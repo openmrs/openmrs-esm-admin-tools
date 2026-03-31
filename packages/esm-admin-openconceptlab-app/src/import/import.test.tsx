@@ -2,8 +2,8 @@ import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { screen, waitFor } from '@testing-library/react';
 import { type FetchResponse, openmrsFetch, showNotification } from '@openmrs/esm-framework';
-import { mockSubscription } from '../../../../__mocks__/openconceptlab.mock';
-import { renderWithSwr } from '../../../../tools/test-helpers';
+import { mockSubscription } from '@mocks/openconceptlab.mock';
+import { renderWithSwr } from '@tools/test-helpers';
 import { startImportWithSubscription } from './import.resource';
 import Import from './import.component';
 
@@ -54,13 +54,14 @@ describe('Import component', () => {
   });
 
   it('allows starting an import using the subscription', async () => {
+    const user = userEvent.setup();
     mockOpenmrsFetch.mockReturnValueOnce({ data: { results: [mockSubscription] } });
     renderWithSwr(<Import />);
     await waitForLoadingToFinish();
 
     mockStartImportWithSubscription.mockResolvedValue({ status: 201 } as unknown as FetchResponse);
 
-    await waitFor(() => userEvent.click(screen.getByText('Import from Subscription')));
+    await user.click(screen.getByText('Import from Subscription'));
 
     expect(mockStartImportWithSubscription).toHaveBeenCalledWith(new AbortController());
     expect(mockStartImportWithSubscription).toHaveBeenCalledTimes(1);

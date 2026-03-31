@@ -1,8 +1,8 @@
 import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import { formatDatetime } from '@openmrs/esm-framework';
-import { renderWithSwr } from '../../../../../tools/test-helpers';
-import { mockPreviousImports } from '../../../../../__mocks__/openconceptlab.mock';
+import { renderWithSwr } from '@tools/test-helpers';
+import { mockPreviousImports } from '@mocks/openconceptlab.mock';
 import ImportOverview from './import-overview.component';
 
 describe('Import Overview component', () => {

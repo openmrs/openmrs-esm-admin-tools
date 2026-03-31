@@ -1,9 +1,9 @@
 import React, { useCallback, useState } from 'react';
-import { ModalBody, Button, ModalFooter, ModalHeader, InlineLoading } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
-import { cancelReportRequest } from '../reports.resource';
-import { showSnackbar } from '@openmrs/esm-framework';
 import { mutate } from 'swr';
+import { ModalBody, Button, ModalFooter, ModalHeader, InlineLoading } from '@carbon/react';
+import { showSnackbar } from '@openmrs/esm-framework';
+import { cancelReportRequest } from '../reports.resource';
 import {
   PROCESSING_REPORT_STATUSES,
   RAN_REPORT_STATUSES,
@@ -21,6 +21,69 @@ type ModalType = 'delete' | 'cancel' | 'schedule';
 const CancelReportModal: React.FC<CancelReportModalProps> = ({ closeModal, reportRequestUuid, modalType }) => {
   const { t } = useTranslation();
   const [isCanceling, setIsCanceling] = useState(false);
+
+  const getModalTitleByType = useCallback(
+    (modalType: ModalType) => {
+      if (modalType === 'delete') {
+        return t('deleteReport', 'Delete report');
+      } else if (modalType === 'cancel') {
+        return t('cancelReport', 'Cancel report');
+      } else if (modalType === 'schedule') {
+        return t('scheduleReport', 'Schedule report');
+      }
+    },
+    [t],
+  );
+
+  const getModalBodyByType = useCallback(
+    (modalType: ModalType) => {
+      if (modalType === 'delete') {
+        return t('deleteReportModalText', 'Are you sure you want to delete this report?');
+      } else if (modalType === 'cancel') {
+        return t('cancelReportModalText', 'Are you sure you want to cancel this report?');
+      } else if (modalType === 'schedule') {
+        return t('deleteReportScheduleModalText', 'Are you sure you want to delete this schedule?');
+      }
+    },
+    [t],
+  );
+
+  const getSuccessToastMessageByType = useCallback(
+    (modalType: ModalType) => {
+      if (modalType === 'delete') {
+        return t('reportDeletedSuccessfully', 'Report deleted successfully');
+      } else if (modalType === 'cancel') {
+        return t('reportCancelledSuccessfully', 'Report cancelled successfully');
+      } else if (modalType === 'schedule') {
+        return t('reportScheduleDeletedSuccessfully', 'Report schedule deleted successfully');
+      }
+    },
+    [t],
+  );
+
+  const getFailedToastMessageByType = useCallback(
+    (modalType: ModalType) => {
+      if (modalType === 'delete') {
+        return t('reportDeletingErrorMsg', 'Error during report deleting');
+      } else if (modalType === 'cancel') {
+        return t('reportCancelingErrorMsg', 'Error during report canceling');
+      } else if (modalType === 'schedule') {
+        return t('reportScheduleDeletingErrorMsg', 'Error during report schedule deleting');
+      }
+    },
+    [t],
+  );
+
+  const getLoadingMessageByType = useCallback(
+    (modalType: ModalType) => {
+      if (modalType === 'delete' || modalType === 'schedule') {
+        return t('deleting', 'Deleting');
+      } else if (modalType === 'cancel') {
+        return t('cancelling', 'Cancelling');
+      }
+    },
+    [t],
+  );
 
   const handleCancel = useCallback(async () => {
     try {
@@ -42,7 +105,14 @@ const CancelReportModal: React.FC<CancelReportModalProps> = ({ closeModal, repor
     } finally {
       setIsCanceling(false);
     }
-  }, [closeModal]);
+  }, [
+    closeModal,
+    getFailedToastMessageByType,
+    getModalTitleByType,
+    getSuccessToastMessageByType,
+    modalType,
+    reportRequestUuid,
+  ]);
 
   const callMutates = (modalType: ModalType) => {
     let baseUrl = '/ws/rest/v1/reportingrest/reportRequest?status=';
@@ -53,54 +123,6 @@ const CancelReportModal: React.FC<CancelReportModalProps> = ({ closeModal, repor
       mutate(baseUrl + PROCESSING_REPORT_STATUSES.join(','));
     } else if (modalType === 'schedule') {
       mutate(baseUrl + SCHEDULED_REPORT_STATUSES.join(',') + '&sortBy=name');
-    }
-  };
-
-  const getModalTitleByType = (modalType: ModalType) => {
-    if (modalType === 'delete') {
-      return t('deleteReport', 'Delete report');
-    } else if (modalType === 'cancel') {
-      return t('cancelReport', 'Cancel report');
-    } else if (modalType === 'schedule') {
-      return t('scheduleReport', 'Schedule report');
-    }
-  };
-
-  const getModalBodyByType = (modalType: ModalType) => {
-    if (modalType === 'delete') {
-      return t('deleteReportModalText', 'Are you sure you want to delete this report?');
-    } else if (modalType === 'cancel') {
-      return t('cancelReportModalText', 'Are you sure you want to cancel this report?');
-    } else if (modalType === 'schedule') {
-      return t('deleteReportScheduleModalText', 'Are you sure you want to delete this schedule?');
-    }
-  };
-
-  const getSuccessToastMessageByType = (modalType: ModalType) => {
-    if (modalType === 'delete') {
-      return t('reportDeletedSuccessfully', 'Report deleted successfully');
-    } else if (modalType === 'cancel') {
-      return t('reportCancelledSuccessfully', 'Report cancelled successfully');
-    } else if (modalType === 'schedule') {
-      return t('reportScheduleDeletedSuccessfully', 'Report schedule deleted successfully');
-    }
-  };
-
-  const getFailedToastMessageByType = (modalType: ModalType) => {
-    if (modalType === 'delete') {
-      return t('reportDeletingErrorMsg', 'Error during report deleting');
-    } else if (modalType === 'cancel') {
-      return t('reportCancelingErrorMsg', 'Error during report canceling');
-    } else if (modalType === 'schedule') {
-      return t('reportScheduleDeletingErrorMsg', 'Error during report schedule deleting');
-    }
-  };
-
-  const getLoadingMessageByType = (modalType: ModalType) => {
-    if (modalType === 'delete' || modalType === 'schedule') {
-      return t('deleting', 'Deleting');
-    } else if (modalType === 'cancel') {
-      return t('canceling', 'Canceling');
     }
   };
 

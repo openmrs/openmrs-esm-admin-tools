@@ -1,17 +1,19 @@
+/** @type {import('jest').Config} */
 const path = require('path');
 
-/** @type {import('jest').Config} */
 module.exports = {
   clearMocks: true,
   transform: {
-    '^.+\\.(j|t)sx?$': '@swc/jest',
+    '^.+\\.[jt]sx?$': ['@swc/jest'],
   },
-  transformIgnorePatterns: ['/node_modules/(?!@openmrs)'],
+  transformIgnorePatterns: ['/node_modules/(?!@openmrs|.+\\.pnp\\.[^\\/]+$)'],
   moduleNameMapper: {
     '\\.(s?css)$': 'identity-obj-proxy',
     '@openmrs/esm-framework': '@openmrs/esm-framework/mock',
     '^dexie$': require.resolve('dexie'),
     '^lodash-es/(.*)$': 'lodash/$1',
+    '^@tools/(.*)$': path.resolve(__dirname, 'tools', '$1'),
+    '^@mocks/(.*)$': path.resolve(__dirname, '__mocks__', '$1'),
     '^lodash-es$': 'lodash',
     '^react-i18next$': path.resolve(__dirname, '__mocks__', 'react-i18next.js'),
   },

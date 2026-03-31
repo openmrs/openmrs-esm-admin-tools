@@ -1,12 +1,13 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import styles from './run-report-form.scss';
-import { useLocations, useReportDefinitions, useReportDesigns, runReportObservable } from '../reports.resource';
-import { closeOverlay } from '../../hooks/useOverlay';
-import { Button, ButtonSet, DatePicker, DatePickerInput, Form, Select, SelectItem, TextInput } from '@carbon/react';
-import { showSnackbar, useLayoutType } from '@openmrs/esm-framework';
-import { take } from 'rxjs/operators';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Button, ButtonSet, Form, Select, SelectItem } from '@carbon/react';
 import classNames from 'classnames';
+import { take } from 'rxjs/operators';
+import { useTranslation } from 'react-i18next';
+import { showSnackbar, useLayoutType } from '@openmrs/esm-framework';
+import ReportParameter from '../report-parameter.component';
+import { closeOverlay } from '../../hooks/useOverlay';
+import { useLocations, useReportDefinitions, useReportDesigns, runReportObservable } from '../reports.resource';
+import styles from './run-report-form.scss';
 
 interface RunReportForm {
   closePanel: () => void;
@@ -24,94 +25,52 @@ const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
 
   const { reportDesigns, mutateReportDesigns } = useReportDesigns(reportUuid);
 
+  const supportedParameterTypes = useMemo(
+    () => [
+      'java.util.Date',
+      'java.lang.String',
+      'java.lang.Integer',
+      'org.openmrs.Location',
+      'org.openmrs.Concept',
+      'org.openmrs.EncounterType',
+    ],
+    [],
+  );
+
   useEffect(() => {
     mutateReportDesigns();
-  }, [reportUuid]);
+  }, [mutateReportDesigns, reportUuid]);
 
   useEffect(() => {
     const paramTypes = currentReport?.parameters.map((param) => param.type);
-    const isAnyNotSupportedType = !paramTypes?.every((paramType) => supportedParameterTypes.includes(paramType));
-    const allParametersNotEmpty = currentReport?.parameters.every(
-      (parameter) => !!reportParameters[parameter.name] && reportParameters[parameter.name] !== 'Invalid Date',
-    );
 
-    if (!isAnyNotSupportedType && allParametersNotEmpty && reportUuid !== '' && renderModeUuid !== '') {
+    const isAnyNotSupportedType =
+      paramTypes?.some((paramType) => !supportedParameterTypes.includes(paramType)) ?? false;
+    const allRequiredParametersValid =
+      currentReport?.parameters?.every((parameter) => {
+        if (!parameter.required) {
+          return true;
+        }
+
+        const paramValue = reportParameters[parameter.name];
+        const isValid = !!paramValue && paramValue !== 'Invalid Date' && paramValue !== '';
+        return isValid;
+      }) ?? true;
+
+    if (!isAnyNotSupportedType && allRequiredParametersValid && reportUuid !== '' && renderModeUuid !== '') {
       setIsFormValid(true);
     } else {
       setIsFormValid(false);
     }
-  }, [reportParameters, reportUuid, renderModeUuid]);
-
-  const supportedParameterTypes = ['java.util.Date', 'java.lang.String', 'java.lang.Integer', 'org.openmrs.Location'];
+  }, [reportParameters, reportUuid, renderModeUuid, currentReport?.parameters, supportedParameterTypes]);
 
   const { reportDefinitions } = useReportDefinitions();
   const { locations } = useLocations();
 
-  function renderParameterElementBasedOnType(parameter: any) {
-    switch (parameter.type) {
-      case 'java.util.Date':
-        return (
-          <div className={styles.runReportInnerDivElement}>
-            <DatePicker
-              datePickerType="single"
-              name={parameter.name}
-              onChange={([date]) => handleOnDateChange(parameter.name, date)}
-              dateFormat="Y-m-d"
-              className={styles.datePicker}
-            >
-              <DatePickerInput id={parameter.name} name={parameter.name} labelText={parameter.label} type="date" />
-            </DatePicker>
-          </div>
-        );
-      case 'java.lang.String':
-      case 'java.lang.Integer':
-        return (
-          <div className={styles.runReportInnerDivElement}>
-            <TextInput
-              id={parameter.name}
-              name={parameter.name}
-              labelText={parameter.label}
-              className={styles.basicInputElement}
-              onChange={(e) => handleOnChange(e)}
-              value={reportParameters[parameter.name] ?? ''}
-            />
-          </div>
-        );
-      case 'org.openmrs.Location':
-        return (
-          <div className={styles.runReportInnerDivElement}>
-            <Select
-              id={parameter.name}
-              name={parameter.name}
-              labelText={parameter.label}
-              className={styles.basicInputElement}
-              onChange={(e) => handleOnChange(e)}
-              value={reportParameters[parameter.name] ?? ''}
-            >
-              <SelectItem value="" />
-              {locations?.map((location) => (
-                <SelectItem key={location.uuid} text={location.display} value={location.uuid}>
-                  {location.display}
-                </SelectItem>
-              ))}
-            </Select>
-          </div>
-        );
-      default:
-        return (
-          <div className={styles.runReportInnerDivElement}>
-            <span className={styles.unknownParameterTypeSpan}>
-              {`Unknown parameter type: ${parameter.type} for parameter: ${parameter.label}`}
-            </span>
-          </div>
-        );
-    }
-  }
-
   function handleOnChange(event) {
     const key = event.target.name;
     let value = null;
-    if (event.target.type == 'checkbox') {
+    if (event.target.type === 'checkbox') {
       value = event.target.checked;
     } else {
       value = event.target.value;
@@ -121,8 +80,7 @@ const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
   }
 
   function handleOnDateChange(fieldName, dateValue) {
-    const date = new Date(dateValue).toLocaleDateString();
-    setReportParameters((state) => ({ ...state, [fieldName]: date }));
+    setReportParameters((state) => ({ ...state, [fieldName]: dateValue }));
   }
 
   const handleSubmit = useCallback(
@@ -153,8 +111,7 @@ const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
             setTimeout(() => {
               showSnackbar({
                 kind: 'success',
-                title: t('reportRunning', 'Report running'),
-                subtitle: t('reportRanSuccessfullyMsg', 'Report ran successfully'),
+                title: t('reportRanSuccessfully', 'Report ran successfully'),
               });
               closePanel();
               setIsSubmitting(false);
@@ -164,14 +121,14 @@ const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
             console.error(error);
             showSnackbar({
               kind: 'error',
-              title: t('reportRunningErrorMsg', 'Error while running the report'),
-              subtitle: t('reportRunningErrorMsg', 'Error while running the report'),
+              title: t('errorRunningReport', 'Error running report'),
+              subtitle: error?.message,
             });
             setIsSubmitting(false);
           },
         );
     },
-    [reportUuid, renderModeUuid, reportParameters],
+    [closePanel, reportParameters, reportUuid, renderModeUuid, t],
   );
 
   return (
@@ -197,10 +154,30 @@ const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
           ))}
         </Select>
       </div>
-      <div id="reportParametersDiv">
-        {currentReport?.parameters?.map((parameter) => (
-          <div key={`param-${parameter.name}`}>{renderParameterElementBasedOnType(parameter)}</div>
-        ))}
+      <div id="reportParametersDiv" className={styles.runReportInnerDivElement}>
+        {currentReport?.parameters?.map((parameter) => {
+          return parameter.type === 'java.util.Date' ? (
+            <ReportParameter
+              key={parameter.name + reportUuid}
+              parameter={parameter}
+              reportUuid={reportUuid}
+              reportParameters={reportParameters}
+              locations={locations}
+              handleOnDateChange={handleOnDateChange}
+              handleOnChange={undefined}
+            />
+          ) : (
+            <ReportParameter
+              key={parameter.name + reportUuid}
+              parameter={parameter}
+              reportUuid={reportUuid}
+              reportParameters={reportParameters}
+              locations={locations}
+              handleOnChange={handleOnChange}
+              handleOnDateChange={undefined}
+            />
+          );
+        })}
       </div>
       <div className={styles.outputFormatDiv}>
         <Select

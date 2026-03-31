@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import classNames from 'classnames';
 import { take } from 'rxjs/operators';
-import styles from './edit-scheduled-report-form.scss';
-import SimpleCronEditor from '../simple-cron-editor/simple-cron-editor.component';
+import { useTranslation } from 'react-i18next';
+import { Button, ButtonSet, Form, Select, SelectItem, Stack } from '@carbon/react';
+import { getCoreTranslation, showSnackbar, useLayoutType } from '@openmrs/esm-framework';
 import { useReportDefinition, useReportDesigns, useReportRequest, runReportObservable } from '../reports.resource';
 import ReportParameterInput from '../report-parameter-input.component';
-import { Button, ButtonSet, Form, Select, SelectItem, Stack } from '@carbon/react';
-import { useTranslation } from 'react-i18next';
-import { showSnackbar, useLayoutType } from '@openmrs/esm-framework';
-import classNames from 'classnames';
+import SimpleCronEditor from '../simple-cron-editor/simple-cron-editor.component';
+import styles from './edit-scheduled-report-form.scss';
 
 interface EditScheduledReportForm {
   reportDefinitionUuid: string;
@@ -27,8 +27,8 @@ const EditScheduledReportForm: React.FC<EditScheduledReportForm> = ({
   const { reportDesigns } = useReportDesigns(reportDefinitionUuid);
   const { reportRequest } = useReportRequest(reportRequestUuid);
 
-  const [reportParameters, setReportParameters] = useState({});
-  const [renderModeUuid, setRenderModeUuid] = useState();
+  const [reportParameters, setReportParameters] = useState(reportRequest?.parameterMappings || {});
+  const [renderModeUuid, setRenderModeUuid] = useState<string>();
   const [initialCron, setInitialCron] = useState();
   const [schedule, setSchedule] = useState('');
 
@@ -39,6 +39,10 @@ const EditScheduledReportForm: React.FC<EditScheduledReportForm> = ({
   useEffect(() => {
     setInitialCron(reportRequest?.schedule);
     setRenderModeUuid(reportRequest?.renderingMode?.argument);
+
+    if (reportRequest?.parameterMappings) {
+      setReportParameters(reportRequest.parameterMappings);
+    }
   }, [reportRequest]);
 
   const handleSubmit = useCallback(
@@ -84,7 +88,7 @@ const EditScheduledReportForm: React.FC<EditScheduledReportForm> = ({
           },
         );
     },
-    [closePanel, renderModeUuid, reportRequestUuid, reportParameters, schedule],
+    [reportRequestUuid, reportDefinitionUuid, reportParameters, renderModeUuid, schedule, t, closePanel],
   );
 
   const handleOnChange = () => {
@@ -107,17 +111,18 @@ const EditScheduledReportForm: React.FC<EditScheduledReportForm> = ({
           <ReportParameterInput
             key={`${reportDefinition.name}-${parameter.name}-param-input`}
             parameter={parameter}
-            value={reportRequest?.parameterMappings[parameter.name]}
             onChange={(parameterValue) => {
               setReportParameters((state) => ({
                 ...state,
                 [parameter.name]: parameterValue,
               }));
             }}
+            value={reportRequest?.parameterMappings[parameter.name]}
           />
         ))}
         <div className={styles.outputFormatDiv}>
           <Select
+            id="outputFormat"
             className={styles.basicInputElement}
             labelText={t('outputFormat', 'Output format')}
             onChange={(e) => setRenderModeUuid(e.target.value)}
@@ -135,10 +140,10 @@ const EditScheduledReportForm: React.FC<EditScheduledReportForm> = ({
       <div className={styles.buttonsDiv}>
         <ButtonSet className={classNames({ [styles.tablet]: isTablet, [styles.desktop]: !isTablet })}>
           <Button className={styles.button} kind="secondary" onClick={closePanel}>
-            {t('cancel', 'Cancel')}
+            {getCoreTranslation('cancel')}
           </Button>
           <Button className={styles.button} disabled={isSubmitting || !isSubmittable} kind="primary" type="submit">
-            {t('save', 'Save')}
+            {getCoreTranslation('save')}
           </Button>
         </ButtonSet>
       </div>

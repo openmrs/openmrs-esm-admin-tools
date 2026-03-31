@@ -23,6 +23,8 @@ const Import: React.FC = () => {
   const [file, setFile] = useState<File>();
   const [isFileUploading, setIsFileUploading] = useState(false);
 
+  const allowedMimeTypes = ['application/zip', 'application/x-zip-compressed']
+
   const { data: subscription, isLoading, error } = useSubscription();
 
   useEffect(() => {
@@ -34,7 +36,7 @@ const Import: React.FC = () => {
   const onAddFiles = useCallback(
     (evt: React.DragEvent<HTMLInputElement>, { addedFiles }) => {
       const fileToUpload: File = addedFiles[0];
-      if (fileToUpload.type !== 'application/zip') {
+      if (!allowedMimeTypes.includes(fileToUpload.type)) {
         showNotification({
           kind: 'error',
           description: t('fileFormatError', 'Only .zip files are allowed'),
@@ -122,13 +124,13 @@ const Import: React.FC = () => {
       <Grid className={styles.grid}>
         <Column sm={4} md={8} lg={10}>
           <Form>
-            <SkeletonText className={styles.productiveHeading03} heading={true} />
-            <SkeletonText className={styles.formText} paragraph={true} lineCount={2} />
+            <SkeletonText className={styles.productiveHeading03} heading />
+            <SkeletonText className={styles.formText} paragraph lineCount={2} />
             <ButtonSkeleton />
           </Form>
 
           <Form className={styles.form}>
-            <SkeletonText className={styles.productiveHeading03} heading={true} />
+            <SkeletonText className={styles.productiveHeading03} heading />
             <SkeletonText className={styles.formText} />
             <FileUploaderSkeleton style={{ marginBottom: '1.5rem' }} />
             <ButtonSkeleton />
@@ -170,7 +172,7 @@ const Import: React.FC = () => {
             <FileUploaderItem
               key={file.name}
               name={file.name}
-              size="default"
+              size="md"
               status="edit"
               iconDescription={t('fileAdded', 'File Added')}
               onDelete={handleFileUploaderItemClick}
@@ -178,7 +180,7 @@ const Import: React.FC = () => {
             />
           ) : (
             <FileUploaderDropContainer
-              accept={['application/zip']}
+              accept={['application/zip', 'application/x-zip-compressed']}
               multiple
               labelText={t('importFromFileDragInfo', 'Drag and drop file here or click to upload')}
               onAddFiles={onAddFiles}

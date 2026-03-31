@@ -19,6 +19,10 @@
     "noEmit": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "target": "esnext"
+    "target": "esnext",
+    "paths": {
+      "@mocks/*": ["./__mocks__/*"],
+      "@tools/*": ["./tools/*"],
+    }
   }
 }

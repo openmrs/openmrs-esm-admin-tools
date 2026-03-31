@@ -3,9 +3,9 @@ import {
   Column,
   DataTable,
   DataTableSkeleton,
+  Grid,
   Pagination,
   PaginationSkeleton,
-  Grid,
   SkeletonText,
   Table,
   TableBody,
@@ -19,8 +19,8 @@ import {
 } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
 import { formatDatetime, showNotification, usePagination } from '@openmrs/esm-framework';
+import { type Import } from '../types';
 import { usePreviousImports } from './previous-imports.resource';
-import type { Import } from '../types';
 import ImportOverview from './import-overview/import-overview.component';
 import styles from './previous-imports.scss';
 

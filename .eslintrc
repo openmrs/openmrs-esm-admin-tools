@@ -2,11 +2,25 @@
   "env": {
     "node": true
   },
-  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "plugin:jest-dom/recommended"],
+  "overrides": [
+    {
+      "files": ["**/*.test.tsx"],
+      "extends": ["plugin:testing-library/react"]
+    },
+    {
+      "files": ["e2e/**/*.spec.ts"],
+      "extends": ["plugin:playwright/recommended"],
+      "rules": {
+        "testing-library/prefer-screen-queries": "off",
+        "react-hooks/rules-of-hooks": "off",
+        "react-hooks/exhaustive-deps": "off"
+      }
+    }
+  ],
   "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint", "react-hooks"],
+  "plugins": ["@typescript-eslint", "import", "jest-dom", "react-hooks", "testing-library"],
   "rules": {
-    // Disabling these rules for now just to keep the diff small. I'll enable them one by one as we go.
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/ban-types": "off",
     "@typescript-eslint/no-explicit-any": "off",
@@ -20,12 +34,12 @@
         "fixStyle": "inline-type-imports"
       }
     ],
-    "prefer-const": "off",
+    "import/no-duplicates": "error",
     "no-console": ["error", { "allow": ["warn", "error"] }],
-    "no-unsafe-optional-chaining": "off",
     "no-explicit-any": "off",
     "no-extra-boolean-cast": "off",
     "no-prototype-builtins": "off",
+    "no-unsafe-optional-chaining": "off",
     "no-useless-escape": "off",
     "no-restricted-imports": [
       "error",
@@ -52,6 +66,9 @@
           }
         ]
       }
-    ]
+    ],
+    "prefer-const": "off",
+    "react-hooks/exhaustive-deps": "warn",
+    "react-hooks/rules-of-hooks": "error"
   }
 }

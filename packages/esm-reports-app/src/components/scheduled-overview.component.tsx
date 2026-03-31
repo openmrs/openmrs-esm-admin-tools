@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import { ExtensionSlot, isDesktop, useLayoutType, usePagination } from '@openmrs/esm-framework';
-import styles from './reports.scss';
+import React, { useMemo, useState } from 'react';
+import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import {
   DataTable,
@@ -13,16 +12,18 @@ import {
   TableHeader,
   TableRow,
 } from '@carbon/react';
+import { ExtensionSlot, isDesktop, useLayoutType, usePagination } from '@openmrs/esm-framework';
 import { useScheduledReports } from './reports.resource';
-import { DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZES } from './pagination-constants';
-import ScheduledOverviewCellContent from './scheduled-overview-cell-content.component';
 import Overlay from './overlay.component';
-import classNames from 'classnames';
+import ScheduledOverviewCellContent from './scheduled-overview-cell-content.component';
+import { DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZES } from './pagination-constants';
+import styles from './reports.scss';
 
 const ScheduledOverviewComponent: React.FC = () => {
   const { t } = useTranslation();
   const layout = useLayoutType();
 
+  // FIXME This needs proper types
   const { scheduledReports, mutateScheduledReports } = useScheduledReports('name');
   const scheduledReportRows = scheduledReports
     ? scheduledReports.map((report) => ({
@@ -39,15 +40,18 @@ const ScheduledOverviewComponent: React.FC = () => {
     : [];
 
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
-  const { currentPage, results, goTo } = usePagination(scheduledReportRows, pageSize);
+  const { currentPage, results, goTo } = usePagination<any>(scheduledReportRows, pageSize);
 
-  const tableHeaders = [
-    { key: 'name', header: t('reportName', 'Report Name') },
-    { key: 'status', header: t('status', 'Status') },
-    { key: 'schedule', header: t('schedule', 'Schedule') },
-    { key: 'nextRun', header: t('nextRun', 'Next run') },
-    { key: 'actions', header: t('actions', 'Actions') },
-  ];
+  const tableHeaders = useMemo(
+    () => [
+      { key: 'name', header: t('reportName', 'Report name') },
+      { key: 'status', header: t('status', 'Status') },
+      { key: 'schedule', header: t('schedule', 'Schedule') },
+      { key: 'nextRun', header: t('nextRun', 'Next run') },
+      { key: 'actions', header: t('actions', 'Actions') },
+    ],
+    [t],
+  );
 
   return (
     <div>
@@ -64,9 +68,7 @@ const ScheduledOverviewComponent: React.FC = () => {
                 <TableHead>
                   <TableRow>
                     {headers.map((header, index) => (
-                      <TableHeader key={header.key ?? `header-${index}`}>
-                        {header.header?.content ?? header.header}
-                      </TableHeader>
+                      <TableHeader key={header.key ?? `header-${index}`}>{header.header}</TableHeader>
                     ))}
                   </TableRow>
                 </TableHead>

@@ -1,7 +1,8 @@
-import { formatDatetime } from '@openmrs/esm-framework';
 import React from 'react';
+import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
-import type { Import } from '../../types';
+import { formatDatetime } from '@openmrs/esm-framework';
+import { type Import } from '../../types';
 import ImportItems from './import-items.component';
 import styles from './import-overview.scss';
 
@@ -30,7 +31,7 @@ const ImportOverview: React.FC<ImportOverviewProps> = ({ selectedImportObject })
       <span className={styles.heading01}>{t('result', 'Result:')} </span>
       <br />
 
-      <div className={`body ${styles.indentedContent}`}>
+      <div className={classNames('body', styles.indentedContent)}>
         <span>
           {selectedImportObject.upToDateItemsCount} {t('conceptsUpToDate', 'concepts up to date')}
         </span>

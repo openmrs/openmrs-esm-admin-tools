@@ -1,61 +1,46 @@
-/**
- * This is the entrypoint file of the application. It communicates the
- * important features of this microfrontend to the app shell. It
- * connects the app shell to the React application(s) that make up this
- * microfrontend.
- */
-import { getAsyncLifecycle, registerBreadcrumbs } from '@openmrs/esm-framework';
-
-const moduleName = '@openmrs/esm-reports-app';
+import { defineConfigSchema, getAsyncLifecycle, registerBreadcrumbs } from '@openmrs/esm-framework';
+import { getFixedT } from 'i18next';
+import { basePath, moduleName } from './constants';
+import { configSchema } from './config-schema';
 
 const options = {
   featureName: 'reports',
   moduleName,
 };
 
-/**
- * This tells the app shell how to obtain translation files: that they
- * are JSON files in the directory `../translations` (which you should
- * see in the directory structure).
- */
 export const importTranslation = require.context('../translations', false, /.json$/, 'lazy');
 
-/**
- * This function performs any setup that should happen at microfrontend
- * load-time (such as defining the config schema) and then returns an
- * object which describes how the React application(s) should be
- * rendered.
- */
 export function startupApp() {
+  const t = getFixedT(undefined, moduleName);
+
   registerBreadcrumbs([
     {
       title: 'Home',
-      path: `${window.openmrsBase}`,
+      path: `${window.getOpenmrsSpaBase().slice(0, -1)}${basePath}`,
     },
     {
-      path: `${window.spaBase}/system-administration`,
-      title: () => Promise.resolve(window.i18next.t('systemAdmin', 'System Administration')),
-      parent: `${window.spaBase}/home`,
+      path: `${window.getOpenmrsSpaBase()}system-administration`,
+      title: () => Promise.resolve(t('systemAdmin', 'System Administration')),
+      parent: `${window.getOpenmrsSpaBase()}home`,
     },
     {
-      title: () => Promise.resolve(window.i18next.t('reports', 'Reports')),
-      path: `${window.spaBase}/reports`,
-      parent: `${window.spaBase}/system-administration`,
+      title: () => Promise.resolve(t('reports', 'Reports')),
+      path: `${window.getOpenmrsSpaBase()}reports`,
+      parent: `${window.getOpenmrsSpaBase()}system-administration`,
     },
     {
-      title: () => Promise.resolve(window.i18next.t('scheduledReports', 'Scheduled Reports')),
-      path: `${window.spaBase}/reports/scheduled-overview`,
-      parent: `${window.spaBase}/reports`,
+      title: () => Promise.resolve(t('scheduledReports', 'Scheduled Reports')),
+      path: `${window.getOpenmrsSpaBase()}reports/scheduled-overview`,
+      parent: `${window.getOpenmrsSpaBase()}reports`,
+    },
+    {
+      title: () => Promise.resolve(t('reportsDataOverview', 'Reports Data Overview')),
+      path: `${window.getOpenmrsSpaBase()}reports/reports-data-overview`,
+      parent: `${window.getOpenmrsSpaBase()}reports`,
     },
   ]);
+  defineConfigSchema(moduleName, configSchema);
 }
-
-/**
- * This named export tells the app shell that the default export of `root.component.tsx`
- * should be rendered when the route matches `root`. The full route
- * will be `openmrsSpaBase() + 'root'`, which is usually
- * `/openmrs/spa/root`.
- */
 
 export const root = getAsyncLifecycle(() => import('./reports.component'), options);
 

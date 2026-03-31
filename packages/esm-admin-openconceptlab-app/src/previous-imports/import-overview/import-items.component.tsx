@@ -1,4 +1,5 @@
-import { showNotification, usePagination } from '@openmrs/esm-framework';
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   DataTableSkeleton,
   Link,
@@ -11,10 +12,9 @@ import {
   TableHeader,
   TableRow,
 } from '@carbon/react';
-import React, { Fragment, useCallback, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { showNotification, usePagination } from '@openmrs/esm-framework';
+import { type ImportItem } from '../../types';
 import { getImportDetails } from './import-items.resource';
-import type { ImportItem } from '../../types';
 import styles from './import-items.scss';
 
 interface ImportItemsProps {
@@ -25,8 +25,8 @@ const ImportItems: React.FC<ImportItemsProps> = ({ importUuid }) => {
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState<Boolean>();
   const [pageSize, setPageSize] = useState(5);
-
   const [selectedImportItems, setSelectedImportItems] = useState<ImportItem[]>([]);
+
   const { results, currentPage, goTo } = usePagination(selectedImportItems, pageSize);
 
   const handleImportDetails = useCallback(

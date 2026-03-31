@@ -22,7 +22,7 @@ const NextReportExecution: React.FC<NextReportExecutionProps> = ({ schedule, cur
       startAt: currentDate.toISOString(),
       matchCount: 1,
     });
-    return nextExecutions.length == 1 ? dayjs.utc(nextExecutions[0].toString()).format('YYYY-MM-DD HH:mm') : '';
+    return nextExecutions.length === 1 ? dayjs.utc(nextExecutions[0].toString()).format('YYYY-MM-DD HH:mm') : '';
   })();
 
   return <span>{nextReportExecutionDate}</span>;
