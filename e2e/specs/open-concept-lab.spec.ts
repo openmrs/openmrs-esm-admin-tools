@@ -47,7 +47,7 @@ test('Setup a subscription and import concepts', async ({ page }) => {
     await expect(openConceptLabPage.page.getByRole('table')).toHaveText(/\d+ items fetched/);
   });
 
-  await test.step('And I click the Subscription Tab', async () => {
+  await test.step('When I click the Subscription Tab', async () => {
     await openConceptLabPage.page.getByRole('tab', { name: 'Subscription' }).click();
   });
 
