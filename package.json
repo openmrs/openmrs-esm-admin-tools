@@ -37,7 +37,6 @@
     "@typescript-eslint/parser": "^7.1.0",
     "concurrently": "^8.2.2",
     "cross-env": "^7.0.3",
-    "css-loader": "^6.10.0",
     "dayjs": "^1.11.10",
     "dotenv": "^16.4.5",
     "eslint": "^8.57.0",
@@ -61,12 +60,8 @@
     "react-i18next": "^16.0.0",
     "react-router-dom": "^6.22.2",
     "rxjs": "^6.6.7",
-    "sass": "^1.71.1",
-    "swc-loader": "^0.2.3",
     "turbo": "^2.5.2",
-    "typescript": "^5.0.0",
-    "webpack": "5.99.9",
-    "webpack-cli": "^6.0.1"
+    "typescript": "^5.0.0"
   },
   "lint-staged": {
     "*.{ts,tsx}": "eslint --cache --fix --max-warnings 0",
