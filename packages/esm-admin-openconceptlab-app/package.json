@@ -12,8 +12,8 @@
     "build": "rspack --mode production",
     "analyze": "rspack --mode=production --env.analyze=true",
     "lint": "eslint src --ext js,jsx,ts,tsx",
-    "test": "cross-env TZ=UTC jest --config jest.config.js --verbose false --passWithNoTests --color",
-    "test:watch": "cross-env TZ=UTC jest --watch --config jest.config.js --color",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest watch",
     "typescript": "tsc",
     "extract-translations": "i18next 'src/**/*.component.tsx' --config ../../tools/i18next-parser.config.js"
   },
@@ -51,5 +51,8 @@
     "react-router-dom": "6.x",
     "rxjs": "6.x",
     "swr": "2.x"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.2"
   }
 }

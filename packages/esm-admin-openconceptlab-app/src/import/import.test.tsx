@@ -1,4 +1,5 @@
 import React from 'react';
+import { vi, describe, it, expect } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { screen, waitFor } from '@testing-library/react';
 import { type FetchResponse, openmrsFetch, showNotification } from '@openmrs/esm-framework';
@@ -7,23 +8,23 @@ import { renderWithSwr } from '@tools/test-helpers';
 import { startImportWithSubscription } from './import.resource';
 import Import from './import.component';
 
-const mockOpenmrsFetch = openmrsFetch as jest.Mock;
-const mockShowNotification = jest.mocked(showNotification);
-const mockStartImportWithSubscription = jest.mocked(startImportWithSubscription);
+const mockOpenmrsFetch = vi.mocked(openmrsFetch);
+const mockShowNotification = vi.mocked(showNotification);
+const mockStartImportWithSubscription = vi.mocked(startImportWithSubscription);
 
-jest.mock('./import.resource', () => {
-  const originalModule = jest.requireActual('./import.resource');
+vi.mock('./import.resource', async () => {
+  const originalModule = (await vi.importActual('./import.resource')) as object;
 
   return {
     ...originalModule,
-    startImportWithSubscription: jest.fn(),
-    startImportWithFile: jest.fn(),
+    startImportWithSubscription: vi.fn(),
+    startImportWithFile: vi.fn(),
   };
 });
 
 describe('Import component', () => {
   it('renders the form elements', async () => {
-    mockOpenmrsFetch.mockReturnValueOnce({ data: { results: [] } });
+    mockOpenmrsFetch.mockResolvedValueOnce({ data: { results: [] } } as unknown as FetchResponse);
     renderWithSwr(<Import />);
     await waitForLoadingToFinish();
 
@@ -36,7 +37,7 @@ describe('Import component', () => {
   });
 
   it('renders correctly when there is no subscription', async () => {
-    mockOpenmrsFetch.mockReturnValueOnce({ data: { results: [] } });
+    mockOpenmrsFetch.mockResolvedValueOnce({ data: { results: [] } } as unknown as FetchResponse);
     renderWithSwr(<Import />);
     await waitForLoadingToFinish();
 
@@ -45,7 +46,7 @@ describe('Import component', () => {
   });
 
   it('renders correctly when when a subscription exists', async () => {
-    mockOpenmrsFetch.mockReturnValueOnce({ data: { results: [mockSubscription] } });
+    mockOpenmrsFetch.mockResolvedValueOnce({ data: { results: [mockSubscription] } } as unknown as FetchResponse);
     renderWithSwr(<Import />);
     await waitForLoadingToFinish();
 
@@ -55,7 +56,7 @@ describe('Import component', () => {
 
   it('allows starting an import using the subscription', async () => {
     const user = userEvent.setup();
-    mockOpenmrsFetch.mockReturnValueOnce({ data: { results: [mockSubscription] } });
+    mockOpenmrsFetch.mockResolvedValueOnce({ data: { results: [mockSubscription] } } as unknown as FetchResponse);
     renderWithSwr(<Import />);
     await waitForLoadingToFinish();
 

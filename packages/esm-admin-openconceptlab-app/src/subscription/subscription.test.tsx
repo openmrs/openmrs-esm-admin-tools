@@ -1,4 +1,5 @@
 import React from 'react';
+import { vi, describe, it, expect } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { screen, waitFor } from '@testing-library/react';
 import { type FetchResponse, openmrsFetch, showNotification } from '@openmrs/esm-framework';
@@ -7,34 +8,34 @@ import { mockSubscription } from '@mocks/openconceptlab.mock';
 import { deleteSubscription, updateSubscription } from './subscription.resource';
 import Subscription from './subscription.component';
 
-const mockOpenmrsFetch = openmrsFetch as jest.Mock;
-const mockUpdateSubscription = jest.mocked(updateSubscription);
-const mockDeleteSubscription = jest.mocked(deleteSubscription);
-const mockShowNotification = jest.mocked(showNotification);
+const mockOpenmrsFetch = vi.mocked(openmrsFetch);
+const mockUpdateSubscription = vi.mocked(updateSubscription);
+const mockDeleteSubscription = vi.mocked(deleteSubscription);
+const mockShowNotification = vi.mocked(showNotification);
 
-jest.mock('./subscription.resource', () => {
-  const originalModule = jest.requireActual('./subscription.resource');
+vi.mock('./subscription.resource', async () => {
+  const originalModule = (await vi.importActual('./subscription.resource')) as object;
 
   return {
     ...originalModule,
-    updateSubscription: jest.fn(),
-    deleteSubscription: jest.fn(),
+    updateSubscription: vi.fn(),
+    deleteSubscription: vi.fn(),
   };
 });
 
 describe('Subscription component', () => {
   it('renders the empty forms', async () => {
-    mockOpenmrsFetch.mockReturnValueOnce({ data: { results: [] } });
+    mockOpenmrsFetch.mockResolvedValueOnce({ data: { results: [] } } as unknown as FetchResponse);
     renderWithSwr(<Subscription />);
     await waitForLoadingToFinish();
 
     expect(screen.getByText('Setup Subscription')).toBeVisible();
     expect(screen.getByRole('heading', { name: 'Unsubscribe' })).toBeVisible();
-    expect(screen.getByRole('button', { name: 'danger Unsubscribe' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /danger\s*Unsubscribe/i })).toBeDisabled();
   });
 
   it('renders the subscription if a subscription exists', async () => {
-    mockOpenmrsFetch.mockReturnValueOnce({ data: { results: [mockSubscription] } });
+    mockOpenmrsFetch.mockResolvedValueOnce({ data: { results: [mockSubscription] } } as unknown as FetchResponse);
     renderWithSwr(<Subscription />);
     await waitForLoadingToFinish();
     await waitForLoadingSubscription();
@@ -45,12 +46,12 @@ describe('Subscription component', () => {
     expect(
       screen.getByLabelText('Disable validation (should be used with care for well curated collections or sources)'),
     ).not.toBeChecked();
-    expect(screen.getByRole('button', { name: 'danger Unsubscribe' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: /danger\s*Unsubscribe/i })).toBeEnabled();
   });
 
-  xit('allows adding a new subscription', async () => {
+  it.skip('allows adding a new subscription', async () => {
     const user = userEvent.setup();
-    mockOpenmrsFetch.mockReturnValueOnce({ data: { results: [] } });
+    mockOpenmrsFetch.mockResolvedValueOnce({ data: { results: [] } } as unknown as FetchResponse);
     renderWithSwr(<Subscription />);
     await waitForLoadingToFinish();
 
@@ -79,9 +80,9 @@ describe('Subscription component', () => {
     expect(mockShowNotification).toHaveBeenCalledTimes(1);
   });
 
-  xit('allows changing the saved subscription', async () => {
+  it.skip('allows changing the saved subscription', async () => {
     const user = userEvent.setup();
-    mockOpenmrsFetch.mockReturnValueOnce({ data: { results: [mockSubscription] } });
+    mockOpenmrsFetch.mockResolvedValueOnce({ data: { results: [mockSubscription] } } as unknown as FetchResponse);
     renderWithSwr(<Subscription />);
     await waitForLoadingToFinish();
     await waitForLoadingSubscription();
@@ -117,14 +118,14 @@ describe('Subscription component', () => {
     expect(mockShowNotification).toHaveBeenCalledTimes(1);
   });
 
-  xit('allows removing the saved subscription', async () => {
+  it.skip('allows removing the saved subscription', async () => {
     const user = userEvent.setup();
-    mockOpenmrsFetch.mockReturnValueOnce({ data: { results: [mockSubscription] } });
+    mockOpenmrsFetch.mockResolvedValueOnce({ data: { results: [mockSubscription] } } as unknown as FetchResponse);
     renderWithSwr(<Subscription />);
     await waitForLoadingToFinish();
     await waitForLoadingSubscription();
 
-    const unsubscribeButton = screen.getByRole('button', { name: 'danger Unsubscribe' });
+    const unsubscribeButton = screen.getByRole('button', { name: /danger\s*Unsubscribe/i });
 
     mockDeleteSubscription.mockResolvedValueOnce({ status: 204 } as unknown as FetchResponse);
 

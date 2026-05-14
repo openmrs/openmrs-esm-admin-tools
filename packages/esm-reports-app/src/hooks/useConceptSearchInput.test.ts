@@ -1,20 +1,21 @@
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useConceptSearchInput } from './useConceptSearchInput';
 
 // Mock the useDebounce hook
-jest.mock('@openmrs/esm-framework', () => ({
-  useDebounce: jest.fn((value) => value),
+vi.mock('@openmrs/esm-framework', () => ({
+  useDebounce: vi.fn((value) => value),
 }));
 
 describe('useConceptSearchInput', () => {
-  const mockOnConceptSelect = jest.fn();
+  const mockOnConceptSelect = vi.fn();
   const defaultProps = {
     parameterName: 'testParameter',
     onConceptSelect: mockOnConceptSelect,
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should initialize with empty values', () => {
