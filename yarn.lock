@@ -4267,7 +4267,7 @@ __metadata:
     swr: "npm:2.2.5"
     vitest: "npm:^4.1.2"
   peerDependencies:
-    "@openmrs/esm-framework": 9.x
+    "@openmrs/esm-framework": 10.x
     dayjs: 1.x
     react: 18.x
     react-dom: 18.x
@@ -4320,7 +4320,7 @@ __metadata:
     react-image-annotate: "npm:^1.8.0"
     vitest: "npm:^4.1.2"
   peerDependencies:
-    "@openmrs/esm-framework": 9.x
+    "@openmrs/esm-framework": 10.x
     dayjs: 1.x
     i18next: 25.x
     react: 18.x
@@ -4402,7 +4402,7 @@ __metadata:
     swr: "npm:2.2.5"
     vitest: "npm:^4.1.2"
   peerDependencies:
-    "@openmrs/esm-framework": 9.x
+    "@openmrs/esm-framework": 10.x
     dayjs: 1.x
     react: 18.x
     react-dom: 18.x
