@@ -17,13 +17,13 @@ import { showNotification } from '@openmrs/esm-framework';
 import { startImportWithFile, startImportWithSubscription, useSubscription } from './import.resource';
 import styles from './import.scss';
 
+const allowedMimeTypes = ['application/zip', 'application/x-zip-compressed'];
+
 const Import: React.FC = () => {
   const { t } = useTranslation();
   const [isSubscriptionAvailable, setIsSubscriptionAvailable] = useState(false);
   const [file, setFile] = useState<File>();
   const [isFileUploading, setIsFileUploading] = useState(false);
-
-  const allowedMimeTypes = ['application/zip', 'application/x-zip-compressed']
 
   const { data: subscription, isLoading, error } = useSubscription();
 
@@ -180,7 +180,7 @@ const Import: React.FC = () => {
             />
           ) : (
             <FileUploaderDropContainer
-              accept={['application/zip', 'application/x-zip-compressed']}
+              accept={allowedMimeTypes}
               multiple
               labelText={t('importFromFileDragInfo', 'Drag and drop file here or click to upload')}
               onAddFiles={onAddFiles}
