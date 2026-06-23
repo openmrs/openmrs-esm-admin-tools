@@ -1,0 +1,56 @@
+{
+  "name": "@openmrs/esm-auditlog-app",
+  "version": "1.0.0",
+  "license": "MPL-2.0",
+  "description": "Admin audit log dashboard for OpenMRS O3",
+  "browser": "dist/openmrs-esm-auditlog-app.js",
+  "main": "src/index.ts",
+  "source": true,
+  "scripts": {
+    "start": "openmrs develop",
+    "serve": "rspack serve --mode=development",
+    "build": "rspack --mode production",
+    "analyze": "rspack --mode=production --env.analyze=true",
+    "lint": "eslint src --ext js,jsx,ts,tsx --max-warnings=0",
+    "typescript": "tsc",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest watch",
+    "extract-translations": "i18next 'src/**/*.component.tsx' --config ../../tools/i18next-parser.config.js"
+  },
+  "browserslist": [
+    "extends browserslist-config-openmrs"
+  ],
+  "keywords": [
+    "openmrs",
+    "microfrontends",
+    "audit-log"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openmrs/openmrs-esm-admin-tools.git"
+  },
+  "homepage": "https://github.com/openmrs/openmrs-esm-admin-tools#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "bugs": {
+    "url": "https://github.com/openmrs/openmrs-esm-admin-tools/issues"
+  },
+  "dependencies": {
+    "@carbon/react": "^1.83.0",
+    "dayjs": "^1.8.36",
+    "lodash-es": "^4.17.21"
+  },
+  "peerDependencies": {
+    "@openmrs/esm-framework": "9.x",
+    "dayjs": "1.x",
+    "i18next": "25.x",
+    "react": "18.x",
+    "react-i18next": "16.x",
+    "react-router-dom": "6.x",
+    "rxjs": "6.x"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.2"
+  }
+}

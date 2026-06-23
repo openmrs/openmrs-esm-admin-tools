@@ -1,0 +1,71 @@
+.filtersRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  align-items: flex-start;
+}
+
+.filterItem {
+  flex: 1 1 14rem;
+  min-width: 12rem;
+  max-width: 16rem;
+}
+
+.filterItem :global(.cds--label) {
+  margin-bottom: 0.5rem;
+  line-height: 1rem;
+}
+
+.filterItem :global(.cds--date-picker),
+.filterItem :global(.cds--date-picker-container),
+.filterItem :global(.cds--date-picker-input__wrapper) {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+}
+
+.filterItem :global(.cds--date-picker-input__wrapper) [class*='inputGroup'] {
+  width: 100%;
+}
+
+.filterItem :global(.cds--date-picker-input__wrapper) [class*='inputWrapper'] {
+  inline-size: auto;
+  min-width: 0;
+  max-width: 100%;
+  margin-left: 0.5rem;
+  flex: 1 1 auto;
+}
+
+.filterItem :global([class*='invalidText']):empty {
+  display: none;
+}
+
+.fieldWithClear {
+  position: relative;
+}
+
+.textClear,
+.dateClear {
+  position: absolute;
+  top: 1.5rem;
+  right: 0;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  z-index: 1;
+}
+
+.dateClear {
+  right: 2.5rem;
+}
+
+.clearAllItem {
+  flex: 0 0 auto;
+  align-self: flex-start;
+  margin-top: 1.5rem;
+}
+
+.clearAllItem :global(.cds--btn) {
+  white-space: nowrap;
+}
