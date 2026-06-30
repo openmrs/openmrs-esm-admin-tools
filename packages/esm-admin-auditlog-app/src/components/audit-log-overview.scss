@@ -1,0 +1,124 @@
+@use '@carbon/colors';
+@use '@carbon/layout';
+@use '@carbon/type';
+@use '@openmrs/esm-styleguide/src/vars' as *;
+
+.container {
+  padding: layout.$spacing-05 layout.$spacing-06 layout.$spacing-07;
+}
+
+.header {
+  margin-bottom: layout.$spacing-05;
+}
+
+.title {
+  @include type.type-style('heading-03');
+  color: colors.$gray-100;
+  margin: 0 0 layout.$spacing-02;
+}
+
+.subtitle {
+  @include type.type-style('body-01');
+  color: $text-02;
+  margin: 0;
+}
+
+.tableContainer {
+  background-color: $ui-02;
+  border: 1px solid $ui-03;
+  width: 100%;
+}
+
+.tableToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 3rem;
+  padding: 0 layout.$spacing-03 0 layout.$spacing-05;
+  border-bottom: 1px solid $ui-03;
+}
+
+.inlineLoading {
+  width: auto;
+  min-height: auto;
+
+  :global(.cds--inline-loading__text) {
+    @include type.type-style('label-01');
+    color: $text-03;
+  }
+}
+
+.table {
+  th {
+    @include type.type-style('heading-compact-01');
+    background-color: $ui-03;
+  }
+
+  tbody tr {
+    height: layout.$spacing-09;
+  }
+
+  // Drop the lingering blue focus box on the row expand toggle after a mouse click.
+  // Keyboard focus (focus-visible) keeps its indicator for accessibility.
+  :global(.cds--table-expand__button:focus:not(:focus-visible)) {
+    outline: none;
+    box-shadow: none;
+  }
+}
+
+.expandedRow {
+  td {
+    padding: 0 !important;
+    background-color: $ui-01;
+  }
+
+  &:hover td {
+    background-color: $ui-01;
+  }
+}
+
+.pagination {
+  :global(.cds--pagination) {
+    border-top: none;
+  }
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: layout.$spacing-02;
+  min-height: 12rem;
+  text-align: center;
+  background-color: $ui-02;
+}
+
+.emptyTitle {
+  @include type.type-style('heading-compact-02');
+  color: colors.$gray-100;
+  margin: 0;
+}
+
+.emptyBody {
+  @include type.type-style('body-01');
+  color: $text-02;
+  margin: 0;
+  max-width: 22rem;
+}
+
+.errorRow {
+  display: flex;
+  align-items: center;
+  gap: layout.$spacing-03;
+  margin-bottom: layout.$spacing-05;
+}
+
+.permissionDenied {
+  margin-top: layout.$spacing-07;
+  text-align: center;
+
+  p {
+    @include type.type-style('body-01');
+  }
+}
