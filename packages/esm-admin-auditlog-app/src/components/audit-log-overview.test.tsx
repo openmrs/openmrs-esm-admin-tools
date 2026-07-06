@@ -119,16 +119,6 @@ describe('AuditLogOverview', () => {
     });
   });
 
-  it('shows the "apply filter for diffs" hint in expanded row when no filter is active', async () => {
-    mockUseAuditLogs.mockReturnValue({ ...baseReturn, hasActiveFilter: false });
-    renderComponent();
-    const expandButtons = screen.getAllByRole('button', { name: /expand/i });
-    fireEvent.click(expandButtons[0]);
-    await waitFor(() => {
-      expect(screen.getByText('Apply at least one filter to see field-level changes.')).toBeInTheDocument();
-    });
-  });
-
   it('shows field-level diff when filter is active and changes exist', async () => {
     renderComponent();
     const expandButtons = screen.getAllByRole('button', { name: /expand/i });

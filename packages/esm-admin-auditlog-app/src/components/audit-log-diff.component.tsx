@@ -6,32 +6,16 @@ import {
   StructuredListHead,
   StructuredListRow,
   StructuredListWrapper,
-  InlineNotification,
 } from '@carbon/react';
 import type { AuditFieldDiff } from '../types';
 import styles from './audit-log-diff.scss';
 
 interface AuditLogDiffProps {
   changes: AuditFieldDiff[];
-  hasActiveFilter: boolean;
 }
 
-const AuditLogDiff: React.FC<AuditLogDiffProps> = ({ changes, hasActiveFilter }) => {
+const AuditLogDiff: React.FC<AuditLogDiffProps> = ({ changes }) => {
   const { t } = useTranslation();
-
-  // Server enforces: changes array is empty when no filter is active (bandwidth optimisation).
-  if (!hasActiveFilter) {
-    return (
-      <InlineNotification
-        kind="info"
-        lowContrast
-        hideCloseButton
-        title=""
-        subtitle={t('applyFilterForDiffs', 'Apply at least one filter to see field-level changes.')}
-        className={styles.diffHint}
-      />
-    );
-  }
 
   // Keep entries where changed is absent or true; skip only explicit false.
   const visibleChanges = changes.filter((change) => change.changed !== false);

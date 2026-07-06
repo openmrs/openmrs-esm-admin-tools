@@ -2,6 +2,8 @@ import React, { Fragment, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 import {
   Button,
   DataTable,
@@ -29,7 +31,7 @@ import {
   useSession,
   userHasAccess,
 } from '@openmrs/esm-framework';
-import { DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZES } from '../constants';
+import { DATE_DISPLAY_FORMAT, DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZES } from '../constants';
 import type { ConfigObject } from '../config-schema';
 import type { AuditLogFilterState } from '../types';
 import { useAuditLogs } from './audit-log.resource';
@@ -38,6 +40,9 @@ import AuditLogEventTag from './audit-log-event-tag.component';
 import AuditLogDiff from './audit-log-diff.component';
 import styles from './audit-log-overview.scss';
 
+dayjs.extend(utc);
+dayjs.extend(customParseFormat);
+
 // Writes a query param when the value is truthy, removes it otherwise — keeps the URL tidy.
 function setOrDelete(params: URLSearchParams, key: string, value?: string | null) {
   if (value) {
@@ -45,6 +50,11 @@ function setOrDelete(params: URLSearchParams, key: string, value?: string | null
   } else {
     params.delete(key);
   }
+}
+
+function formatChangedOn(value: string): string {
+  const parsed = dayjs.utc(value, DATE_DISPLAY_FORMAT, true);
+  return parsed.isValid() ? parsed.local().format(DATE_DISPLAY_FORMAT) : value;
 }
 
 const AuditLogOverview: React.FC = () => {
@@ -72,11 +82,7 @@ const AuditLogOverview: React.FC = () => {
   const pageSize = Number(searchParams.get('size')) || DEFAULT_PAGE_SIZE;
   const backendPage = uiPage - 1;
 
-  const { logs, totalLogs, isLoading, isValidating, error, mutate, hasActiveFilter } = useAuditLogs(
-    filters,
-    backendPage,
-    pageSize,
-  );
+  const { logs, totalLogs, isLoading, isValidating, error, mutate } = useAuditLogs(filters, backendPage, pageSize);
 
   const hasFilters =
     Boolean(filters.entityType) ||
@@ -252,6 +258,8 @@ const AuditLogOverview: React.FC = () => {
                               <TableCell key={cell.id}>
                                 {cell.info.header === 'eventType' ? (
                                   <AuditLogEventTag eventType={cell.value} />
+                                ) : cell.info.header === 'changedOn' ? (
+                                  formatChangedOn(cell.value)
                                 ) : (
                                   cell.value
                                 )}
@@ -260,7 +268,7 @@ const AuditLogOverview: React.FC = () => {
                           </TableExpandRow>
                           {row.isExpanded && (
                             <TableExpandedRow colSpan={headers.length + 1} className={styles.expandedRow}>
-                              <AuditLogDiff changes={original?.changes ?? []} hasActiveFilter={hasActiveFilter} />
+                              <AuditLogDiff changes={original?.changes ?? []} />
                             </TableExpandedRow>
                           )}
                         </Fragment>
