@@ -1,0 +1,34 @@
+@use '@carbon/layout';
+@use '@carbon/type';
+@use '@openmrs/esm-styleguide/src/vars' as *;
+
+.diffWrapper {
+  padding: layout.$spacing-05 layout.$spacing-06;
+}
+
+.diffTitle {
+  @include type.type-style('label-01');
+  color: $text-02;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 layout.$spacing-03;
+}
+
+.oldValue {
+  @include type.type-style('body-compact-01');
+  color: $danger;
+  text-decoration: line-through;
+}
+
+.newValue {
+  @include type.type-style('body-compact-01');
+  color: $support-02;
+  font-weight: 600;
+}
+
+.noChanges {
+  @include type.type-style('body-compact-01');
+  color: $text-02;
+  padding: layout.$spacing-05 layout.$spacing-06;
+  margin: 0;
+}
