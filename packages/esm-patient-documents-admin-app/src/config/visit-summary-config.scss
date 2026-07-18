@@ -1,0 +1,104 @@
+@use '@carbon/colors';
+@use '@carbon/layout';
+@use '@carbon/type';
+
+.grid {
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.instructions {
+  @include type.type-style('body-01');
+  margin-bottom: layout.$spacing-05;
+}
+
+.sectionList {
+  list-style: none;
+  margin: 0 0 layout.$spacing-06 0;
+  padding: 0;
+  border: 1px solid colors.$gray-20;
+}
+
+.sectionRow {
+  display: flex;
+  align-items: center;
+  gap: layout.$spacing-03;
+  padding: layout.$spacing-02 layout.$spacing-04;
+  background-color: colors.$white-0;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid colors.$gray-20;
+  }
+}
+
+.sectionPosition {
+  @include type.type-style('label-01');
+  min-width: layout.$spacing-06;
+  text-align: right;
+  color: colors.$gray-70;
+}
+
+.reorderButtons {
+  display: flex;
+  align-items: center;
+}
+
+.sectionLabel {
+  @include type.type-style('body-compact-01');
+  flex: 1;
+}
+
+.lockedToggle {
+  display: flex;
+  align-items: center;
+  gap: layout.$spacing-02;
+}
+
+.tooltipTrigger {
+  border: none;
+  background: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: colors.$gray-70;
+}
+
+.previewVisitInput {
+  margin-bottom: layout.$spacing-05;
+}
+
+.actions {
+  display: flex;
+  gap: layout.$spacing-03;
+  margin-bottom: layout.$spacing-06;
+}
+
+.retryButton {
+  margin-top: layout.$spacing-04;
+}
+
+.previewPlaceholder {
+  @include type.type-style('body-01');
+  min-height: layout.$spacing-13;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.previewObject {
+  width: 100%;
+  min-height: 40rem;
+  border: 1px solid colors.$gray-20;
+}
+
+.emptyStateTitle {
+  @include type.type-style('heading-compact-01');
+  margin-bottom: layout.$spacing-03;
+}
+
+.emptyStateBody {
+  @include type.type-style('body-01');
+}
