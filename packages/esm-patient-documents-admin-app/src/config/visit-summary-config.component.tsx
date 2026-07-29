@@ -7,9 +7,7 @@ import {
   IconButton,
   InlineLoading,
   InlineNotification,
-  Layer,
   SkeletonText,
-  TextInput,
   Tile,
   Toggle,
   Tooltip,
@@ -18,11 +16,13 @@ import { ArrowDown, ArrowUp, Information } from '@carbon/react/icons';
 import { useTranslation } from 'react-i18next';
 import { showSnackbar } from '@openmrs/esm-framework';
 import {
-  fetchVisitSummaryPdf,
+  fetchVisitSummaryPreviewPdf,
+  getVisitSummaryPreviewErrorType,
   saveSectionSettings,
   sectionPropertyPrefix,
   useVisitSummarySections,
   type SectionSettingWrite,
+  type VisitSummaryPreviewErrorType,
 } from './config.resource';
 import type { VisitSummarySection } from '../types';
 import styles from './visit-summary-config.scss';
@@ -31,7 +31,7 @@ type PreviewState =
   | { status: 'idle' }
   | { status: 'loading' }
   | { status: 'ready'; url: string }
-  | { status: 'error'; message: string };
+  | { status: 'error'; errorType: VisitSummaryPreviewErrorType };
 
 /**
  * Sections rendered as page furniture by the PDF stylesheet (the footer is
@@ -56,8 +56,8 @@ const VisitSummaryConfig: React.FC = () => {
   const [localSections, setLocalSections] = useState<Array<VisitSummarySection>>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [preview, setPreview] = useState<PreviewState>({ status: 'idle' });
-  const [previewVisitUuid, setPreviewVisitUuid] = useState('');
   const previewUrlRef = useRef<string | null>(null);
+  const previewAbortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     if (sections) {
@@ -67,8 +67,9 @@ const VisitSummaryConfig: React.FC = () => {
 
   useEffect(() => {
     return () => {
+      previewAbortControllerRef.current?.abort();
       if (previewUrlRef.current) {
-        URL.revokeObjectURL(previewUrlRef.current);
+        window.URL.revokeObjectURL(previewUrlRef.current);
       }
     };
   }, []);
@@ -166,22 +167,29 @@ const VisitSummaryConfig: React.FC = () => {
   }, [enabledChanges, localSections, mutate, orderChanged, t]);
 
   const runPreview = useCallback(async () => {
+    previewAbortControllerRef.current?.abort();
+    const abortController = new AbortController();
+    previewAbortControllerRef.current = abortController;
+
     setPreview({ status: 'loading' });
     try {
-      const blob = await fetchVisitSummaryPdf(previewVisitUuid.trim());
-      if (previewUrlRef.current) {
-        URL.revokeObjectURL(previewUrlRef.current);
+      const blob = await fetchVisitSummaryPreviewPdf(abortController);
+      if (abortController.signal.aborted) {
+        return;
       }
-      const url = URL.createObjectURL(blob);
+      if (previewUrlRef.current) {
+        window.URL.revokeObjectURL(previewUrlRef.current);
+      }
+      const url = window.URL.createObjectURL(blob);
       previewUrlRef.current = url;
       setPreview({ status: 'ready', url });
     } catch (previewError) {
-      setPreview({
-        status: 'error',
-        message: previewError instanceof Error ? previewError.message : String(previewError),
-      });
+      if (abortController.signal.aborted) {
+        return;
+      }
+      setPreview({ status: 'error', errorType: getVisitSummaryPreviewErrorType(previewError) });
     }
-  }, [previewVisitUuid]);
+  }, []);
 
   const handleSaveAndPreview = useCallback(async () => {
     const saved = await handleSave();
@@ -248,6 +256,34 @@ const VisitSummaryConfig: React.FC = () => {
       </Grid>
     );
   }
+
+  const previewErrorMessages: Record<VisitSummaryPreviewErrorType, { title: string; subtitle: string }> = {
+    notAuthorized: {
+      title: t('previewNotAuthorizedTitle', 'Not authorized'),
+      subtitle: t(
+        'sectionsFetchForbiddenSubtitle',
+        'Your account lacks the Get Global Properties privilege required to view this page.',
+      ),
+    },
+    endpointMissing: {
+      title: t('previewEndpointMissingTitle', 'Preview not available on this server'),
+      subtitle: t(
+        'previewEndpointMissing',
+        'The patientdocuments module running on this server is missing or too old to provide the sample preview. Update it and try again.',
+      ),
+    },
+    generationFailed: {
+      title: t('previewGenerationFailedTitle', 'PDF generation failed'),
+      subtitle: t(
+        'previewGenerationFailed',
+        'The server could not generate the sample preview. Try again — if the problem persists, check the server logs.',
+      ),
+    },
+    network: {
+      title: t('previewNetworkErrorTitle', 'Network error'),
+      subtitle: t('previewNetworkError', 'The preview could not be retrieved. Check your network connection.'),
+    },
+  };
 
   return (
     <Grid className={styles.grid}>
@@ -345,28 +381,17 @@ const VisitSummaryConfig: React.FC = () => {
             </li>
           ))}
         </ol>
-        <Layer className={styles.previewVisitInput}>
-          <TextInput
-            id="preview-visit-uuid"
-            labelText={t('previewVisitUuid', 'Visit UUID for preview')}
-            helperText={t(
-              'previewVisitUuidHelper',
-              'The preview renders the visit summary of this visit with the saved settings.',
-            )}
-            value={previewVisitUuid}
-            disabled={isSaving}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => setPreviewVisitUuid(event.target.value)}
-          />
-        </Layer>
+        <p className={styles.previewHelper}>
+          {t(
+            'previewHelper',
+            'The preview is rendered from sample data with the saved settings. No patient record is used.',
+          )}
+        </p>
         <div className={styles.actions}>
           <Button kind="primary" disabled={!isDirty || isSaving} onClick={handleSave}>
             {isSaving ? <InlineLoading description={t('saving', 'Saving...')} /> : t('saveButton', 'Save')}
           </Button>
-          <Button
-            kind="secondary"
-            disabled={isSaving || preview.status === 'loading' || previewVisitUuid.trim() === ''}
-            onClick={handleSaveAndPreview}
-          >
+          <Button kind="secondary" disabled={isSaving || preview.status === 'loading'} onClick={handleSaveAndPreview}>
             {t('saveAndPreviewButton', 'Save & preview')}
           </Button>
         </div>
@@ -388,12 +413,15 @@ const VisitSummaryConfig: React.FC = () => {
               kind="error"
               lowContrast
               hideCloseButton
-              title={t('previewError', "Couldn't generate the preview")}
-              subtitle={preview.message}
+              title={previewErrorMessages[preview.errorType].title}
+              subtitle={previewErrorMessages[preview.errorType].subtitle}
             />
-            <Button kind="tertiary" onClick={runPreview} className={styles.retryButton}>
-              {t('retry', 'Retry')}
-            </Button>
+            {/* Retrying cannot grant a privilege the account does not have. */}
+            {preview.errorType !== 'notAuthorized' && (
+              <Button kind="tertiary" onClick={runPreview} className={styles.retryButton}>
+                {t('retry', 'Retry')}
+              </Button>
+            )}
           </>
         )}
         {preview.status === 'ready' && (

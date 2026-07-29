@@ -5,6 +5,12 @@ import type { SystemSetting, VisitSummarySection } from '../types';
 export const sectionsUrl = `${restBaseUrl}/patientdocuments/visitSummary/sections`;
 
 /**
+ * Renders a PDF from sample in-memory data, honouring the same enabled/order
+ * configuration as the real visit summary
+ */
+export const previewUrl = `${restBaseUrl}/patientdocuments/visitSummary/preview`;
+
+/**
  * Matches the backend convention defined in
  * PatientDocumentsConstants.VISIT_SUMMARY_SECTION_PREFIX.
  */
@@ -86,22 +92,42 @@ export async function saveSectionSettings(
   return failed;
 }
 
+export type VisitSummaryPreviewErrorType = 'notAuthorized' | 'endpointMissing' | 'generationFailed' | 'network';
+
 /**
- * Fetches the visit summary PDF as a blob. Uses window.fetch rather than
- * openmrsFetch because openmrsFetch parses response bodies as text/JSON,
- * which corrupts binary content.
+ * openmrsFetch reads the body off a clone, so the stream is still intact for blob().
+ * A body that fails to read is marked so the classifier can tell it apart from a
+ * request that never reached the server.
  */
-export async function fetchVisitSummaryPdf(visitUuid: string, abortController?: AbortController): Promise<Blob> {
-  const url = `${window.openmrsBase}${restBaseUrl}/patientdocuments/visitSummary?visitUuid=${encodeURIComponent(
-    visitUuid,
-  )}&inline=true`;
-  const response = await fetch(url, {
-    credentials: 'include',
+export async function fetchVisitSummaryPreviewPdf(abortController?: AbortController): Promise<Blob> {
+  const response = await openmrsFetch(previewUrl, {
     headers: { Accept: 'application/pdf' },
     signal: abortController?.signal,
   });
-  if (!response.ok) {
-    throw new Error(`Failed to generate the visit summary PDF (HTTP ${response.status})`);
+  try {
+    return await response.blob();
+  } catch (error) {
+    throw Object.assign(new Error('Failed to read the visit summary preview PDF response body'), {
+      isBlobReadError: true,
+      cause: error,
+    });
   }
-  return response.blob();
+}
+
+/** 404 means the running patientdocuments module predates the preview endpoint. */
+export function getVisitSummaryPreviewErrorType(error: unknown): VisitSummaryPreviewErrorType {
+  const status = (error as { response?: { status?: number } })?.response?.status;
+  if (status === 403) {
+    return 'notAuthorized';
+  }
+  if (status === 404) {
+    return 'endpointMissing';
+  }
+  if (typeof status === 'number') {
+    return 'generationFailed';
+  }
+  if ((error as { isBlobReadError?: boolean })?.isBlobReadError) {
+    return 'generationFailed';
+  }
+  return 'network';
 }
