@@ -1,14 +1,14 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Layer, ClickableTile } from '@carbon/react';
-import { ArrowRightIcon } from '@openmrs/esm-framework';
+import { ArrowRightIcon, ConfigurableLink } from '@openmrs/esm-framework';
 import styles from './admin-ocl-card-link.scss';
 
 const OpenConceptLabCardLink: React.FC = () => {
   const { t } = useTranslation();
   return (
     <Layer>
-      <a className={styles.cardLink} href={`${window.spaBase}/ocl`} target="_blank" rel="noopener noreferrer">
+      <ConfigurableLink className={styles.cardLink} to={`${window.spaBase}/ocl`}>
         <ClickableTile>
           <div>
             <div className="heading">{t('manageConcepts', 'Manage Concepts')}</div>
@@ -18,7 +18,7 @@ const OpenConceptLabCardLink: React.FC = () => {
             <ArrowRightIcon size={16} />
           </div>
         </ClickableTile>
-      </a>
+      </ConfigurableLink>
     </Layer>
   );
 };
