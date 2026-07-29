@@ -8,7 +8,7 @@ const OpenConceptLabCardLink: React.FC = () => {
   const { t } = useTranslation();
   return (
     <Layer>
-      <a className={styles.cardLink} href={`${window.spaBase}/ocl`} target="_blank" rel="norefferer">
+      <a className={styles.cardLink} href={`${window.spaBase}/ocl`} target="_blank" rel="noopener noreferrer">
         <ClickableTile>
           <div>
             <div className="heading">{t('manageConcepts', 'Manage Concepts')}</div>
