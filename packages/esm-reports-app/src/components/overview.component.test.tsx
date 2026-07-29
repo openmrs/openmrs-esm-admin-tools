@@ -1,4 +1,5 @@
 import React from 'react';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { renderWithSwr } from '@tools/test-helpers';
 import { waitForLoadingToFinish } from '@tools/index';
@@ -8,39 +9,39 @@ import { mockReports, mockSession } from '@mocks/index';
 import { useReports } from './reports.resource';
 
 // Mock dependencies
-jest.mock('@openmrs/esm-framework', () => ({
-  openmrsFetch: jest.fn(),
-  useConfig: jest.fn(),
-  useSession: jest.fn(),
-  useLayoutType: jest.fn(() => 'desktop'),
-  isDesktop: jest.fn(() => true),
-  userHasAccess: jest.fn(() => true),
-  ExtensionSlot: jest.fn(({ name }) => <div data-testid={`extension-slot-${name}`} />),
-  navigate: jest.fn(),
-  showModal: jest.fn(),
-  getGlobalStore: jest.fn(() => ({
-    getState: jest.fn(),
-    setState: jest.fn(),
-    subscribe: jest.fn(),
+vi.mock('@openmrs/esm-framework', () => ({
+  openmrsFetch: vi.fn(),
+  useConfig: vi.fn(),
+  useSession: vi.fn(),
+  useLayoutType: vi.fn(() => 'desktop'),
+  isDesktop: vi.fn(() => true),
+  userHasAccess: vi.fn(() => true),
+  ExtensionSlot: vi.fn(({ name }) => <div data-testid={`extension-slot-${name}`} />),
+  navigate: vi.fn(),
+  showModal: vi.fn(),
+  getGlobalStore: vi.fn(() => ({
+    getState: vi.fn(),
+    setState: vi.fn(),
+    subscribe: vi.fn(),
   })),
 }));
 
-const mockUseReports = jest.mocked(useReports);
+const mockUseReports = vi.mocked(useReports);
 
-jest.mock('./reports.resource', () => ({
-  useReports: jest.fn(),
-  downloadReport: jest.fn(),
-  downloadMultipleReports: jest.fn(),
-  preserveReport: jest.fn(),
+vi.mock('./reports.resource', () => ({
+  useReports: vi.fn(),
+  downloadReport: vi.fn(),
+  downloadMultipleReports: vi.fn(),
+  preserveReport: vi.fn(),
 }));
 
-const mockUseSession = jest.mocked(useSession);
-const mockOpenmrsFetch = openmrsFetch as jest.Mock;
-const mockUseConfig = useConfig as jest.Mock;
+const mockUseSession = vi.mocked(useSession);
+const mockOpenmrsFetch = vi.mocked(openmrsFetch);
+const mockUseConfig = vi.mocked(useConfig);
 
 describe('OverviewComponent', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockUseSession.mockReturnValue(mockSession.data);
   });
 
@@ -54,7 +55,7 @@ describe('OverviewComponent', () => {
       reportsTotalCount: mockReports.length,
       error: null,
       isValidating: false,
-      mutateReports: jest.fn(),
+      mutateReports: vi.fn(),
     });
 
     renderWithSwr(<OverviewComponent />);
@@ -108,7 +109,7 @@ describe('OverviewComponent', () => {
       reportsTotalCount: mockReports.length,
       error: null,
       isValidating: false,
-      mutateReports: jest.fn(),
+      mutateReports: vi.fn(),
     });
 
     renderWithSwr(<OverviewComponent />);

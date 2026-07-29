@@ -1,21 +1,21 @@
 import React from 'react';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom';
 import ConceptSearchInput from './concept-search-input.component';
 
 // Mock the dependencies
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, defaultValue: string) => defaultValue,
   }),
 }));
 
-jest.mock('@openmrs/esm-framework', () => ({
-  useDebounce: jest.fn((value) => value),
+vi.mock('@openmrs/esm-framework', () => ({
+  useDebounce: vi.fn((value) => value),
 }));
 
-jest.mock('./concept-search-results', () => {
-  return function MockConceptSearchResults({ searchTerm, onConceptSelect }: any) {
+vi.mock('./concept-search-results', () => ({
+  default: function MockConceptSearchResults({ searchTerm, onConceptSelect }: any) {
     if (!searchTerm) return null;
 
     return (
@@ -28,18 +28,18 @@ jest.mock('./concept-search-results', () => {
         </div>
       </div>
     );
-  };
-});
+  },
+}));
 
 describe('ConceptSearchInput', () => {
-  const mockOnConceptSelect = jest.fn();
+  const mockOnConceptSelect = vi.fn();
   const defaultProps = {
     parameterName: 'testParameter',
     onConceptSelect: mockOnConceptSelect,
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should render search input with default placeholder', () => {

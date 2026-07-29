@@ -1,6 +1,8 @@
 import React from 'react';
+import { vi, describe, it, expect } from 'vitest';
 import { screen, waitFor } from '@testing-library/react';
-import { usePagination } from '@openmrs/esm-framework';
+import { type FetchResponse, usePagination } from '@openmrs/esm-framework';
+import { type ImportItem } from '../../types';
 import { renderWithSwr } from '@tools/test-helpers';
 import { mockImportItems, mockPreviousImports } from '@mocks/openconceptlab.mock';
 import { getImportDetails } from './import-items.resource';
@@ -10,26 +12,30 @@ const defaultProps = {
   importUuid: mockPreviousImports[1].uuid,
 };
 
-const mockGetImportDetails = getImportDetails as jest.Mock;
-const mockUsePagination = usePagination as jest.Mock;
+const mockGetImportDetails = vi.mocked(getImportDetails);
+const mockUsePagination = vi.mocked(usePagination);
 
-jest.mock('./import-items.resource', () => {
-  const originalModule = jest.requireActual('./import-items.resource');
+vi.mock('./import-items.resource', async () => {
+  const originalModule = (await vi.importActual('./import-items.resource')) as object;
 
   return {
     ...originalModule,
-    getImportDetails: jest.fn(),
+    getImportDetails: vi.fn(),
   };
 });
 
 describe('Import items', () => {
   it('renders a tabular overview', async () => {
-    mockGetImportDetails.mockReturnValue({ status: 200, ok: true, data: mockImportItems });
+    mockGetImportDetails.mockResolvedValue({
+      status: 200,
+      ok: true,
+      data: mockImportItems,
+    } as unknown as FetchResponse<{ results: ImportItem[] }>);
     mockUsePagination.mockReturnValue({
       currentPage: 1,
       goTo: () => {},
       results: mockImportItems,
-    });
+    } as unknown as ReturnType<typeof usePagination>);
     renderWithSwr(<ImportItems {...defaultProps} />);
     await waitForLoadingToFinish();
 
@@ -38,12 +44,16 @@ describe('Import items', () => {
   });
 
   it('renders the import items correctly', async () => {
-    mockGetImportDetails.mockReturnValue({ status: 200, ok: true, data: mockImportItems });
+    mockGetImportDetails.mockResolvedValue({
+      status: 200,
+      ok: true,
+      data: mockImportItems,
+    } as unknown as FetchResponse<{ results: ImportItem[] }>);
     mockUsePagination.mockReturnValue({
       currentPage: 1,
       goTo: () => {},
       results: mockImportItems,
-    });
+    } as unknown as ReturnType<typeof usePagination>);
     renderWithSwr(<ImportItems {...defaultProps} />);
     await waitForLoadingToFinish();
 
