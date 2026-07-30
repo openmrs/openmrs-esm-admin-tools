@@ -9,20 +9,22 @@ export interface LinkCardProps extends TileProps {
   children?: React.ReactNode;
 }
 
+// ClickableTile forwards extra props to its underlying anchor, but Carbon's
+// ClickableTileProps type omits `target`, so pass it via a spread.
+const newTabProps = { target: '_blank', rel: 'noopener noreferrer' };
+
 export const LinkCard: React.FC<LinkCardProps> = ({ header, viewLink, children }) => {
   return (
     <Layer>
-      <a className={styles.cardLink} href={viewLink} target="_blank" rel="noopener noreferrer">
-        <ClickableTile className={styles.overviewCard}>
-          <div>
-            <div className={styles.heading}>{header}</div>
-            <div className={styles.content}>{children}</div>
-          </div>
-          <div className={styles.iconWrapper}>
-            <ArrowRightIcon size={16} />
-          </div>
-        </ClickableTile>
-      </a>
+      <ClickableTile className={styles.overviewCard} href={viewLink} {...newTabProps}>
+        <div>
+          <div className={styles.heading}>{header}</div>
+          <div className={styles.content}>{children}</div>
+        </div>
+        <div className={styles.iconWrapper}>
+          <ArrowRightIcon size={16} />
+        </div>
+      </ClickableTile>
     </Layer>
   );
 };
