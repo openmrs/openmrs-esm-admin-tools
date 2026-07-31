@@ -98,10 +98,14 @@ export type VisitSummaryPreviewErrorType = 'notAuthorized' | 'endpointMissing' |
  * openmrsFetch reads the body off a clone, so the stream is still intact for blob().
  * A body that fails to read is marked so the classifier can tell it apart from a
  * request that never reached the server.
+ *
+ * Deliberately sends no Accept header: a server without this endpoint reformats its
+ * 404 to match `Accept: application/pdf`, fails, and answers 500 with an HTML error
+ * page, which hides the "module too old" case. Left unset, an old server returns a
+ * JSON 404 and a current one still returns the PDF.
  */
 export async function fetchVisitSummaryPreviewPdf(abortController?: AbortController): Promise<Blob> {
   const response = await openmrsFetch(previewUrl, {
-    headers: { Accept: 'application/pdf' },
     signal: abortController?.signal,
   });
   try {

@@ -226,7 +226,7 @@ const VisitSummaryConfig: React.FC = () => {
                     'sectionsFetchForbiddenSubtitle',
                     'Your account lacks the Get Global Properties privilege required to view this page.',
                   )
-                : t('sectionsFetchErrorSubtitle', 'Check that the patientdocuments module is running.')
+                : t('sectionsFetchErrorSubtitle', 'Check that the patientdocuments module is installed and up to date.')
             }
           />
           {!isForbidden && (

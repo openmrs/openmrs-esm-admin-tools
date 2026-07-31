@@ -1,14 +1,15 @@
 {
   "$schema": "https://json.openmrs.org/routes.schema.json",
   "backendDependencies": {
-    "patientdocuments": ">=1.0.0",
+    "patientdocuments": ">=1.2.0",
     "webservices.rest": ">=2.2.0"
   },
   "extensions": [
     {
       "name": "visit-summary-config-card-link",
       "slot": "system-admin-page-card-link-slot",
-      "component": "visitSummaryConfigCardLink"
+      "component": "visitSummaryConfigCardLink",
+      "privileges": ["Manage Global Properties"]
     }
   ],
   "pages": [

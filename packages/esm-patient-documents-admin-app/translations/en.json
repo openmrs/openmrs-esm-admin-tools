@@ -32,7 +32,7 @@
   "saving": "Saving...",
   "sectionListLabel": "Visit summary sections",
   "sectionsFetchError": "Couldn't load the visit summary sections",
-  "sectionsFetchErrorSubtitle": "Check that the patientdocuments module is running.",
+  "sectionsFetchErrorSubtitle": "Check that the patientdocuments module is installed and up to date.",
   "sectionsFetchForbiddenSubtitle": "Your account lacks the Get Global Properties privilege required to view this page.",
   "toggleOff": "Off",
   "toggleOn": "On",

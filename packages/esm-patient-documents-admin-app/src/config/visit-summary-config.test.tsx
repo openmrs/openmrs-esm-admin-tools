@@ -175,7 +175,9 @@ describe('VisitSummaryConfig', () => {
     expect(requestUrl).not.toContain('visitUuid');
     // openmrsFetch prepends the OpenMRS base itself; an absolute path would double it.
     expect(requestUrl).not.toContain(window.openmrsBase);
-    expect(requestInit).toEqual(expect.objectContaining({ headers: { Accept: 'application/pdf' } }));
+    // No Accept header: it makes an old server reformat its 404 into a 500 HTML page,
+    // which would misreport a too-old module as a generation failure.
+    expect((requestInit as RequestInit).headers).toBeUndefined();
     expect((requestInit as RequestInit).signal).toBeInstanceOf(AbortSignal);
     expect(window.URL.createObjectURL).toHaveBeenCalledWith(mockPdfBlob);
   });
