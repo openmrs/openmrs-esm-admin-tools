@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json.openmrs.org/routes.schema.json",
+  "pages": [
+    {
+      "route": "metadataexport",
+      "component": "root",
+      "online": true
+    }
+  ],
+  "extensions": [
+  ],
+  "workspaces": [
+    {
+      "name": "new-package-workspace",
+      "component": "newPackageWorkspace",
+      "title": "New package",
+      "type": "form",
+      "canMaximize": true,
+      "width": "narrow"
+    }
+  ]
+}
