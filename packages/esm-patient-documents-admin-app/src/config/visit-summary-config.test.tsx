@@ -2,14 +2,17 @@ import React from 'react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
-import { type FetchResponse, openmrsFetch } from '@openmrs/esm-framework';
+import { type FetchResponse, type Session, openmrsFetch, userHasAccess, useSession } from '@openmrs/esm-framework';
 import { renderWithSwr } from '@tools/test-helpers';
+import { mockSession } from '@mocks/index';
 import { saveSectionSettings } from './config.resource';
 import VisitSummaryConfig from './visit-summary-config.component';
 import type { VisitSummarySection } from '../types';
 
 const mockOpenmrsFetch = vi.mocked(openmrsFetch);
 const mockSaveSectionSettings = vi.mocked(saveSectionSettings);
+const mockUseSession = vi.mocked(useSession);
+const mockUserHasAccess = vi.mocked(userHasAccess);
 
 vi.mock('./config.resource', async () => {
   const originalModule = (await vi.importActual('./config.resource')) as object;
@@ -30,6 +33,8 @@ const mockPdfBlob = new Blob(['%PDF-1.4'], { type: 'application/pdf' });
 const mockObjectUrl = 'blob:mock-visit-summary-preview-pdf';
 
 const forbiddenText = 'Your account lacks the Get Global Properties privilege required to view this page.';
+const readOnlyTitle = 'These settings are read-only for your account';
+const readOnlyText = /changing them requires the Manage Global Properties privilege/i;
 const endpointMissingText = /module running on this server is missing or too old/i;
 const generationFailedText = /the server could not generate the sample preview/i;
 const networkErrorText = /check your network connection/i;
@@ -62,6 +67,11 @@ describe('VisitSummaryConfig', () => {
     mockSaveSectionSettings.mockResolvedValue([]);
     window.URL.createObjectURL = vi.fn(() => mockObjectUrl);
     window.URL.revokeObjectURL = vi.fn();
+    // The framework mock defaults to an unauthenticated session and a bare
+    // userHasAccess, which would read as read-only. Every test below except the
+    // read-only ones exercises the page as a user who can save.
+    mockUseSession.mockReturnValue(mockSession.data as unknown as Session);
+    mockUserHasAccess.mockReturnValue(true);
   });
 
   it('renders the sections sorted by order, with locked sections disabled', async () => {
@@ -303,6 +313,100 @@ describe('VisitSummaryConfig', () => {
 
     expect(await screen.findByLabelText('Visit summary PDF preview')).toHaveAttribute('data', mockObjectUrl);
     expect(screen.queryByText(generationFailedText)).not.toBeInTheDocument();
+  });
+
+  it('checks the Manage Global Properties privilege against the session user', async () => {
+    mockFetch();
+    renderWithSwr(<VisitSummaryConfig />);
+
+    await screen.findAllByRole('listitem');
+
+    expect(mockUserHasAccess).toHaveBeenCalledWith('Manage Global Properties', mockSession.data.user);
+  });
+
+  it('does not show the read-only notice when the user can save', async () => {
+    mockFetch();
+    renderWithSwr(<VisitSummaryConfig />);
+
+    await screen.findAllByRole('listitem');
+
+    expect(screen.queryByText(readOnlyTitle)).not.toBeInTheDocument();
+    expect(screen.queryByText(readOnlyText)).not.toBeInTheDocument();
+  });
+
+  describe('when the user can view but not save', () => {
+    beforeEach(() => {
+      mockUserHasAccess.mockReturnValue(false);
+    });
+
+    it('disables every mutating control', async () => {
+      mockFetch();
+      renderWithSwr(<VisitSummaryConfig />);
+
+      await screen.findAllByRole('listitem');
+
+      // Toggles: the one that is normally editable, and the locked one.
+      expect(screen.getByRole('switch', { name: 'Include Vitals' })).toBeDisabled();
+      expect(screen.getByRole('switch', { name: 'Include Allergies' })).toBeDisabled();
+      expect(screen.getByRole('switch', { name: 'Facility header is always included' })).toBeDisabled();
+
+      // Reorder arrows, including the ones that would be enabled for a saver.
+      const reorderButtons = screen.getAllByRole('button', { name: /^Move / });
+      expect(reorderButtons).toHaveLength(6);
+      reorderButtons.forEach((button) => expect(button).toBeDisabled());
+
+      expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
+      expect(screen.getByRole('button', { name: 'Save & preview' })).toBeDisabled();
+    });
+
+    it('explains the missing save privilege instead of the forbidden-fetch error', async () => {
+      mockFetch();
+      renderWithSwr(<VisitSummaryConfig />);
+
+      expect(await screen.findByText(readOnlyTitle)).toBeVisible();
+      expect(screen.getByText(readOnlyText)).toBeVisible();
+
+      // This is the can-load-but-not-save state, not the cannot-load-at-all one.
+      expect(screen.queryByText(forbiddenText)).not.toBeInTheDocument();
+      expect(screen.queryByText("Couldn't load the visit summary sections")).not.toBeInTheDocument();
+    });
+
+    it('keeps the notice non-dismissible', async () => {
+      mockFetch();
+      renderWithSwr(<VisitSummaryConfig />);
+
+      await screen.findByText(readOnlyTitle);
+
+      expect(screen.queryByRole('button', { name: /close notification/i })).not.toBeInTheDocument();
+    });
+
+    it('still renders the sections in order with their locked-section tooltips', async () => {
+      const user = userEvent.setup();
+      mockFetch();
+      renderWithSwr(<VisitSummaryConfig />);
+
+      const rows = await screen.findAllByRole('listitem');
+      expect(rows[0]).toHaveTextContent('Facility header');
+      expect(rows[1]).toHaveTextContent('Vitals');
+      expect(rows[2]).toHaveTextContent('Allergies');
+
+      await user.click(screen.getByRole('button', { name: 'This section is always included' }));
+      expect(await screen.findByText('This section is always included')).toBeVisible();
+    });
+
+    it('does not save when the sections cannot be edited', async () => {
+      const user = userEvent.setup();
+      mockFetch();
+      renderWithSwr(<VisitSummaryConfig />);
+
+      await user.click(await screen.findByRole('switch', { name: 'Include Vitals' }));
+      await user.click(screen.getByRole('button', { name: 'Save' }));
+      await user.click(screen.getByRole('button', { name: 'Save & preview' }));
+
+      expect(mockSaveSectionSettings).not.toHaveBeenCalled();
+      expect(previewCall()).toBeUndefined();
+      expect(screen.getByRole('switch', { name: 'Include Vitals' })).toBeChecked();
+    });
   });
 
   it('revokes the preview object URL on unmount', async () => {

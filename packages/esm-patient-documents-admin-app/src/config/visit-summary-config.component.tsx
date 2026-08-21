@@ -14,7 +14,8 @@ import {
 } from '@carbon/react';
 import { ArrowDown, ArrowUp, Information } from '@carbon/react/icons';
 import { useTranslation } from 'react-i18next';
-import { showSnackbar } from '@openmrs/esm-framework';
+import { showSnackbar, userHasAccess, useSession } from '@openmrs/esm-framework';
+import { PRIVILEGE_MANAGE_GLOBAL_PROPERTIES } from '../constants';
 import {
   fetchVisitSummaryPreviewPdf,
   getVisitSummaryPreviewErrorType,
@@ -51,7 +52,16 @@ function sortedByOrder(sections: Array<VisitSummarySection>): Array<VisitSummary
 
 const VisitSummaryConfig: React.FC = () => {
   const { t } = useTranslation();
+  const session = useSession();
   const { sections, error, isLoading, mutate } = useVisitSummarySections();
+
+  /**
+   * Reading the sections only needs Get Global Properties, so a user without
+   * Manage Global Properties can reach this page by direct URL even though the
+   * admin card link is hidden from them. They get the page read-only rather
+   * than editable controls whose every save is rejected by the server.
+   */
+  const canSave = userHasAccess(PRIVILEGE_MANAGE_GLOBAL_PROPERTIES, session?.user);
 
   const [localSections, setLocalSections] = useState<Array<VisitSummarySection>>([]);
   const [isSaving, setIsSaving] = useState(false);
@@ -288,6 +298,19 @@ const VisitSummaryConfig: React.FC = () => {
   return (
     <Grid className={styles.grid}>
       <Column sm={4} md={8} lg={8}>
+        {!canSave && (
+          <InlineNotification
+            kind="info"
+            lowContrast
+            hideCloseButton
+            className={styles.readOnlyNotice}
+            title={t('readOnlyTitle', 'These settings are read-only for your account')}
+            subtitle={t(
+              'readOnlySubtitle',
+              'You can see the current visit summary sections and their order, but changing them requires the Manage Global Properties privilege. Ask an administrator to grant it.',
+            )}
+          />
+        )}
         <p className={styles.instructions}>
           {t(
             'instructions',
@@ -304,7 +327,7 @@ const VisitSummaryConfig: React.FC = () => {
                   size="sm"
                   align="right"
                   label={t('moveUp', 'Move {{section}} up', { section: section.label })}
-                  disabled={index === 0 || isSaving || isPinnedToBottom(section)}
+                  disabled={!canSave || index === 0 || isSaving || isPinnedToBottom(section)}
                   onClick={() => handleMove(index, -1)}
                 >
                   <ArrowUp />
@@ -315,6 +338,7 @@ const VisitSummaryConfig: React.FC = () => {
                   align="right"
                   label={t('moveDown', 'Move {{section}} down', { section: section.label })}
                   disabled={
+                    !canSave ||
                     index === localSections.length - 1 ||
                     isSaving ||
                     isPinnedToBottom(section) ||
@@ -335,7 +359,7 @@ const VisitSummaryConfig: React.FC = () => {
                   labelA={t('toggleOff', 'Off')}
                   labelB={t('toggleOn', 'On')}
                   toggled={section.enabled}
-                  disabled={isSaving}
+                  disabled={!canSave || isSaving}
                   onToggle={(checked: boolean) => handleToggle(section.sectionKey, checked)}
                 />
               ) : (
@@ -388,10 +412,14 @@ const VisitSummaryConfig: React.FC = () => {
           )}
         </p>
         <div className={styles.actions}>
-          <Button kind="primary" disabled={!isDirty || isSaving} onClick={handleSave}>
+          <Button kind="primary" disabled={!canSave || !isDirty || isSaving} onClick={handleSave}>
             {isSaving ? <InlineLoading description={t('saving', 'Saving...')} /> : t('saveButton', 'Save')}
           </Button>
-          <Button kind="secondary" disabled={isSaving || preview.status === 'loading'} onClick={handleSaveAndPreview}>
+          <Button
+            kind="secondary"
+            disabled={!canSave || isSaving || preview.status === 'loading'}
+            onClick={handleSaveAndPreview}
+          >
             {t('saveAndPreviewButton', 'Save & preview')}
           </Button>
         </div>
