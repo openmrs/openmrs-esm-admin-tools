@@ -1,1 +1,1 @@
-export const moduleName = '@openmrs/esm-metadataexport';
+export const moduleName = '@openmrs/esm-metadataexport-app';
