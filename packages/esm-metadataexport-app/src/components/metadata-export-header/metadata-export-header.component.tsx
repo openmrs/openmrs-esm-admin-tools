@@ -1,5 +1,5 @@
 import React from 'react';
-import { PageHeader, PageHeaderContent, StockManagementPictogram } from '@openmrs/esm-framework';
+import { PageHeader, PageHeaderContent } from '@openmrs/esm-framework';
 import styles from './metadata-export-header.scss';
 import NewPackageActionButton from '../new-package/add-package-action-button/add-package-action-button.component';
 
