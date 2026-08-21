@@ -21,8 +21,8 @@ export function useAllPackages(includeRetired = false) {
 export function createPackage(
   payload: ExportPackageRequest,
   abortController?: AbortController,
-): Promise<FetchResponse<ExportPackageRequest>> {
-  return openmrsFetch(`${restBaseUrl}/metadataexport/packages`, {
+): Promise<FetchResponse<ExportPackage>> {
+  return openmrsFetch<ExportPackage>(`${restBaseUrl}/metadataexport/packages`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: payload,
