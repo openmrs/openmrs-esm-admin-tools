@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json.openmrs.org/routes.schema.json",
+  "backendDependencies": {
+    "metadataexport": ">=1.0.0-SNAPSHOT"
+  },
+  "pages": [
+    {
+      "route": "metadataexport",
+      "component": "root",
+      "online": true
+    }
+  ],
+  "extensions": [
+    {
+      "name": "metadata-export-card-link",
+      "slot": "system-admin-page-card-link-slot",
+      "component": "metadataExportCardLink",
+      "privileges": ["Get Metadata Export Packages"]
+    }
+  ],
+  "workspaces": [
+    {
+      "name": "new-package-workspace",
+      "component": "newPackageWorkspace",
+      "title": "New package",
+      "type": "form",
+      "canMaximize": true,
+      "width": "narrow"
+    }
+  ]
+}

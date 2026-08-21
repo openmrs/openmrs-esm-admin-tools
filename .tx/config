@@ -10,6 +10,15 @@ replace_edited_strings = false
 keep_translations      = false
 resource_name          = esm-admin-openconceptlab-app
 
+[o:openmrs:p:openmrs3:r:esm-metadataexport-app]
+file_filter            = packages/esm-metadataexport-app/translations/<lang>.json
+source_file            = packages/esm-metadataexport-app/translations/en.json
+source_lang            = en
+type                   = KEYVALUEJSON
+replace_edited_strings = false
+keep_translations      = false
+resource_name          = esm-metadataexport-app
+
 [o:openmrs:p:openmrs3:r:esm-reports-app]
 file_filter            = packages/esm-reports-app/translations/<lang>.json
 source_file            = packages/esm-reports-app/translations/en.json
