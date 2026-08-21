@@ -17,6 +17,7 @@ export function startupApp() {
 export const root = getAsyncLifecycle(() => import('./root.component'), options);
 
 // Extensions
+export const metadataExportCardLink = getAsyncLifecycle(() => import('./admin-card-link.component'), options);
 
 // Modals
 

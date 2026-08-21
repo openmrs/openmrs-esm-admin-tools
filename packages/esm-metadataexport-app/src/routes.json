@@ -1,5 +1,8 @@
 {
   "$schema": "https://json.openmrs.org/routes.schema.json",
+  "backendDependencies": {
+    "metadataexport": ">=1.0.0-SNAPSHOT"
+  },
   "pages": [
     {
       "route": "metadataexport",
@@ -8,6 +11,11 @@
     }
   ],
   "extensions": [
+    {
+      "name": "metadata-export-card-link",
+      "slot": "system-admin-page-card-link-slot",
+      "component": "metadataExportCardLink"
+    }
   ],
   "workspaces": [
     {
