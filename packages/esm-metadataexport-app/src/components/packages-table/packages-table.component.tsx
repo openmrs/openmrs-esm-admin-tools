@@ -11,7 +11,15 @@ import {
   TableHeader,
   TableRow,
 } from '@carbon/react';
-import { CardHeader, EmptyCard, ErrorState, isDesktop, useLayoutType } from '@openmrs/esm-framework';
+import {
+  CardHeader,
+  EmptyCard,
+  ErrorState,
+  isDesktop,
+  useLayoutType,
+  useSession,
+  userHasAccess,
+} from '@openmrs/esm-framework';
 import { formatDomainLabel } from '../../domain-lookups/domain-lookups.resource';
 import { useAllPackages } from '../../packages/packages.resource';
 import { launchAddNewPackageWorkspace } from '../new-package/new-package-utills';
@@ -20,7 +28,10 @@ import styles from './packages-table.component.scss';
 const PackagesTable: React.FC = () => {
   const { t } = useTranslation();
   const layout = useLayoutType();
+  const session = useSession();
   const { packages, isLoading, error } = useAllPackages();
+
+  const canManage = session?.user ? userHasAccess('Manage Metadata Export Packages', session.user) : false;
 
   const headerTitle = t('packages', 'Packages');
 
@@ -60,7 +71,7 @@ const PackagesTable: React.FC = () => {
       <EmptyCard
         displayText={t('packages__lower', 'packages')}
         headerTitle={headerTitle}
-        launchForm={() => launchAddNewPackageWorkspace(t)}
+        launchForm={canManage ? () => launchAddNewPackageWorkspace(t) : undefined}
       />
     );
   }
