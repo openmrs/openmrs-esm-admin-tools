@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { showSnackbar } from '@openmrs/esm-framework';
+import { OpenmrsFetchError, showSnackbar } from '@openmrs/esm-framework';
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { useDomains } from '../../domain-lookups/domain-lookups.resource';
 import { createPackage } from '../../packages/packages.resource';
@@ -24,6 +24,16 @@ const mockCloseWorkspaceWithSavedChanges = vi.fn();
 const mockPromptBeforeClosing = vi.fn();
 
 const domains = ['ATTRIBUTE_TYPES', 'CONCEPTS', 'ENCOUNTER_TYPES'];
+
+// Builds an OpenmrsFetchError carrying a REST-style response body so we can
+// exercise the component's server-error extraction (fieldErrors / error).
+const fetchError = (responseBody: unknown) =>
+  new OpenmrsFetchError(
+    '/ws/rest/v1/metadataexport/packages',
+    new Response(null, { status: 400, statusText: 'Bad Request' }),
+    responseBody as never,
+    new Error(),
+  );
 
 function renderWorkspace() {
   render(
@@ -132,17 +142,55 @@ describe('NewPackageWorkspace', () => {
     expect(mockCreatePackage).toHaveBeenCalledWith(expect.objectContaining({ name: 'Everything', entries: [] }));
   });
 
-  it('shows an error snackbar and keeps the workspace open when the request fails', async () => {
+  async function submitValidPackage(user: ReturnType<typeof userEvent.setup>) {
+    await user.type(screen.getByRole('textbox', { name: 'Package name' }), 'Core reference data');
+    await user.click(screen.getByRole('checkbox', { name: 'Concepts' }));
+    await user.click(screen.getByRole('button', { name: 'Create package' }));
+  }
+
+  it('shows a generic error snackbar and keeps the workspace open for an unexpected error', async () => {
     mockCreatePackage.mockRejectedValue(new Error('Server exploded'));
     const user = userEvent.setup();
     renderWorkspace();
 
-    await user.type(screen.getByRole('textbox', { name: 'Package name' }), 'Core reference data');
-    await user.click(screen.getByRole('checkbox', { name: 'Concepts' }));
-    await user.click(screen.getByRole('button', { name: 'Create package' }));
+    await submitValidPackage(user);
 
     expect(mockShowSnackbar).toHaveBeenCalledWith(
-      expect.objectContaining({ title: 'Failed to create package', subtitle: 'Server exploded', kind: 'error' }),
+      expect.objectContaining({
+        title: 'Failed to create package',
+        subtitle: 'An unexpected error occurred',
+        kind: 'error',
+      }),
+    );
+    expect(mockCloseWorkspace).not.toHaveBeenCalled();
+  });
+
+  it('surfaces the server error message from an OpenmrsFetchError', async () => {
+    mockCreatePackage.mockRejectedValue(fetchError({ error: 'A package with that name already exists' }));
+    const user = userEvent.setup();
+    renderWorkspace();
+
+    await submitValidPackage(user);
+
+    expect(mockShowSnackbar).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: 'Failed to create package',
+        subtitle: 'A package with that name already exists',
+        kind: 'error',
+      }),
+    );
+    expect(mockCloseWorkspace).not.toHaveBeenCalled();
+  });
+
+  it('surfaces the first field error from an OpenmrsFetchError', async () => {
+    mockCreatePackage.mockRejectedValue(fetchError({ fieldErrors: { name: 'Name must be unique' } }));
+    const user = userEvent.setup();
+    renderWorkspace();
+
+    await submitValidPackage(user);
+
+    expect(mockShowSnackbar).toHaveBeenCalledWith(
+      expect.objectContaining({ title: 'Failed to create package', subtitle: 'Name must be unique', kind: 'error' }),
     );
     expect(mockCloseWorkspace).not.toHaveBeenCalled();
   });
