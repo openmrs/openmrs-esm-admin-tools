@@ -9,9 +9,7 @@ export const MetaDataExportHeader: React.FC<{ title: string }> = ({ title }) => 
       <PageHeaderContent illustration={<></>} title={title} />
 
       <div className={styles['right-justified-items']}>
-        <div className={styles['date-and-location']}>
-          <NewPackageActionButton />
-        </div>
+        <NewPackageActionButton />
       </div>
     </PageHeader>
   );

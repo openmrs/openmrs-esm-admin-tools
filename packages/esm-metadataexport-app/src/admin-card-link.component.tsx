@@ -20,8 +20,8 @@ const MetadataExportCardLink: React.FC = () => {
     <Layer>
       <ClickableTile href={metadataExportUrl} onClick={handleClick}>
         <div>
-          <div className="heading">{t('cardLinkHeading', 'Manage Metadata Export')}</div>
-          <div className="content">{t('cardLinkContent', 'Metadata Export Packages')}</div>
+          <div className="heading">{t('managePackages', 'Manage packages')}</div>
+          <div className="content">{t('metadataexport', 'Metadata Export')}</div>
         </div>
         <div className="iconWrapper">
           <ArrowRightIcon size={16} />

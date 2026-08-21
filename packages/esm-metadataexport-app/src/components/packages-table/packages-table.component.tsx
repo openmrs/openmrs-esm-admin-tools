@@ -31,7 +31,7 @@ const PackagesTable: React.FC = () => {
   const session = useSession();
   const { packages, isLoading, error } = useAllPackages();
 
-  const canManage = session?.user ? userHasAccess('Manage Metadata Export Packages', session.user) : false;
+  const canManage = session.user ? userHasAccess('Manage Metadata Export Packages', session.user) : false;
 
   const headerTitle = t('packages', 'Packages');
 
