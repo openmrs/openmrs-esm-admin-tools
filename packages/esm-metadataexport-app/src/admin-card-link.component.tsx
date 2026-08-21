@@ -1,4 +1,4 @@
-import React, { type KeyboardEvent, type MouseEvent } from 'react';
+import React, { type MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Layer, ClickableTile } from '@carbon/react';
 import { ArrowRightIcon, navigate } from '@openmrs/esm-framework';
