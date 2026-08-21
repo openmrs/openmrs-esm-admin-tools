@@ -39,23 +39,19 @@ describe('NewPackageActionButton', () => {
     expect(mockLaunchAddNewPackageWorkspace).toHaveBeenCalledTimes(1);
   });
 
-  it('disables the button for users without the Manage Metadata Export Packages privilege', async () => {
-    const user = userEvent.setup();
+  it('does not render the button for users without the Manage Metadata Export Packages privilege', () => {
     mockUserHasAccess.mockReturnValue(false);
     render(<NewPackageActionButton />);
 
-    const button = screen.getByRole('button', { name: 'New Package' });
-    expect(button).toBeDisabled();
-
-    await user.click(button);
+    expect(screen.queryByRole('button', { name: 'New Package' })).not.toBeInTheDocument();
     expect(mockLaunchAddNewPackageWorkspace).not.toHaveBeenCalled();
   });
 
-  it('disables the button when there is no authenticated user', () => {
+  it('does not render the button when there is no authenticated user', () => {
     mockUseSession.mockReturnValue({ authenticated: false } as unknown as Session);
     render(<NewPackageActionButton />);
 
-    expect(screen.getByRole('button', { name: 'New Package' })).toBeDisabled();
+    expect(screen.queryByRole('button', { name: 'New Package' })).not.toBeInTheDocument();
     expect(mockUserHasAccess).not.toHaveBeenCalled();
   });
 });
