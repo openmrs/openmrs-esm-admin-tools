@@ -5,18 +5,14 @@ import { ArrowRightIcon, navigate } from '@openmrs/esm-framework';
 
 const metadataExportUrl = `${window.spaBase}/metadataexport`;
 
-// Navigate client-side on a plain left click; modified clicks fall through
-// to the anchor so they open a new tab or window as usual.
+// Navigate client-side on a plain left click or keyboard activation; modified
+// mouse clicks fall through to the anchor so they open a new tab or window as usual.
 function handleClick(event: MouseEvent<HTMLAnchorElement> | KeyboardEvent<HTMLAnchorElement>) {
-  // Keyboard activation (Enter/Space) has no `button`; treat it as a plain activation.
-  const isPlainClick =
-    !('button' in event) ||
-    (event.button === 0 && !event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey);
-
-  if (isPlainClick) {
-    event.preventDefault();
-    navigate({ to: metadataExportUrl });
+  if ('button' in event && (event.button !== 0 || event.ctrlKey || event.shiftKey || event.altKey || event.metaKey)) {
+    return;
   }
+  event.preventDefault();
+  navigate({ to: metadataExportUrl });
 }
 
 const MetadataExportCardLink: React.FC = () => {
