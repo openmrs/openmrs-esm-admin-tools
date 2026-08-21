@@ -14,7 +14,8 @@
     {
       "name": "metadata-export-card-link",
       "slot": "system-admin-page-card-link-slot",
-      "component": "metadataExportCardLink"
+      "component": "metadataExportCardLink",
+      "privileges": ["Get Metadata Export Packages"]
     }
   ],
   "workspaces": [

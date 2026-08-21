@@ -59,20 +59,30 @@ const PackagesTable: React.FC = () => {
   );
 
   if (isLoading) {
-    return <DataTableSkeleton role="progressbar" columnCount={headers.length} zebra />;
+    return (
+      <div className={styles.container}>
+        <DataTableSkeleton role="progressbar" columnCount={headers.length} zebra />
+      </div>
+    );
   }
 
   if (error) {
-    return <ErrorState error={error} headerTitle={headerTitle} />;
+    return (
+      <div className={styles.container}>
+        <ErrorState error={error} headerTitle={headerTitle} />
+      </div>
+    );
   }
 
   if (!packages.length) {
     return (
-      <EmptyCard
-        displayText={t('packages__lower', 'packages')}
-        headerTitle={headerTitle}
-        launchForm={canManage ? () => launchAddNewPackageWorkspace(t) : undefined}
-      />
+      <div className={styles.container}>
+        <EmptyCard
+          displayText={t('packages__lower', 'packages')}
+          headerTitle={headerTitle}
+          launchForm={canManage ? () => launchAddNewPackageWorkspace(t) : undefined}
+        />
+      </div>
     );
   }
 
