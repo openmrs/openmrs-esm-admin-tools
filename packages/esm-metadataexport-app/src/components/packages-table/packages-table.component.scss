@@ -1,5 +1,5 @@
-@use '@carbon/styles/scss/spacing';
+@use '@carbon/layout';
 
 .container {
-  margin: spacing.$spacing-05;
+  margin: layout.$spacing-05;
 }
