@@ -10,8 +10,6 @@
   "domains": "Domains",
   "errorLoadingDomains": "Error loading domains",
   "metadataexport": "Metadata Export",
-  "metadataexportDescription": "Welcome to the Metadataexport page.",
-  "metadataexportHeading": "Metadataexport",
   "newpackage": "New Package",
   "packageCreated": "Package created",
   "packageCreatedSubtitle": "{{name}} was created successfully",
