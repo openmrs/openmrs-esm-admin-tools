@@ -1,0 +1,22 @@
+{
+  "allDomains": "All domains",
+  "cancel": "Cancel",
+  "createPackage": "Create package",
+  "creating": "Creating",
+  "description": "Description",
+  "descriptionPlaceholder": "Briefly describe what this package contains",
+  "domains": "Domains",
+  "errorLoadingDomains": "Error loading domains",
+  "managePackages": "Manage packages",
+  "metadataexport": "Metadata Export",
+  "newpackage": "New Package",
+  "packageCreated": "Package created",
+  "packageCreatedSubtitle": "{{name}} was created successfully",
+  "packageCreationFailed": "Failed to create package",
+  "packageName": "Package name",
+  "packageNamePlaceholder": "e.g. Core reference data",
+  "packages": "Packages",
+  "packages__lower": "packages",
+  "selectAll": "Select all",
+  "unexpectedError": "An unexpected error occurred"
+}
