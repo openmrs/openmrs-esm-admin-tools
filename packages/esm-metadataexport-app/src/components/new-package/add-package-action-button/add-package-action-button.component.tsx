@@ -3,13 +3,13 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@carbon/react';
 import { Add } from '@carbon/react/icons';
 import { launchAddNewPackageWorkspace } from '../new-package-utills';
-import { useSession } from '@openmrs/esm-framework';
+import { useSession, userHasAccess } from '@openmrs/esm-framework';
 
 const NewPackageActionButton: React.FC = () => {
   const { t } = useTranslation();
   const session = useSession();
 
-  const canManage = session?.user?.privileges?.some((p) => p.display === 'Manage Metadata Export Packages');
+  const canManage = session.user ? userHasAccess('Manage Metadata Export Packages', session.user) : false;
 
   const handleAddNewPackageWorkspace = useCallback(() => {
     launchAddNewPackageWorkspace(t);

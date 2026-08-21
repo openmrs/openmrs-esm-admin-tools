@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
-import { type Session, useSession } from '@openmrs/esm-framework';
+import { type Session, useSession, userHasAccess } from '@openmrs/esm-framework';
 import { launchAddNewPackageWorkspace } from '../new-package-utills';
 import NewPackageActionButton from './add-package-action-button.component';
 
@@ -12,14 +12,15 @@ vi.mock('../new-package-utills', () => ({
 
 const mockLaunchAddNewPackageWorkspace = launchAddNewPackageWorkspace as Mock;
 const mockUseSession = vi.mocked(useSession);
+const mockUserHasAccess = vi.mocked(userHasAccess);
 
-const sessionWithPrivilege = (privileges: string[]) =>
-  ({ user: { privileges: privileges.map((display) => ({ display })) } }) as unknown as Session;
+const sessionWithUser = () => ({ user: { uuid: 'cc8507b8-7c9a-486b-85dc-b8f25ad1e4cc' } }) as unknown as Session;
 
 describe('NewPackageActionButton', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockUseSession.mockReturnValue(sessionWithPrivilege(['Manage Metadata Export Packages']));
+    mockUseSession.mockReturnValue(sessionWithUser());
+    mockUserHasAccess.mockReturnValue(true);
   });
 
   it('renders a "New Package" button', () => {
@@ -28,18 +29,19 @@ describe('NewPackageActionButton', () => {
     expect(screen.getByRole('button', { name: 'New Package' })).toBeInTheDocument();
   });
 
-  it('launches the new package workspace when clicked', async () => {
+  it('launches the new package workspace when a privileged user clicks', async () => {
     const user = userEvent.setup();
     render(<NewPackageActionButton />);
 
     await user.click(screen.getByRole('button', { name: 'New Package' }));
 
+    expect(mockUserHasAccess).toHaveBeenCalledWith('Manage Metadata Export Packages', expect.anything());
     expect(mockLaunchAddNewPackageWorkspace).toHaveBeenCalledTimes(1);
   });
 
   it('disables the button for users without the Manage Metadata Export Packages privilege', async () => {
     const user = userEvent.setup();
-    mockUseSession.mockReturnValue(sessionWithPrivilege(['Get Metadata Export Packages']));
+    mockUserHasAccess.mockReturnValue(false);
     render(<NewPackageActionButton />);
 
     const button = screen.getByRole('button', { name: 'New Package' });
@@ -47,5 +49,13 @@ describe('NewPackageActionButton', () => {
 
     await user.click(button);
     expect(mockLaunchAddNewPackageWorkspace).not.toHaveBeenCalled();
+  });
+
+  it('disables the button when there is no authenticated user', () => {
+    mockUseSession.mockReturnValue({ authenticated: false } as unknown as Session);
+    render(<NewPackageActionButton />);
+
+    expect(screen.getByRole('button', { name: 'New Package' })).toBeDisabled();
+    expect(mockUserHasAccess).not.toHaveBeenCalled();
   });
 });
