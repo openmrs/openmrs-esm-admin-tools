@@ -23,6 +23,8 @@
   "previewPaneLabel": "Visit summary PDF preview",
   "previewPlaceholder": "The PDF preview will appear here after you select Save & preview.",
   "previewUnsupported": "This browser can't display PDFs inline.",
+  "readOnlySubtitle": "You can see the current visit summary sections and their order, but changing them requires the Manage Global Properties privilege. Ask an administrator to grant it.",
+  "readOnlyTitle": "These settings are read-only for your account",
   "retry": "Retry",
   "saveAndPreviewButton": "Save & preview",
   "saveButton": "Save",
