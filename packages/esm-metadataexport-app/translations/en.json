@@ -1,6 +1,8 @@
 {
   "allDomains": "All domains",
   "cancel": "Cancel",
+  "cardLinkContent": "Metadata Export Packages",
+  "cardLinkHeading": "Manage Metadata Export",
   "createPackage": "Create package",
   "creating": "Creating",
   "description": "Description",
