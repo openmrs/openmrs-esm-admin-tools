@@ -1,10 +1,16 @@
-import { Page } from '@playwright/test';
-import { expect } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
 import { getSavedSubscription, removeOclSubscription } from '../commands';
 import { test } from '../core';
 import { OpenConceptLabPage } from '../pages';
 
 test.beforeEach(async ({ api }) => {
+  const savedSubscription = await getSavedSubscription(api);
+  if (savedSubscription) {
+    await removeOclSubscription(api, savedSubscription);
+  }
+});
+
+test.afterEach(async ({ api }) => {
   const savedSubscription = await getSavedSubscription(api);
   if (savedSubscription) {
     await removeOclSubscription(api, savedSubscription);
@@ -56,13 +62,6 @@ test('Setup a subscription and import concepts', async ({ page }) => {
   });
 
   await test.step('Then I should see the unsubscribe message', async () => {
-    await openConceptLabPage.page.getByText('Subscription created successfully');
+    await expect(openConceptLabPage.page.getByText('Successfully unsubscribed')).toBeVisible();
   });
-});
-
-test.afterEach(async ({ api }) => {
-  const savedSubscription = await getSavedSubscription(api);
-  if (savedSubscription) {
-    await removeOclSubscription(api, savedSubscription);
-  }
 });
