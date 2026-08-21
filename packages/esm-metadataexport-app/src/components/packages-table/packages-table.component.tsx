@@ -58,7 +58,7 @@ const PackagesTable: React.FC = () => {
   if (!packages.length) {
     return (
       <EmptyCard
-        displayText={t('packages', 'packages')}
+        displayText={t('packages__lower', 'packages')}
         headerTitle={headerTitle}
         launchForm={() => launchAddNewPackageWorkspace(t)}
       />

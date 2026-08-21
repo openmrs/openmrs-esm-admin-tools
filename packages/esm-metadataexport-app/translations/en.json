@@ -19,5 +19,6 @@
   "packageName": "Package name",
   "packageNamePlaceholder": "e.g. Core reference data",
   "packages": "Packages",
+  "packages__lower":"packages",
   "selectAll": "Select all"
 }
