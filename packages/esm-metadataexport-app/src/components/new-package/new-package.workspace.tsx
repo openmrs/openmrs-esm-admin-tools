@@ -13,7 +13,13 @@ import {
   TextInput,
 } from '@carbon/react';
 import { useSWRConfig } from 'swr';
-import { type DefaultWorkspaceProps, restBaseUrl, showSnackbar, useLayoutType } from '@openmrs/esm-framework';
+import {
+  type DefaultWorkspaceProps,
+  restBaseUrl,
+  showSnackbar,
+  useLayoutType,
+  OpenmrsFetchError,
+} from '@openmrs/esm-framework';
 import { formatDomainLabel, useDomains } from '../../domain-lookups/domain-lookups.resource';
 import { createPackage } from '../../packages/packages.resource';
 import styles from './new-package.workspace.scss';
@@ -85,9 +91,14 @@ const NewPackageWorkspace: React.FC<DefaultWorkspaceProps> = ({
         // Bypass the "unsaved changes" prompt now that the package is persisted.
         closeWorkspaceWithSavedChanges();
       } catch (submitError) {
+        const responseBody = submitError instanceof OpenmrsFetchError ? submitError.responseBody : null;
+        const reason =
+          typeof responseBody === 'object' && responseBody !== null
+            ? (Object.values(responseBody.fieldErrors ?? {})[0] ?? responseBody.error)
+            : null;
         showSnackbar({
           title: t('packageCreationFailed', 'Failed to create package'),
-          subtitle: submitError instanceof Error ? submitError.message : String(submitError),
+          subtitle: reason ?? t('unexpectedError', 'An unexpected error occurred'),
           kind: 'error',
           isLowContrast: false,
         });
