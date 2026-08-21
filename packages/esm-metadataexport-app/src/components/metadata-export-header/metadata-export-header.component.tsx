@@ -6,7 +6,7 @@ import NewPackageActionButton from '../new-package/add-package-action-button/add
 export const MetaDataExportHeader: React.FC<{ title: string }> = ({ title }) => {
   return (
     <PageHeader className={styles.header} data-testid="metadata-export-header">
-      <PageHeaderContent illustration={<StockManagementPictogram />} title={title} />
+      <PageHeaderContent illustration={<></>} title={title} />
 
       <div className={styles['right-justified-items']}>
         <div className={styles['date-and-location']}>
