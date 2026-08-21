@@ -15,12 +15,9 @@ const NewPackageActionButton: React.FC = () => {
     launchAddNewPackageWorkspace(t);
   }, [t]);
 
-  if (!canManage) {
-    return null;
-  }
-
   return (
     <Button
+      disabled={!canManage}
       onClick={handleAddNewPackageWorkspace}
       size="md"
       kind="primary"
