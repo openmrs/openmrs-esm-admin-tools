@@ -1,5 +1,3 @@
-![Node.js CI](https://github.com/openmrs/openmrs-esm-template-app/workflows/Node.js%20CI/badge.svg)
-
 # Metadata Export Module
 
 `openmrs-esm-metadataexport-app` is a frontend module for O3 that provides tools to manage and export metadata packages.
