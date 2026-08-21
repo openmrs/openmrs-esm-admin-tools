@@ -3,10 +3,10 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { type Session, useSession, userHasAccess } from '@openmrs/esm-framework';
-import { launchAddNewPackageWorkspace } from '../new-package-utills';
+import { launchAddNewPackageWorkspace } from '../new-package-utils';
 import NewPackageActionButton from './add-package-action-button.component';
 
-vi.mock('../new-package-utills', () => ({
+vi.mock('../new-package-utils', () => ({
   launchAddNewPackageWorkspace: vi.fn(),
 }));
 

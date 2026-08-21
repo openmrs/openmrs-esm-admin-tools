@@ -22,7 +22,7 @@ import {
 } from '@openmrs/esm-framework';
 import { formatDomainLabel } from '../../domain-lookups/domain-lookups.resource';
 import { useAllPackages } from '../../packages/packages.resource';
-import { launchAddNewPackageWorkspace } from '../new-package/new-package-utills';
+import { launchAddNewPackageWorkspace } from '../new-package/new-package-utils';
 import styles from './packages-table.component.scss';
 
 const PackagesTable: React.FC = () => {

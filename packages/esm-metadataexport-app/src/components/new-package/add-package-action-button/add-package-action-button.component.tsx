@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@carbon/react';
 import { Add } from '@carbon/react/icons';
 import { useSession, userHasAccess } from '@openmrs/esm-framework';
-import { launchAddNewPackageWorkspace } from '../new-package-utills';
+import { launchAddNewPackageWorkspace } from '../new-package-utils';
 
 const NewPackageActionButton: React.FC = () => {
   const { t } = useTranslation();

@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { type Session, useSession, userHasAccess } from '@openmrs/esm-framework';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useAllPackages } from '../../packages/packages.resource';
-import { launchAddNewPackageWorkspace } from '../new-package/new-package-utills';
+import { launchAddNewPackageWorkspace } from '../new-package/new-package-utils';
 import PackagesTable from './packages-table.component';
 
 vi.mock('../../packages/packages.resource', async (importOriginal) => ({
@@ -12,7 +12,7 @@ vi.mock('../../packages/packages.resource', async (importOriginal) => ({
   useAllPackages: vi.fn(),
 }));
 
-vi.mock('../new-package/new-package-utills', () => ({
+vi.mock('../new-package/new-package-utils', () => ({
   launchAddNewPackageWorkspace: vi.fn(),
 }));
 
