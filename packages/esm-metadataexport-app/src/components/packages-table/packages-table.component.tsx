@@ -24,6 +24,7 @@ import { formatDomainLabel } from '../../domain-lookups/domain-lookups.resource'
 import { useAllPackages } from '../../packages/packages.resource';
 import { launchAddNewPackageWorkspace } from '../new-package/new-package-utils';
 import styles from './packages-table.scss';
+import ViewPackageActionButton from '../view-package/view-package-action-button/view-package-action-button.component';
 
 const PackagesTable: React.FC = () => {
   const { t } = useTranslation();
@@ -40,6 +41,8 @@ const PackagesTable: React.FC = () => {
       { key: 'name', header: t('packageName', 'Package name') },
       { key: 'domains', header: t('domains', 'Domains') },
       { key: 'description', header: t('description', 'Description') },
+      { key: 'status', header: t('status', 'Status') },
+      { key: 'actions', header: ' ' },
     ],
     [t],
   );
@@ -54,6 +57,7 @@ const PackagesTable: React.FC = () => {
           ? exportPackage.entries.map((entry) => formatDomainLabel(entry.domain)).join(', ')
           : t('allDomains', 'All domains'),
         description: exportPackage.description,
+        status: exportPackage.latestBuild ? t(exportPackage.latestBuild.status) : t('noBuilds', 'NO BUILDS'),
       })),
     [packages, t],
   );
@@ -105,9 +109,17 @@ const PackagesTable: React.FC = () => {
               <TableBody>
                 {rows.map((row) => (
                   <TableRow {...getRowProps({ row })} key={row.id}>
-                    {row.cells.map((cell) => (
-                      <TableCell key={cell.id}>{cell.value}</TableCell>
-                    ))}
+                    {row.cells.map((cell) =>
+                      cell.info.header === 'actions' ? (
+                        <TableCell key={cell.id}>
+                          {canManage && (
+                            <ViewPackageActionButton exportPackage={packages.find((p) => p.uuid === row.id)} />
+                          )}
+                        </TableCell>
+                      ) : (
+                        <TableCell key={cell.id}>{cell.value}</TableCell>
+                      ),
+                    )}
                   </TableRow>
                 ))}
               </TableBody>
