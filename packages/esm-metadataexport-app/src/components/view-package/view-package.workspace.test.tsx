@@ -1,206 +1,120 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { OpenmrsFetchError, showSnackbar } from '@openmrs/esm-framework';
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
-import { useDomains } from '../../domain-lookups/domain-lookups.resource';
-import { createPackage } from '../../packages/packages.resource';
+import { usePackageBuilds } from '../../packages/packages.resource';
+import { type ExportPackage, type ExportPackageBuild } from '../../types';
 import ViewPackageWorkspace from './view-package.workspace';
 
-vi.mock('../../domain-lookups/domain-lookups.resource', async (importOriginal) => ({
-  ...(await importOriginal<object>()),
-  useDomains: vi.fn(),
-}));
-
 vi.mock('../../packages/packages.resource', () => ({
-  createPackage: vi.fn(),
+  usePackageBuilds: vi.fn(),
 }));
 
-const mockUseDomains = useDomains as Mock;
-const mockCreatePackage = createPackage as Mock;
-const mockShowSnackbar = showSnackbar as Mock;
+const mockUsePackageBuilds = usePackageBuilds as Mock;
 const mockCloseWorkspace = vi.fn();
 const mockCloseWorkspaceWithSavedChanges = vi.fn();
 const mockPromptBeforeClosing = vi.fn();
 
-const domains = ['ATTRIBUTE_TYPES', 'CONCEPTS', 'ENCOUNTER_TYPES'];
+const build = (overrides: Partial<ExportPackageBuild> = {}): ExportPackageBuild => ({
+  uuid: '23dbfd25-eec7-4f4e-b26c-d95324346ce3',
+  packageUuid: '361d69db-c018-4545-87a7-e987e8af9e85',
+  version: 2,
+  status: 'COMPLETED',
+  dateCreated: Date.now(),
+  dateStarted: Date.now(),
+  dateCompleted: Date.now(),
+  errorMessage: null,
+  downloadUrl: '/download/build-1',
+  manifest: null,
+  ...overrides,
+});
 
-// Builds an OpenmrsFetchError carrying a REST-style response body so we can
-// exercise the component's server-error extraction (fieldErrors / error).
-const fetchError = (responseBody: unknown) =>
-  new OpenmrsFetchError(
-    '/ws/rest/v1/metadataexport/packages',
-    new Response(null, { status: 400, statusText: 'Bad Request' }),
-    responseBody as never,
-    new Error(),
-  );
+const exportPackage: ExportPackage = {
+  uuid: '361d69db-c018-4545-87a7-e987e8af9e85',
+  name: 'Core reference data',
+  description: 'Some notes',
+  retired: false,
+  dateCreated: Date.now(),
+  entries: [
+    { domain: 'CONCEPTS', itemUuids: [] },
+    { domain: 'ENCOUNTER_TYPES', itemUuids: [] },
+  ],
+  latestBuild: null,
+};
 
-function renderWorkspace() {
+function mockBuilds(overrides: Partial<ReturnType<typeof usePackageBuilds>> = {}) {
+  mockUsePackageBuilds.mockReturnValue({
+    builds: [],
+    isLoading: false,
+    isValidating: false,
+    error: undefined,
+    mutate: vi.fn(),
+    ...overrides,
+  });
+}
+
+function renderWorkspace(pkg: ExportPackage = exportPackage) {
   render(
     <ViewPackageWorkspace
+      exportPackage={pkg}
       closeWorkspace={mockCloseWorkspace}
       closeWorkspaceWithSavedChanges={mockCloseWorkspaceWithSavedChanges}
       promptBeforeClosing={mockPromptBeforeClosing}
       setTitle={vi.fn()}
-      // @ts-expect-error - the workspace only uses closeWorkspace and promptBeforeClosing from the default props
-      additionalProps={{}}
     />,
   );
 }
 
 describe('ViewPackageWorkspace', () => {
   beforeEach(() => {
-    mockUseDomains.mockReturnValue({ domains, isLoading: false, error: undefined });
-    mockCreatePackage.mockResolvedValue({ data: {} });
+    mockBuilds();
   });
 
-  it('renders a checkbox for each domain with a human-readable label', () => {
+  it('renders the package domains as human-readable labels', () => {
     renderWorkspace();
 
-    expect(screen.getByRole('checkbox', { name: 'Attribute types' })).toBeInTheDocument();
-    expect(screen.getByRole('checkbox', { name: 'Concepts' })).toBeInTheDocument();
-    expect(screen.getByRole('checkbox', { name: 'Encounter types' })).toBeInTheDocument();
+    expect(screen.getByText('Concepts, Encounter types')).toBeInTheDocument();
   });
 
-  it('shows a loading skeleton while domains are loading', () => {
-    mockUseDomains.mockReturnValue({ domains: [], isLoading: true, error: undefined });
-    renderWorkspace();
+  it('shows "All domains" when the package has no entries', () => {
+    renderWorkspace({ ...exportPackage, entries: [] });
 
-    expect(screen.queryByRole('checkbox', { name: 'Select all' })).not.toBeInTheDocument();
+    expect(screen.getByText('All domains')).toBeInTheDocument();
   });
 
-  it('shows an error notification when the domains request fails', () => {
-    mockUseDomains.mockReturnValue({ domains: [], isLoading: false, error: new Error('Boom') });
+  it('shows a loading indicator while builds are loading', () => {
+    mockBuilds({ isLoading: true });
     renderWorkspace();
 
-    expect(screen.getByText('Error loading domains')).toBeInTheDocument();
-    expect(screen.getByText('Boom')).toBeInTheDocument();
+    expect(screen.getByText('Loading builds…')).toBeInTheDocument();
   });
 
-  it('disables the submit button until a name and at least one domain are provided', async () => {
-    const user = userEvent.setup();
+  it('shows an error state when the builds request fails', () => {
+    mockBuilds({ error: new Error('Boom') });
     renderWorkspace();
 
-    const submitButton = screen.getByRole('button', { name: 'Create package' });
-    expect(submitButton).toBeDisabled();
-
-    await user.type(screen.getByRole('textbox', { name: 'Package name' }), 'Core reference data');
-    expect(submitButton).toBeDisabled();
-
-    await user.click(screen.getByRole('checkbox', { name: 'Concepts' }));
-    expect(submitButton).toBeEnabled();
+    expect(screen.getByText('Error State')).toBeInTheDocument();
   });
 
-  it('selects and clears every domain via "Select all"', async () => {
-    const user = userEvent.setup();
+  it('shows an empty message when there are no builds', () => {
     renderWorkspace();
 
-    const selectAll = screen.getByRole('checkbox', { name: 'Select all' });
-    await user.click(selectAll);
-
-    for (const label of ['Attribute types', 'Concepts', 'Encounter types']) {
-      expect(screen.getByRole('checkbox', { name: label })).toBeChecked();
-    }
-
-    await user.click(selectAll);
-    for (const label of ['Attribute types', 'Concepts', 'Encounter types']) {
-      expect(screen.getByRole('checkbox', { name: label })).not.toBeChecked();
-    }
+    expect(screen.getByText('No builds yet')).toBeInTheDocument();
   });
 
-  it('POSTs the selected domains as entries, shows a snackbar, and closes the workspace', async () => {
-    const user = userEvent.setup();
+  it('renders each build with its version, status, and download link', () => {
+    mockBuilds({ builds: [build()] });
     renderWorkspace();
 
-    await user.type(screen.getByRole('textbox', { name: 'Package name' }), 'Core reference data');
-    await user.type(screen.getByRole('textbox', { name: 'Description' }), 'Some notes');
-    await user.click(screen.getByRole('checkbox', { name: 'Concepts' }));
-    await user.click(screen.getByRole('checkbox', { name: 'Encounter types' }));
-    await user.click(screen.getByRole('button', { name: 'Create package' }));
-
-    expect(mockCreatePackage).toHaveBeenCalledWith({
-      name: 'Core reference data',
-      description: 'Some notes',
-      entries: [{ domain: 'CONCEPTS' }, { domain: 'ENCOUNTER_TYPES' }],
-    });
-    expect(mockShowSnackbar).toHaveBeenCalledWith(
-      expect.objectContaining({ title: 'Package created', kind: 'success' }),
-    );
-    // Closes without triggering the "unsaved changes" prompt.
-    expect(mockCloseWorkspaceWithSavedChanges).toHaveBeenCalled();
-    expect(mockCloseWorkspace).not.toHaveBeenCalled();
+    expect(screen.getByText('Build 2')).toBeInTheDocument();
+    expect(screen.getByText('COMPLETED')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Download' })).toHaveAttribute('href', '/download/build-1');
   });
 
-  it('sends an empty entries array when every domain is selected', async () => {
-    const user = userEvent.setup();
+  it('omits the download link for a build without a download URL', () => {
+    mockBuilds({ builds: [build({ status: 'QUEUED', downloadUrl: null, dateStarted: null, dateCompleted: null })] });
     renderWorkspace();
 
-    await user.type(screen.getByRole('textbox', { name: 'Package name' }), 'Everything');
-    await user.click(screen.getByRole('checkbox', { name: 'Select all' }));
-    await user.click(screen.getByRole('button', { name: 'Create package' }));
-
-    expect(mockCreatePackage).toHaveBeenCalledWith(expect.objectContaining({ name: 'Everything', entries: [] }));
-  });
-
-  async function submitValidPackage(user: ReturnType<typeof userEvent.setup>) {
-    await user.type(screen.getByRole('textbox', { name: 'Package name' }), 'Core reference data');
-    await user.click(screen.getByRole('checkbox', { name: 'Concepts' }));
-    await user.click(screen.getByRole('button', { name: 'Create package' }));
-  }
-
-  it('shows a generic error snackbar and keeps the workspace open for an unexpected error', async () => {
-    mockCreatePackage.mockRejectedValue(new Error('Server exploded'));
-    const user = userEvent.setup();
-    renderWorkspace();
-
-    await submitValidPackage(user);
-
-    expect(mockShowSnackbar).toHaveBeenCalledWith(
-      expect.objectContaining({
-        title: 'Failed to create package',
-        subtitle: 'An unexpected error occurred',
-        kind: 'error',
-      }),
-    );
-    expect(mockCloseWorkspace).not.toHaveBeenCalled();
-  });
-
-  it('surfaces the server error message from an OpenmrsFetchError', async () => {
-    mockCreatePackage.mockRejectedValue(fetchError({ error: 'A package with that name already exists' }));
-    const user = userEvent.setup();
-    renderWorkspace();
-
-    await submitValidPackage(user);
-
-    expect(mockShowSnackbar).toHaveBeenCalledWith(
-      expect.objectContaining({
-        title: 'Failed to create package',
-        subtitle: 'A package with that name already exists',
-        kind: 'error',
-      }),
-    );
-    expect(mockCloseWorkspace).not.toHaveBeenCalled();
-  });
-
-  it('surfaces the first field error from an OpenmrsFetchError', async () => {
-    mockCreatePackage.mockRejectedValue(fetchError({ fieldErrors: { name: 'Name must be unique' } }));
-    const user = userEvent.setup();
-    renderWorkspace();
-
-    await submitValidPackage(user);
-
-    expect(mockShowSnackbar).toHaveBeenCalledWith(
-      expect.objectContaining({ title: 'Failed to create package', subtitle: 'Name must be unique', kind: 'error' }),
-    );
-    expect(mockCloseWorkspace).not.toHaveBeenCalled();
-  });
-
-  it('closes the workspace when Cancel is clicked', async () => {
-    const user = userEvent.setup();
-    renderWorkspace();
-
-    await user.click(screen.getByRole('button', { name: 'Cancel' }));
-
-    expect(mockCloseWorkspace).toHaveBeenCalled();
+    expect(screen.getByText('QUEUED')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Download' })).not.toBeInTheDocument();
   });
 });
