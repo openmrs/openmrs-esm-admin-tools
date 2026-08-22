@@ -26,3 +26,8 @@ export const newPackageWorkspace = getAsyncLifecycle(
   () => import('./components/new-package/new-package.workspace'),
   options,
 );
+
+export const viewPackageWorkspace = getAsyncLifecycle(
+  () => import('./components/view-package/view-package.workspace'),
+  options,
+);
