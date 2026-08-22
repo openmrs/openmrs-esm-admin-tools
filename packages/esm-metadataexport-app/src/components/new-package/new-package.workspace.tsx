@@ -94,7 +94,7 @@ const NewPackageWorkspace: React.FC<DefaultWorkspaceProps> = ({
         const responseBody = submitError instanceof OpenmrsFetchError ? submitError.responseBody : null;
         const reason =
           typeof responseBody === 'object' && responseBody !== null
-            ? (Object.values(responseBody.fieldErrors ?? {})[0] ?? responseBody.error)
+            ? Object.values(responseBody.fieldErrors ?? {})[0] ?? responseBody.error
             : null;
         showSnackbar({
           title: t('packageCreationFailed', 'Failed to create package'),
