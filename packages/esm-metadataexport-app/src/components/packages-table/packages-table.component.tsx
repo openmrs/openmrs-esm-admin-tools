@@ -57,7 +57,7 @@ const PackagesTable: React.FC = () => {
           ? exportPackage.entries.map((entry) => formatDomainLabel(entry.domain)).join(', ')
           : t('allDomains', 'All domains'),
         description: exportPackage.description,
-        status: exportPackage.latestBuild ? t(exportPackage.latestBuild.status) : t('noBuilds', 'NO BUILDS'),
+        status: exportPackage.latestBuild ? t(exportPackage.latestBuild.status) : t('noBuilds', 'No builds'),
       })),
     [packages, t],
   );
