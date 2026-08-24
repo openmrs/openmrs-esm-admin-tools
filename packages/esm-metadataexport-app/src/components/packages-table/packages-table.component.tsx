@@ -23,8 +23,8 @@ import {
 import { formatDomainLabel } from '../../domain-lookups/domain-lookups.resource';
 import { useAllPackages } from '../../packages/packages.resource';
 import { launchAddNewPackageWorkspace } from '../new-package/new-package-utils';
-import styles from './packages-table.scss';
 import ViewPackageActionButton from '../view-package/view-package-action-button/view-package-action-button.component';
+import styles from './packages-table.scss';
 
 const PackagesTable: React.FC = () => {
   const { t } = useTranslation();
