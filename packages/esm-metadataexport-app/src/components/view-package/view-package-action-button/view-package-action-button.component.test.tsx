@@ -7,7 +7,7 @@ import { type ExportPackage } from '../../../types';
 import { launchViewPackageWorkspace } from '../view-package-utils';
 import ViewPackageActionButton from './view-package-action-button.component';
 
-vi.mock('../view-package-utills', () => ({
+vi.mock('../view-package-utils', () => ({
   launchViewPackageWorkspace: vi.fn(),
 }));
 
