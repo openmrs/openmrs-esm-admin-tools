@@ -62,6 +62,11 @@ const PackagesTable: React.FC = () => {
     [packages, t],
   );
 
+  const packagesByUuid = useMemo(
+    () => new Map(packages.map((exportPackage) => [exportPackage.uuid, exportPackage])),
+    [packages],
+  );
+
   if (isLoading) {
     return (
       <div className={styles.container}>
@@ -112,7 +117,7 @@ const PackagesTable: React.FC = () => {
                     {row.cells.map((cell) =>
                       cell.info.header === 'actions' ? (
                         <TableCell key={cell.id}>
-                          <ViewPackageActionButton exportPackage={packages.find((p) => p.uuid === row.id)} />
+                          <ViewPackageActionButton exportPackage={packagesByUuid.get(row.id)} />
                         </TableCell>
                       ) : (
                         <TableCell key={cell.id}>{cell.value}</TableCell>
