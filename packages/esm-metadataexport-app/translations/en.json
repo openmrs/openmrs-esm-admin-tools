@@ -3,7 +3,7 @@
   "builds": "Builds",
   "buildVersion": "Build {{version}}",
   "cancel": "Cancel",
-  "completedAgo": "Completed {{time}}",
+  "completedAgo": "Completed {{time}} ago",
   "createPackage": "Create package",
   "creating": "Creating",
   "description": "Description",
@@ -27,7 +27,7 @@
   "packages": "Packages",
   "packages__lower": "packages",
   "selectAll": "Select all",
-  "startedAgo": "Started {{time}}",
+  "startedAgo": "Started {{time}} ago",
   "status": "Status",
   "unexpectedError": "An unexpected error occurred",
   "view": "View"

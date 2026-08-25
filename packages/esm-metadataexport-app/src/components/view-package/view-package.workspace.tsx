@@ -1,16 +1,12 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
 import { InlineLoading, Link, Tag } from '@carbon/react';
 import { Download } from '@carbon/react/icons';
-import { type DefaultWorkspaceProps, ErrorState } from '@openmrs/esm-framework';
+import { type DefaultWorkspaceProps, ErrorState, formatDurationBetween } from '@openmrs/esm-framework';
 import { formatDomainLabel } from '../../domain-lookups/domain-lookups.resource';
 import { usePackageBuilds } from '../../packages/packages.resource';
 import { type ExportBuildStatus, type ExportPackage } from '../../types';
 import styles from './view-package.workspace.scss';
-
-dayjs.extend(relativeTime);
 
 interface ViewPackageWorkspaceProps extends DefaultWorkspaceProps {
   exportPackage: ExportPackage;
@@ -71,12 +67,14 @@ const ViewPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPacka
                   <div className={styles.buildRow}>
                     <span className={styles.buildMeta}>
                       {build.dateStarted
-                        ? t('startedAgo', 'Started {{time}}', { time: dayjs(build.dateStarted).fromNow() })
+                        ? t('startedAgo', 'Started {{time}} ago', { time: formatDurationBetween(build.dateStarted) })
                         : t('notStarted', 'Not started')}
                     </span>
                     {build.dateCompleted && (
                       <span className={styles.buildMeta}>
-                        {t('completedAgo', 'Completed {{time}}', { time: dayjs(build.dateCompleted).fromNow() })}
+                        {t('completedAgo', 'Completed {{time}} ago', {
+                          time: formatDurationBetween(build.dateCompleted),
+                        })}
                       </span>
                     )}
                   </div>
