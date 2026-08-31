@@ -44,6 +44,8 @@
     "swr": "2.2.5"
   },
   "peerDependencies": {
+    "@carbon/icons-react": "^11.68.0",
+    "@carbon/react": "^1.92.1",
     "@openmrs/esm-framework": "10.x",
     "dayjs": "1.x",
     "react": "18.x",
