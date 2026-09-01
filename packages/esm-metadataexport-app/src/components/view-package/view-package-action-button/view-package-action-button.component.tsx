@@ -2,8 +2,8 @@ import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@carbon/react';
 import { ArrowRight } from '@carbon/react/icons';
-import { launchViewPackageWorkspace } from '../view-package-utils';
 import { useSession, userHasAccess } from '@openmrs/esm-framework';
+import { launchViewPackageWorkspace } from '../view-package-utils';
 import { type ExportPackage } from '../../../types/index';
 
 interface ViewPackageActionButtonProps {
