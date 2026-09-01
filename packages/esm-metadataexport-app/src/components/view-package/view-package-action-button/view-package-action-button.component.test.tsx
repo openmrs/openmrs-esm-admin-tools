@@ -29,7 +29,6 @@ const mockPackage: ExportPackage = {
 
 describe('ViewPackageActionButton', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     mockUseSession.mockReturnValue(sessionWithUser());
     mockUserHasAccess.mockReturnValue(true);
   });
