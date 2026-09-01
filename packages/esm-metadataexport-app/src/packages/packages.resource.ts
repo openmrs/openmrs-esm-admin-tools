@@ -30,7 +30,7 @@ export function createPackage(
   });
 }
 
-export function usePackageBuilds(uuid: String) {
+export function usePackageBuilds(uuid: string) {
   const apiUrl = `${restBaseUrl}/metadataexport/packages/${uuid}/builds`;
   const { data, error, isLoading, isValidating, mutate } = useSWR<FetchResponse<Array<ExportPackageBuild>>, Error>(
     apiUrl,
