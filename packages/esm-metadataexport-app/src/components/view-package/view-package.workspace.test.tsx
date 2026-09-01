@@ -115,6 +115,8 @@ describe('ViewPackageWorkspace', () => {
     renderWorkspace();
 
     expect(screen.getByText('QUEUED')).toBeInTheDocument();
+    expect(screen.getByText('Not started')).toBeInTheDocument();
+    expect(screen.queryByText(/^Completed/)).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Download' })).not.toBeInTheDocument();
   });
 });
