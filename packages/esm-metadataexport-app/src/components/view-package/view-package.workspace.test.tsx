@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
+import { type Session, useSession, userHasAccess } from '@openmrs/esm-framework';
 import ViewPackageWorkspace from './view-package.workspace';
 import { usePackageBuilds } from '../../packages/packages.resource';
 import { type ExportPackage, type ExportPackageBuild } from '../../types';
@@ -10,6 +11,10 @@ vi.mock('../../packages/packages.resource', () => ({
 }));
 
 const mockUsePackageBuilds = usePackageBuilds as Mock;
+const mockUseSession = vi.mocked(useSession);
+const mockUserHasAccess = vi.mocked(userHasAccess);
+
+const sessionWithUser = () => ({ user: { uuid: 'cc8507b8-7c9a-486b-85dc-b8f25ad1e4cc' } }) as unknown as Session;
 const mockCloseWorkspace = vi.fn();
 const mockCloseWorkspaceWithSavedChanges = vi.fn();
 const mockPromptBeforeClosing = vi.fn();
@@ -67,6 +72,8 @@ function renderWorkspace(pkg: ExportPackage = exportPackage) {
 describe('ViewPackageWorkspace', () => {
   beforeEach(() => {
     mockBuilds();
+    mockUseSession.mockReturnValue(sessionWithUser());
+    mockUserHasAccess.mockReturnValue(true);
   });
 
   it('renders the package domains as human-readable labels', () => {
@@ -108,6 +115,16 @@ describe('ViewPackageWorkspace', () => {
     expect(screen.getByText('Build 2')).toBeInTheDocument();
     expect(screen.getByText('COMPLETED')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Download' })).toHaveAttribute('href', '/download/build-1');
+  });
+
+  it('hides the download link from users without the Manage Metadata Export Packages privilege', () => {
+    mockUserHasAccess.mockReturnValue(false);
+    mockBuilds({ builds: [build()] });
+    renderWorkspace();
+
+    expect(screen.getByText('COMPLETED')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Download' })).not.toBeInTheDocument();
+    expect(mockUserHasAccess).toHaveBeenCalledWith('Manage Metadata Export Packages', expect.anything());
   });
 
   it('omits the download link for a build without a download URL', () => {

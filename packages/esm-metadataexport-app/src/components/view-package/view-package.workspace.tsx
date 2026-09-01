@@ -2,7 +2,13 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { InlineLoading, Link, Tag } from '@carbon/react';
 import { Download } from '@carbon/react/icons';
-import { type DefaultWorkspaceProps, ErrorState, formatDurationBetween } from '@openmrs/esm-framework';
+import {
+  type DefaultWorkspaceProps,
+  ErrorState,
+  formatDurationBetween,
+  useSession,
+  userHasAccess,
+} from '@openmrs/esm-framework';
 import { formatDomainLabel } from '../../domain-lookups/domain-lookups.resource';
 import { usePackageBuilds } from '../../packages/packages.resource';
 import { type ExportBuildStatus, type ExportPackage } from '../../types';
@@ -21,7 +27,11 @@ const statusTagType: Record<ExportBuildStatus, 'gray' | 'blue' | 'green' | 'red'
 
 const ViewPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPackage }) => {
   const { t } = useTranslation();
+  const session = useSession();
   const { builds, isLoading, error } = usePackageBuilds(exportPackage.uuid);
+
+  // Downloading a build hits a Manage-gated backend endpoint, so hide it from Get-only viewers.
+  const canManage = session.user ? userHasAccess('Manage Metadata Export Packages', session.user) : false;
 
   const domainsLabel = useMemo(() => {
     // An empty entries list means the package includes every registered domain.
@@ -81,7 +91,7 @@ const ViewPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPacka
                   {build.status === 'FAILED' && build.errorMessage && (
                     <p className={styles.buildError}>{build.errorMessage}</p>
                   )}
-                  {build.downloadUrl && (
+                  {canManage && build.downloadUrl && (
                     <Link href={build.downloadUrl} renderIcon={() => <Download size={16} />}>
                       {t('download', 'Download')}
                     </Link>
