@@ -1,6 +1,6 @@
 import useSWR from 'swr';
 import { type FetchResponse, openmrsFetch, restBaseUrl } from '@openmrs/esm-framework';
-import { type ExportPackage, type ExportPackageRequest, type ExportPackageBuild } from '../types';
+import type { ExportPackage, ExportPackageRequest, ExportPackageBuild } from '../types';
 
 export function useAllPackages(includeRetired = false) {
   const apiUrl = `${restBaseUrl}/metadataexport/packages?includeRetired=${includeRetired}`;
