@@ -47,7 +47,7 @@ describe('ViewPackageActionButton', () => {
 
     expect(mockUserHasAccess).toHaveBeenCalledWith('Get Metadata Export Packages', expect.anything());
     expect(mockLaunchViewPackageWorkspace).toHaveBeenCalledTimes(1);
-    expect(mockLaunchViewPackageWorkspace).toHaveBeenCalledWith(expect.any(Function), mockPackage);
+    expect(mockLaunchViewPackageWorkspace).toHaveBeenCalledWith(mockPackage);
   });
 
   it('disables the button for users without the Get Metadata Export Packages privilege', async () => {

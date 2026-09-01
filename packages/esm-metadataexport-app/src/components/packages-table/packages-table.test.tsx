@@ -116,10 +116,10 @@ describe('PackagesTable', () => {
 
     // Clicking View resolves the row back to its package via the packagesByUuid lookup.
     await user.click(within(builtRow).getByRole('button', { name: 'View' }));
-    expect(mockLaunchViewPackageWorkspace).toHaveBeenLastCalledWith(expect.any(Function), builtPackage);
+    expect(mockLaunchViewPackageWorkspace).toHaveBeenLastCalledWith(builtPackage);
 
     await user.click(within(unbuiltRow).getByRole('button', { name: 'View' }));
-    expect(mockLaunchViewPackageWorkspace).toHaveBeenLastCalledWith(expect.any(Function), unbuiltPackage);
+    expect(mockLaunchViewPackageWorkspace).toHaveBeenLastCalledWith(unbuiltPackage);
 
     expect(mockLaunchViewPackageWorkspace).toHaveBeenCalledTimes(2);
   });

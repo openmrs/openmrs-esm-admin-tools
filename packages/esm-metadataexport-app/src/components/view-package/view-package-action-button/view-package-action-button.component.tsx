@@ -17,8 +17,8 @@ const ViewPackageActionButton: React.FC<ViewPackageActionButtonProps> = ({ expor
   const canView = session.user ? userHasAccess('Get Metadata Export Packages', session.user) : false;
 
   const handleView = useCallback(() => {
-    launchViewPackageWorkspace(t, exportPackage);
-  }, [t, exportPackage]);
+    launchViewPackageWorkspace(exportPackage);
+  }, [exportPackage]);
 
   return (
     <Button
