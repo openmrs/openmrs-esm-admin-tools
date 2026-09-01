@@ -1,9 +1,9 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
+import ViewPackageWorkspace from './view-package.workspace';
 import { usePackageBuilds } from '../../packages/packages.resource';
 import { type ExportPackage, type ExportPackageBuild } from '../../types';
-import ViewPackageWorkspace from './view-package.workspace';
 
 vi.mock('../../packages/packages.resource', () => ({
   usePackageBuilds: vi.fn(),
