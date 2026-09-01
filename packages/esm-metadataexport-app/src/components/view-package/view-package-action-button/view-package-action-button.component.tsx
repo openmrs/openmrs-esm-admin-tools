@@ -14,7 +14,7 @@ const ViewPackageActionButton: React.FC<ViewPackageActionButtonProps> = ({ expor
   const { t } = useTranslation();
   const session = useSession();
 
-  const canManage = session.user ? userHasAccess('Manage Metadata Export Packages', session.user) : false;
+  const canView = session.user ? userHasAccess('Get Metadata Export Packages', session.user) : false;
 
   const handleView = useCallback(() => {
     launchViewPackageWorkspace(t, exportPackage);
@@ -22,7 +22,7 @@ const ViewPackageActionButton: React.FC<ViewPackageActionButtonProps> = ({ expor
 
   return (
     <Button
-      disabled={!canManage}
+      disabled={!canView}
       onClick={handleView}
       size="md"
       kind="ghost"

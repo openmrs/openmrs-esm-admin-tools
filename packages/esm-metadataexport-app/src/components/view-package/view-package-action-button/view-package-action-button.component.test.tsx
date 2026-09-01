@@ -45,12 +45,12 @@ describe('ViewPackageActionButton', () => {
 
     await user.click(screen.getByRole('button', { name: 'View' }));
 
-    expect(mockUserHasAccess).toHaveBeenCalledWith('Manage Metadata Export Packages', expect.anything());
+    expect(mockUserHasAccess).toHaveBeenCalledWith('Get Metadata Export Packages', expect.anything());
     expect(mockLaunchViewPackageWorkspace).toHaveBeenCalledTimes(1);
     expect(mockLaunchViewPackageWorkspace).toHaveBeenCalledWith(expect.any(Function), mockPackage);
   });
 
-  it('disables the button for users without the Manage Metadata Export Packages privilege', async () => {
+  it('disables the button for users without the Get Metadata Export Packages privilege', async () => {
     const user = userEvent.setup();
     mockUserHasAccess.mockReturnValue(false);
     render(<ViewPackageActionButton exportPackage={mockPackage} />);
