@@ -80,6 +80,12 @@
   color: $text-02;
 }
 
+.buildError {
+  @include type.type-style('body-compact-01');
+  color: $danger;
+  margin: 0;
+}
+
 .emptyBuilds {
   @include type.type-style('body-compact-01');
   color: $text-02;

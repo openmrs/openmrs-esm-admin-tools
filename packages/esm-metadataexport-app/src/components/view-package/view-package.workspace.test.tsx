@@ -119,4 +119,21 @@ describe('ViewPackageWorkspace', () => {
     expect(screen.queryByText(/^Completed/)).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Download' })).not.toBeInTheDocument();
   });
+
+  it('shows the failure reason for a failed build', () => {
+    mockBuilds({
+      builds: [build({ status: 'FAILED', downloadUrl: null, errorMessage: 'Serialization failed for concept 5497' })],
+    });
+    renderWorkspace();
+
+    expect(screen.getByText('FAILED')).toBeInTheDocument();
+    expect(screen.getByText('Serialization failed for concept 5497')).toBeInTheDocument();
+  });
+
+  it('does not show a failure reason for a non-failed build', () => {
+    mockBuilds({ builds: [build({ status: 'COMPLETED', errorMessage: 'stale error' })] });
+    renderWorkspace();
+
+    expect(screen.queryByText('stale error')).not.toBeInTheDocument();
+  });
 });

@@ -78,6 +78,9 @@ const ViewPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPacka
                       </span>
                     )}
                   </div>
+                  {build.status === 'FAILED' && build.errorMessage && (
+                    <p className={styles.buildError}>{build.errorMessage}</p>
+                  )}
                   {build.downloadUrl && (
                     <Link href={build.downloadUrl} renderIcon={() => <Download size={16} />}>
                       {t('download', 'Download')}
