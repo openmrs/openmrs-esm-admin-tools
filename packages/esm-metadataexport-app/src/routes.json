@@ -27,7 +27,6 @@
       "canMaximize": true,
       "width": "narrow"
     },
-
     {
       "name": "view-package-workspace",
       "component": "viewPackageWorkspace",
