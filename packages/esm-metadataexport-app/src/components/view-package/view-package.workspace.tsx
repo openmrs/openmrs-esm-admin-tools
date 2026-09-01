@@ -61,7 +61,7 @@ const ViewPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPacka
                       {t('buildVersion', 'Build {{version}}', { version: build.version })}
                     </span>
                     <Tag type={statusTagType[build.status]} size="sm">
-                      {build.status}
+                      {t(build.status)}
                     </Tag>
                   </div>
                   <div className={styles.buildRow}>
