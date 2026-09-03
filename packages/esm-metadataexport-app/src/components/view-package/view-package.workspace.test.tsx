@@ -1,20 +1,30 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
-import { type Session, useSession, userHasAccess } from '@openmrs/esm-framework';
+import * as esmFramework from '@openmrs/esm-framework';
 import ViewPackageWorkspace from './view-package.workspace';
 import { usePackageBuilds } from '../../packages/packages.resource';
 import { type ExportPackage, type ExportPackageBuild } from '../../types';
+
+vi.mock('@openmrs/esm-framework', async (importOriginal) => {
+  const original = await importOriginal<typeof esmFramework>();
+  return {
+    ...original,
+    restBaseUrl: '/ws/rest/v1',
+    makeUrl: (path: string) => `${window.openmrsBase}${path}`,
+  };
+});
 
 vi.mock('../../packages/packages.resource', () => ({
   usePackageBuilds: vi.fn(),
 }));
 
 const mockUsePackageBuilds = usePackageBuilds as Mock;
-const mockUseSession = vi.mocked(useSession);
-const mockUserHasAccess = vi.mocked(userHasAccess);
+const mockUseSession = vi.mocked(esmFramework.useSession);
+const mockUserHasAccess = vi.mocked(esmFramework.userHasAccess);
 
-const sessionWithUser = () => ({ user: { uuid: 'cc8507b8-7c9a-486b-85dc-b8f25ad1e4cc' } }) as unknown as Session;
+const sessionWithUser = () =>
+  ({ user: { uuid: 'cc8507b8-7c9a-486b-85dc-b8f25ad1e4cc' } }) as unknown as esmFramework.Session;
 const mockCloseWorkspace = vi.fn();
 const mockCloseWorkspaceWithSavedChanges = vi.fn();
 const mockPromptBeforeClosing = vi.fn();
