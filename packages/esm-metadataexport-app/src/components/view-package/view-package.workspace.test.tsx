@@ -114,7 +114,10 @@ describe('ViewPackageWorkspace', () => {
 
     expect(screen.getByText('Build 2')).toBeInTheDocument();
     expect(screen.getByText('COMPLETED')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Download' })).toHaveAttribute('href', '/download/build-1');
+    expect(screen.getByRole('link', { name: 'Download' })).toHaveAttribute(
+      'href',
+      `/openmrs/ws/rest/v1/metadataexport/builds/${build().uuid}/download`,
+    );
   });
 
   it('hides the download link from users without the Manage Metadata Export Packages privilege', () => {

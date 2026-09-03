@@ -6,6 +6,8 @@ import {
   type DefaultWorkspaceProps,
   ErrorState,
   formatDurationBetween,
+  makeUrl,
+  restBaseUrl,
   useSession,
   userHasAccess,
 } from '@openmrs/esm-framework';
@@ -92,7 +94,10 @@ const ViewPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPacka
                     <p className={styles.buildError}>{build.errorMessage}</p>
                   )}
                   {canManage && build.downloadUrl && (
-                    <Link href={build.downloadUrl} renderIcon={() => <Download size={16} />}>
+                    <Link
+                      href={makeUrl(`${restBaseUrl}/metadataexport/builds/${build.uuid}/download`)}
+                      renderIcon={() => <Download size={16} />}
+                    >
                       {t('download', 'Download')}
                     </Link>
                   )}
