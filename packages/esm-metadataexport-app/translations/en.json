@@ -6,6 +6,7 @@
   "buildTriggerFailed": "Failed to trigger build",
   "buildVersion": "Build {{version}}",
   "cancel": "Cancel",
+  "COMPLETED": "Completed",
   "completedAgo": "Completed {{time}} ago",
   "createPackage": "Create package",
   "creating": "Creating",
@@ -19,6 +20,7 @@
   "domains": "Domains",
   "download": "Download",
   "errorLoadingDomains": "Error loading domains",
+  "FAILED": "Failed",
   "loadingBuilds": "Loading builds…",
   "managePackages": "Manage packages",
   "metadataexport": "Metadata Export",
@@ -43,6 +45,8 @@
   "status": "Status",
   "triggeringBuild": "Triggering build",
   "triggerNewBuild": "Trigger new build",
+  "QUEUED": "Queued",
+  "RUNNING": "Running",
   "unexpectedError": "An unexpected error occurred",
   "view": "View"
 }

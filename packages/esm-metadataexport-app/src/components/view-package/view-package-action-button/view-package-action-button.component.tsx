@@ -2,9 +2,9 @@ import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@carbon/react';
 import { ArrowRight } from '@carbon/react/icons';
-import { launchViewPackageWorkspace } from '../view-package-utils';
 import { useSession, userHasAccess } from '@openmrs/esm-framework';
-import { type ExportPackage } from '../../../types/index';
+import { launchViewPackageWorkspace } from '../view-package-utils';
+import { type ExportPackage } from '../../../types';
 
 interface ViewPackageActionButtonProps {
   exportPackage: ExportPackage;
@@ -14,15 +14,15 @@ const ViewPackageActionButton: React.FC<ViewPackageActionButtonProps> = ({ expor
   const { t } = useTranslation();
   const session = useSession();
 
-  const canManage = session.user ? userHasAccess('Manage Metadata Export Packages', session.user) : false;
+  const canView = session.user ? userHasAccess('Get Metadata Export Packages', session.user) : false;
 
   const handleView = useCallback(() => {
-    launchViewPackageWorkspace(t, exportPackage);
-  }, [t, exportPackage]);
+    launchViewPackageWorkspace(exportPackage);
+  }, [exportPackage]);
 
   return (
     <Button
-      disabled={!canManage}
+      disabled={!canView}
       onClick={handleView}
       size="md"
       kind="ghost"

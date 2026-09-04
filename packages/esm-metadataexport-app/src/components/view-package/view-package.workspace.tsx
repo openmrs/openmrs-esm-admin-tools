@@ -6,9 +6,12 @@ import { useSWRConfig } from 'swr';
 import {
   type DefaultWorkspaceProps,
   ErrorState,
+  formatDurationBetween,
+  makeUrl,
   restBaseUrl,
   showSnackbar,
-  formatDurationBetween,
+  useSession,
+  userHasAccess,
 } from '@openmrs/esm-framework';
 import { formatDomainLabel } from '../../domain-lookups/domain-lookups.resource';
 import { deleteBuild, triggerBuild, usePackageBuilds } from '../../packages/packages.resource';
@@ -31,8 +34,12 @@ const statusTagType: Record<ExportBuildStatus, 'gray' | 'blue' | 'green' | 'red'
 
 const ViewPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPackage, closeWorkspace }) => {
   const { t } = useTranslation();
+  const session = useSession();
   const { mutate } = useSWRConfig();
   const { builds, isLoading, error, mutate: mutateBuilds } = usePackageBuilds(exportPackage.uuid);
+
+  // Downloading a build hits a Manage-gated backend endpoint, so hide it from Get-only viewers.
+  const canManage = session.user ? userHasAccess('Manage Metadata Export Packages', session.user) : false;
   const [isTriggeringBuild, setIsTriggeringBuild] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -145,7 +152,7 @@ const ViewPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPacka
                       {t('buildVersion', 'Build {{version}}', { version: build.version })}
                     </span>
                     <Tag type={statusTagType[build.status]} size="sm">
-                      {build.status}
+                      {t(build.status)}
                     </Tag>
                   </div>
                   <div className={styles.buildRow}>
@@ -162,8 +169,14 @@ const ViewPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPacka
                       </span>
                     )}
                   </div>
-                  {build.downloadUrl && (
-                    <Link href={build.downloadUrl} renderIcon={() => <Download size={16} />}>
+                  {build.status === 'FAILED' && build.errorMessage && (
+                    <p className={styles.buildError}>{build.errorMessage}</p>
+                  )}
+                  {canManage && build.downloadUrl && (
+                    <Link
+                      href={makeUrl(`${restBaseUrl}/metadataexport/builds/${build.uuid}/download`)}
+                      renderIcon={() => <Download size={16} />}
+                    >
                       {t('download', 'Download')}
                     </Link>
                   )}

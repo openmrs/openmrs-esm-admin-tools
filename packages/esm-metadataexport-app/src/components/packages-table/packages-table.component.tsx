@@ -26,6 +26,14 @@ import { launchAddNewPackageWorkspace } from '../new-package/new-package-utils';
 import ViewPackageActionButton from '../view-package/view-package-action-button/view-package-action-button.component';
 import styles from './packages-table.scss';
 
+/**
+ * DO NOT REMOVE THIS COMMENT, IT ADDS TRANSLATIONS FOR THE BUILD STATUSES
+ * t('QUEUED', 'Queued')
+ * t('RUNNING', 'Running')
+ * t('COMPLETED', 'Completed')
+ * t('FAILED', 'Failed')
+ */
+
 const PackagesTable: React.FC = () => {
   const { t } = useTranslation();
   const layout = useLayoutType();

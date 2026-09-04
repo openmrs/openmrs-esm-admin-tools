@@ -2,10 +2,18 @@ import React from 'react';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
-import { showSnackbar } from '@openmrs/esm-framework';
-import { deleteBuild, triggerBuild, usePackageBuilds } from '../../packages/packages.resource';
-import { type ExportPackage, type ExportPackageBuild } from '../../types';
+import * as esmFramework from '@openmrs/esm-framework';
 import ViewPackageWorkspace from './view-package.workspace';
+import { usePackageBuilds, triggerBuild, deleteBuild } from '../../packages/packages.resource';
+import { type ExportPackage, type ExportPackageBuild } from '../../types';
+
+vi.mock('@openmrs/esm-framework', async (importOriginal) => {
+  const original = await importOriginal<typeof esmFramework>();
+  return {
+    ...original,
+    makeUrl: (path: string) => `${window.openmrsBase}${path}`,
+  };
+});
 
 vi.mock('../../packages/packages.resource', () => ({
   usePackageBuilds: vi.fn(),
@@ -13,10 +21,16 @@ vi.mock('../../packages/packages.resource', () => ({
   deleteBuild: vi.fn(),
 }));
 
-const mockUsePackageBuilds = usePackageBuilds as Mock;
 const mockTriggerBuild = triggerBuild as Mock;
 const mockDeleteBuild = deleteBuild as Mock;
-const mockShowSnackbar = showSnackbar as Mock;
+const mockShowSnackbar = esmFramework.showSnackbar as Mock;
+
+const mockUsePackageBuilds = usePackageBuilds as Mock;
+const mockUseSession = vi.mocked(esmFramework.useSession);
+const mockUserHasAccess = vi.mocked(esmFramework.userHasAccess);
+
+const sessionWithUser = () =>
+  ({ user: { uuid: 'cc8507b8-7c9a-486b-85dc-b8f25ad1e4cc' } }) as unknown as esmFramework.Session;
 const mockCloseWorkspace = vi.fn();
 const mockCloseWorkspaceWithSavedChanges = vi.fn();
 const mockPromptBeforeClosing = vi.fn();
@@ -26,9 +40,9 @@ const build = (overrides: Partial<ExportPackageBuild> = {}): ExportPackageBuild 
   packageUuid: '361d69db-c018-4545-87a7-e987e8af9e85',
   version: 2,
   status: 'COMPLETED',
-  dateCreated: Date.now(),
-  dateStarted: Date.now(),
-  dateCompleted: Date.now(),
+  dateCreated: Date.now() - 15 * 60 * 1000,
+  dateStarted: Date.now() - 10 * 60 * 1000,
+  dateCompleted: Date.now() - 5 * 60 * 1000,
   errorMessage: null,
   downloadUrl: '/download/build-1',
   manifest: null,
@@ -74,6 +88,8 @@ function renderWorkspace(pkg: ExportPackage = exportPackage) {
 describe('ViewPackageWorkspace', () => {
   beforeEach(() => {
     mockBuilds();
+    mockUseSession.mockReturnValue(sessionWithUser());
+    mockUserHasAccess.mockReturnValue(true);
   });
 
   it('renders the package domains as human-readable labels', () => {
@@ -114,7 +130,22 @@ describe('ViewPackageWorkspace', () => {
 
     expect(screen.getByText('Build 2')).toBeInTheDocument();
     expect(screen.getByText('COMPLETED')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Download' })).toHaveAttribute('href', '/download/build-1');
+    expect(screen.getByText(/^Started .* ago$/)).toBeInTheDocument();
+    expect(screen.getByText(/^Completed .* ago$/)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Download' })).toHaveAttribute(
+      'href',
+      `/openmrs/ws/rest/v1/metadataexport/builds/${build().uuid}/download`,
+    );
+  });
+
+  it('hides the download link from users without the Manage Metadata Export Packages privilege', () => {
+    mockUserHasAccess.mockReturnValue(false);
+    mockBuilds({ builds: [build()] });
+    renderWorkspace();
+
+    expect(screen.getByText('COMPLETED')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Download' })).not.toBeInTheDocument();
+    expect(mockUserHasAccess).toHaveBeenCalledWith('Manage Metadata Export Packages', expect.anything());
   });
 
   it('omits the download link for a build without a download URL', () => {

@@ -3,9 +3,9 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { type Session, useSession, userHasAccess } from '@openmrs/esm-framework';
-import { type ExportPackage } from '../../../types';
-import { launchViewPackageWorkspace } from '../view-package-utils';
 import ViewPackageActionButton from './view-package-action-button.component';
+import { launchViewPackageWorkspace } from '../view-package-utils';
+import { type ExportPackage } from '../../../types';
 
 vi.mock('../view-package-utils', () => ({
   launchViewPackageWorkspace: vi.fn(),
@@ -29,7 +29,6 @@ const mockPackage: ExportPackage = {
 
 describe('ViewPackageActionButton', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     mockUseSession.mockReturnValue(sessionWithUser());
     mockUserHasAccess.mockReturnValue(true);
   });
@@ -46,12 +45,12 @@ describe('ViewPackageActionButton', () => {
 
     await user.click(screen.getByRole('button', { name: 'View' }));
 
-    expect(mockUserHasAccess).toHaveBeenCalledWith('Manage Metadata Export Packages', expect.anything());
+    expect(mockUserHasAccess).toHaveBeenCalledWith('Get Metadata Export Packages', expect.anything());
     expect(mockLaunchViewPackageWorkspace).toHaveBeenCalledTimes(1);
-    expect(mockLaunchViewPackageWorkspace).toHaveBeenCalledWith(expect.any(Function), mockPackage);
+    expect(mockLaunchViewPackageWorkspace).toHaveBeenCalledWith(mockPackage);
   });
 
-  it('disables the button for users without the Manage Metadata Export Packages privilege', async () => {
+  it('disables the button for users without the Get Metadata Export Packages privilege', async () => {
     const user = userEvent.setup();
     mockUserHasAccess.mockReturnValue(false);
     render(<ViewPackageActionButton exportPackage={mockPackage} />);
