@@ -5,7 +5,7 @@ import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import * as esmFramework from '@openmrs/esm-framework';
 import ViewPackageWorkspace from './view-package.workspace';
 import { usePackageBuilds, triggerBuild, deleteBuild } from '../../packages/packages.resource';
-import { type ExportPackage, type ExportPackageBuild } from '../../types';
+import type { ExportPackage, ExportPackageBuild } from '../../types';
 
 vi.mock('@openmrs/esm-framework', async (importOriginal) => {
   const original = await importOriginal<typeof esmFramework>();
