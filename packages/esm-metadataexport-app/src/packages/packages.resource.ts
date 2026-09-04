@@ -46,7 +46,7 @@ export function usePackageBuilds(uuid: string) {
 }
 
 export function triggerBuild(
-  uuid: String,
+  uuid: string,
   abortController?: AbortController,
 ): Promise<FetchResponse<ExportPackageBuild>> {
   return openmrsFetch<ExportPackageBuild>(`${restBaseUrl}/metadataexport/packages/${uuid}/builds`, {
@@ -57,7 +57,7 @@ export function triggerBuild(
 }
 
 export function deleteBuild(
-  uuid: String,
+  uuid: string,
   reason?: string,
   abortController?: AbortController,
 ): Promise<FetchResponse<void>> {
