@@ -106,27 +106,30 @@ const ViewPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPacka
   return (
     <div className={styles.container}>
       <div className={styles.body}>
-        <section className={styles.actionRow}>
-          <Button
-            className={styles.triggerButton}
-            kind="primary"
-            onClick={handleTriggerBuild}
-            disabled={isTriggeringBuild || isDeleting}
-          >
-            {isTriggeringBuild ? (
-              <InlineLoading description={t('triggeringBuild', 'Triggering build') + '…'} />
-            ) : (
-              t('triggerNewBuild', 'Trigger new build')
-            )}
-          </Button>
-          <Button
-            kind="danger--tertiary"
-            onClick={() => setIsDeleteModalOpen(true)}
-            disabled={isDeleting || isTriggeringBuild}
-          >
-            {isDeleting ? <InlineLoading description={t('deleting', 'Deleting') + '…'} /> : t('delete', 'Delete')}
-          </Button>
-        </section>
+        {canManage && (
+          <section className={styles.actionRow}>
+            <Button
+              className={styles.triggerButton}
+              kind="primary"
+              onClick={handleTriggerBuild}
+              disabled={isTriggeringBuild || isDeleting}
+            >
+              {isTriggeringBuild ? (
+                <InlineLoading description={t('triggeringBuild', 'Triggering build') + '…'} />
+              ) : (
+                t('triggerNewBuild', 'Trigger new build')
+              )}
+            </Button>
+            <Button
+              kind="danger--tertiary"
+              onClick={() => setIsDeleteModalOpen(true)}
+              disabled={isDeleting || isTriggeringBuild}
+            >
+              {isDeleting ? <InlineLoading description={t('deleting', 'Deleting') + '…'} /> : t('delete', 'Delete')}
+            </Button>
+          </section>
+        )}
+
         <section className={styles.section}>
           <span className={styles.sectionLabel}>{t('details', 'Details')}</span>
           <dl className={styles.detailList}>
