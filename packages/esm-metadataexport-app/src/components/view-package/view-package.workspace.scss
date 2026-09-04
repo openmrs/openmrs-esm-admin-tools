@@ -1,0 +1,93 @@
+@use '@carbon/layout';
+@use '@carbon/type';
+@use '@openmrs/esm-styleguide/src/vars' as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: layout.$spacing-05;
+  display: flex;
+  flex-direction: column;
+  gap: layout.$spacing-06;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: layout.$spacing-04;
+}
+
+.sectionLabel {
+  @include type.type-style('heading-compact-01');
+  color: $text-02;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.detailList {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: layout.$spacing-03 layout.$spacing-06;
+  margin: 0;
+}
+
+.detailKey {
+  @include type.type-style('body-compact-01');
+  color: $text-02;
+}
+
+.detailValue {
+  @include type.type-style('body-compact-01');
+  color: $text-02;
+  margin: 0;
+}
+
+.buildList {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.buildItem {
+  display: flex;
+  flex-direction: column;
+  gap: layout.$spacing-02;
+  padding: layout.$spacing-04 0;
+  border-top: 1px solid $ui-03;
+}
+
+.buildRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.buildVersion {
+  @include type.type-style('heading-compact-01');
+  color: $text-02;
+}
+
+.buildMeta {
+  @include type.type-style('body-compact-01');
+  color: $text-02;
+}
+
+.buildError {
+  @include type.type-style('body-compact-01');
+  color: $danger;
+  margin: 0;
+}
+
+.emptyBuilds {
+  @include type.type-style('body-compact-01');
+  color: $text-02;
+  margin: 0;
+}

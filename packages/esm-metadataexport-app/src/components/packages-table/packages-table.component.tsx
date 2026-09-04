@@ -23,7 +23,16 @@ import {
 import { formatDomainLabel } from '../../domain-lookups/domain-lookups.resource';
 import { useAllPackages } from '../../packages/packages.resource';
 import { launchAddNewPackageWorkspace } from '../new-package/new-package-utils';
+import ViewPackageActionButton from '../view-package/view-package-action-button/view-package-action-button.component';
 import styles from './packages-table.scss';
+
+/**
+ * DO NOT REMOVE THIS COMMENT, IT ADDS TRANSLATIONS FOR THE BUILD STATUSES
+ * t('QUEUED', 'Queued')
+ * t('RUNNING', 'Running')
+ * t('COMPLETED', 'Completed')
+ * t('FAILED', 'Failed')
+ */
 
 const PackagesTable: React.FC = () => {
   const { t } = useTranslation();
@@ -40,6 +49,8 @@ const PackagesTable: React.FC = () => {
       { key: 'name', header: t('packageName', 'Package name') },
       { key: 'domains', header: t('domains', 'Domains') },
       { key: 'description', header: t('description', 'Description') },
+      { key: 'status', header: t('status', 'Status') },
+      { key: 'actions', header: ' ' },
     ],
     [t],
   );
@@ -54,8 +65,14 @@ const PackagesTable: React.FC = () => {
           ? exportPackage.entries.map((entry) => formatDomainLabel(entry.domain)).join(', ')
           : t('allDomains', 'All domains'),
         description: exportPackage.description,
+        status: exportPackage.latestBuild ? t(exportPackage.latestBuild.status) : t('noBuilds', 'No builds'),
       })),
     [packages, t],
+  );
+
+  const packagesByUuid = useMemo(
+    () => new Map(packages.map((exportPackage) => [exportPackage.uuid, exportPackage])),
+    [packages],
   );
 
   if (isLoading) {
@@ -105,9 +122,15 @@ const PackagesTable: React.FC = () => {
               <TableBody>
                 {rows.map((row) => (
                   <TableRow {...getRowProps({ row })} key={row.id}>
-                    {row.cells.map((cell) => (
-                      <TableCell key={cell.id}>{cell.value}</TableCell>
-                    ))}
+                    {row.cells.map((cell) =>
+                      cell.info.header === 'actions' ? (
+                        <TableCell key={cell.id}>
+                          <ViewPackageActionButton exportPackage={packagesByUuid.get(row.id)} />
+                        </TableCell>
+                      ) : (
+                        <TableCell key={cell.id}>{cell.value}</TableCell>
+                      ),
+                    )}
                   </TableRow>
                 ))}
               </TableBody>

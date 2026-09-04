@@ -26,6 +26,14 @@
       "type": "form",
       "canMaximize": true,
       "width": "narrow"
+    },
+    {
+      "name": "view-package-workspace",
+      "component": "viewPackageWorkspace",
+      "title": "View package",
+      "type": "form",
+      "canMaximize": true,
+      "width": "narrow"
     }
   ]
 }
