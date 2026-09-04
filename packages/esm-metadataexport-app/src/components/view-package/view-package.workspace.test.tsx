@@ -123,7 +123,6 @@ describe('ViewPackageWorkspace', () => {
 
     expect(screen.getByText('Build 2')).toBeInTheDocument();
     expect(screen.getByText('COMPLETED')).toBeInTheDocument();
-    expect(screen.getByText('COMPLETED')).toBeInTheDocument();
     expect(screen.getByText(/^Started .* ago$/)).toBeInTheDocument();
     expect(screen.getByText(/^Completed .* ago$/)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Download' })).toHaveAttribute(
