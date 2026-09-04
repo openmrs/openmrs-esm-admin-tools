@@ -61,9 +61,12 @@ export function deleteBuild(
   reason?: string,
   abortController?: AbortController,
 ): Promise<FetchResponse<void>> {
-  return openmrsFetch<void>(`${restBaseUrl}/metadataexport/packages/${uuid}?reason=${reason}`, {
-    method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' },
-    signal: abortController?.signal,
-  });
+  return openmrsFetch<void>(
+    `${restBaseUrl}/metadataexport/packages/${uuid}?reason=${encodeURIComponent(reason ?? '')}`,
+    {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      signal: abortController?.signal,
+    },
+  );
 }
