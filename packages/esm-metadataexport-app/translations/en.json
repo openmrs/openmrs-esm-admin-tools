@@ -38,15 +38,15 @@
   "packageNamePlaceholder": "e.g. Core reference data",
   "packages": "Packages",
   "packages__lower": "packages",
+  "QUEUED": "Queued",
   "reason": "Reason",
   "reasonPlaceholder": "Enter a reason for deleting this package",
+  "RUNNING": "Running",
   "selectAll": "Select all",
   "startedAgo": "Started {{time}} ago",
   "status": "Status",
   "triggeringBuild": "Triggering build",
   "triggerNewBuild": "Trigger new build",
-  "QUEUED": "Queued",
-  "RUNNING": "Running",
   "unexpectedError": "An unexpected error occurred",
   "view": "View"
 }
