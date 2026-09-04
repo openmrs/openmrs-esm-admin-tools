@@ -3,9 +3,9 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { type Session, useSession, userHasAccess } from '@openmrs/esm-framework';
-import { type ExportPackage } from '../../../types';
-import { launchViewPackageWorkspace } from '../view-package-utils';
 import ViewPackageActionButton from './view-package-action-button.component';
+import { launchViewPackageWorkspace } from '../view-package-utils';
+import { type ExportPackage } from '../../../types';
 
 vi.mock('../view-package-utils', () => ({
   launchViewPackageWorkspace: vi.fn(),

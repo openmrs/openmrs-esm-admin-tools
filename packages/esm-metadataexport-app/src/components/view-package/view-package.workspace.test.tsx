@@ -10,7 +10,6 @@ vi.mock('@openmrs/esm-framework', async (importOriginal) => {
   const original = await importOriginal<typeof esmFramework>();
   return {
     ...original,
-    restBaseUrl: '/ws/rest/v1',
     makeUrl: (path: string) => `${window.openmrsBase}${path}`,
   };
 });
@@ -124,6 +123,9 @@ describe('ViewPackageWorkspace', () => {
 
     expect(screen.getByText('Build 2')).toBeInTheDocument();
     expect(screen.getByText('COMPLETED')).toBeInTheDocument();
+    expect(screen.getByText('COMPLETED')).toBeInTheDocument();
+    expect(screen.getByText(/^Started .* ago$/)).toBeInTheDocument();
+    expect(screen.getByText(/^Completed .* ago$/)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Download' })).toHaveAttribute(
       'href',
       `/openmrs/ws/rest/v1/metadataexport/builds/${build().uuid}/download`,

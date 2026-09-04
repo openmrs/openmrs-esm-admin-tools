@@ -4,7 +4,7 @@ import { Button } from '@carbon/react';
 import { ArrowRight } from '@carbon/react/icons';
 import { useSession, userHasAccess } from '@openmrs/esm-framework';
 import { launchViewPackageWorkspace } from '../view-package-utils';
-import { type ExportPackage } from '../../../types/index';
+import { type ExportPackage } from '../../../types';
 
 interface ViewPackageActionButtonProps {
   exportPackage: ExportPackage;
