@@ -15,7 +15,7 @@ import {
 } from '@openmrs/esm-framework';
 import { formatDomainLabel } from '../../domain-lookups/domain-lookups.resource';
 import { deleteBuild, triggerBuild, usePackageBuilds } from '../../packages/packages.resource';
-import { type ExportBuildStatus, type ExportPackage } from '../../types';
+import type { ExportBuildStatus, ExportPackage } from '../../types';
 import styles from './view-package.workspace.scss';
 
 const packagesUrl = `${restBaseUrl}/metadataexport/packages`;
