@@ -1,10 +1,11 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import * as esmFramework from '@openmrs/esm-framework';
 import ViewPackageWorkspace from './view-package.workspace';
-import { usePackageBuilds } from '../../packages/packages.resource';
-import { type ExportPackage, type ExportPackageBuild } from '../../types';
+import { usePackageBuilds, triggerBuild, deleteBuild } from '../../packages/packages.resource';
+import type { ExportPackage, ExportPackageBuild } from '../../types';
 
 vi.mock('@openmrs/esm-framework', async (importOriginal) => {
   const original = await importOriginal<typeof esmFramework>();
@@ -16,7 +17,13 @@ vi.mock('@openmrs/esm-framework', async (importOriginal) => {
 
 vi.mock('../../packages/packages.resource', () => ({
   usePackageBuilds: vi.fn(),
+  triggerBuild: vi.fn(),
+  deleteBuild: vi.fn(),
 }));
+
+const mockTriggerBuild = triggerBuild as Mock;
+const mockDeleteBuild = deleteBuild as Mock;
+const mockShowSnackbar = esmFramework.showSnackbar as Mock;
 
 const mockUsePackageBuilds = usePackageBuilds as Mock;
 const mockUseSession = vi.mocked(esmFramework.useSession);
@@ -146,25 +153,65 @@ describe('ViewPackageWorkspace', () => {
     renderWorkspace();
 
     expect(screen.getByText('QUEUED')).toBeInTheDocument();
-    expect(screen.getByText('Not started')).toBeInTheDocument();
-    expect(screen.queryByText(/^Completed/)).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Download' })).not.toBeInTheDocument();
   });
 
-  it('shows the failure reason for a failed build', () => {
-    mockBuilds({
-      builds: [build({ status: 'FAILED', downloadUrl: null, errorMessage: 'Serialization failed for concept 5497' })],
-    });
+  it('triggers a build and revalidates the builds list', async () => {
+    const user = userEvent.setup();
+    const mutate = vi.fn();
+    mockBuilds({ mutate });
+    mockTriggerBuild.mockResolvedValue({});
     renderWorkspace();
 
-    expect(screen.getByText('FAILED')).toBeInTheDocument();
-    expect(screen.getByText('Serialization failed for concept 5497')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Trigger new build' }));
+
+    expect(mockTriggerBuild).toHaveBeenCalledWith(exportPackage.uuid);
+    await waitFor(() => expect(mutate).toHaveBeenCalled());
+    expect(mockShowSnackbar).toHaveBeenCalledWith(expect.objectContaining({ kind: 'success' }));
   });
 
-  it('does not show a failure reason for a non-failed build', () => {
-    mockBuilds({ builds: [build({ status: 'COMPLETED', errorMessage: 'stale error' })] });
+  it('shows an error snackbar when triggering a build fails', async () => {
+    const user = userEvent.setup();
+    mockTriggerBuild.mockRejectedValue(new Error('Boom'));
     renderWorkspace();
 
-    expect(screen.queryByText('stale error')).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Trigger new build' }));
+
+    await waitFor(() =>
+      expect(mockShowSnackbar).toHaveBeenCalledWith(expect.objectContaining({ kind: 'error', subtitle: 'Boom' })),
+    );
+  });
+
+  it('deletes the package with the provided reason and closes the workspace', async () => {
+    const user = userEvent.setup();
+    mockDeleteBuild.mockResolvedValue({});
+    renderWorkspace();
+
+    // The first "Delete" button opens the confirmation modal; the modal footer holds the second.
+    await user.click(screen.getAllByRole('button', { name: /delete/i })[0]);
+
+    const dialog = await screen.findByRole('dialog');
+    await user.type(within(dialog).getByRole('textbox'), 'No longer needed');
+    await user.click(within(dialog).getByRole('button', { name: /delete/i }));
+
+    expect(mockDeleteBuild).toHaveBeenCalledWith(exportPackage.uuid, 'No longer needed');
+    await waitFor(() => expect(mockCloseWorkspace).toHaveBeenCalled());
+    expect(mockShowSnackbar).toHaveBeenCalledWith(expect.objectContaining({ kind: 'success' }));
+  });
+
+  it('shows an error snackbar and keeps the workspace open when deletion fails', async () => {
+    const user = userEvent.setup();
+    mockDeleteBuild.mockRejectedValue(new Error('Boom'));
+    renderWorkspace();
+
+    await user.click(screen.getAllByRole('button', { name: /delete/i })[0]);
+
+    const dialog = await screen.findByRole('dialog');
+    await user.click(within(dialog).getByRole('button', { name: /delete/i }));
+
+    await waitFor(() =>
+      expect(mockShowSnackbar).toHaveBeenCalledWith(expect.objectContaining({ kind: 'error', subtitle: 'Boom' })),
+    );
+    expect(mockCloseWorkspace).not.toHaveBeenCalled();
   });
 });

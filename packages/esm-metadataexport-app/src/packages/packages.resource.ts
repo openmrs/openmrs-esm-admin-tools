@@ -44,3 +44,29 @@ export function usePackageBuilds(uuid: string) {
     mutate,
   };
 }
+
+export function triggerBuild(
+  uuid: string,
+  abortController?: AbortController,
+): Promise<FetchResponse<ExportPackageBuild>> {
+  return openmrsFetch<ExportPackageBuild>(`${restBaseUrl}/metadataexport/packages/${uuid}/builds`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    signal: abortController?.signal,
+  });
+}
+
+export function deleteBuild(
+  uuid: string,
+  reason?: string,
+  abortController?: AbortController,
+): Promise<FetchResponse<void>> {
+  return openmrsFetch<void>(
+    `${restBaseUrl}/metadataexport/packages/${uuid}?reason=${encodeURIComponent(reason ?? '')}`,
+    {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      signal: abortController?.signal,
+    },
+  );
+}
