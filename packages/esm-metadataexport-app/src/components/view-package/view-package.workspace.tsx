@@ -1,25 +1,22 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Download } from '@carbon/react/icons';
-import { Button, InlineLoading, Link, Tag, Modal, TextArea } from '@carbon/react';
-import { useSWRConfig } from 'swr';
+import { Button, InlineLoading, Link, Tag } from '@carbon/react';
 import {
   type DefaultWorkspaceProps,
   ErrorState,
   formatDurationBetween,
   makeUrl,
   restBaseUrl,
+  showModal,
   showSnackbar,
   useSession,
   userHasAccess,
 } from '@openmrs/esm-framework';
 import { formatDomainLabel } from '../../domain-lookups/domain-lookups.resource';
-import { deleteBuild, triggerBuild, usePackageBuilds } from '../../packages/packages.resource';
+import { triggerBuild, usePackageBuilds } from '../../packages/packages.resource';
 import type { ExportBuildStatus, ExportPackage } from '../../types';
 import styles from './view-package.workspace.scss';
-
-const packagesUrl = `${restBaseUrl}/metadataexport/packages`;
-const isPackagesCacheKey = (key: unknown) => typeof key === 'string' && key.startsWith(packagesUrl);
 
 interface ViewPackageWorkspaceProps extends DefaultWorkspaceProps {
   exportPackage: ExportPackage;
@@ -35,15 +32,11 @@ const statusTagType: Record<ExportBuildStatus, 'gray' | 'blue' | 'green' | 'red'
 const ViewPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPackage, closeWorkspace }) => {
   const { t } = useTranslation();
   const session = useSession();
-  const { mutate } = useSWRConfig();
   const { builds, isLoading, error, mutate: mutateBuilds } = usePackageBuilds(exportPackage.uuid);
 
   // Downloading a build hits a Manage-gated backend endpoint, so hide it from Get-only viewers.
   const canManage = session.user ? userHasAccess('Manage Metadata Export Packages', session.user) : false;
   const [isTriggeringBuild, setIsTriggeringBuild] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [deleteReason, setDeleteReason] = useState('');
 
   const handleTriggerBuild = useCallback(async () => {
     setIsTriggeringBuild(true);
@@ -68,30 +61,13 @@ const ViewPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPacka
     }
   }, [exportPackage.uuid, exportPackage.name, mutateBuilds, t]);
 
-  const handleDelete = useCallback(async () => {
-    setIsDeleting(true);
-    try {
-      await deleteBuild(exportPackage.uuid, deleteReason);
-      // Revalidate the packages list so the deleted package drops out of the table.
-      await mutate(isPackagesCacheKey);
-      showSnackbar({
-        title: t('packageDeleted', 'Package deleted'),
-        subtitle: t('packageDeletedSubtitle', '{{name}} was deleted', { name: exportPackage.name }),
-        kind: 'success',
-        isLowContrast: true,
-      });
-      setIsDeleteModalOpen(false);
-      closeWorkspace();
-    } catch (deleteError) {
-      showSnackbar({
-        title: t('packageDeleteFailed', 'Failed to delete package'),
-        subtitle: deleteError?.message ?? t('unexpectedError', 'An unexpected error occurred'),
-        kind: 'error',
-      });
-    } finally {
-      setIsDeleting(false);
-    }
-  }, [exportPackage.uuid, exportPackage.name, deleteReason, mutate, closeWorkspace, t]);
+  const launchDeleteModal = useCallback(() => {
+    const dispose = showModal('delete-package-modal', {
+      closeModal: () => dispose(),
+      exportPackage,
+      onDeleted: closeWorkspace,
+    });
+  }, [exportPackage, closeWorkspace]);
 
   const domainsLabel = useMemo(() => {
     // An empty entries list means the package includes every registered domain.
@@ -112,7 +88,7 @@ const ViewPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPacka
               className={styles.triggerButton}
               kind="primary"
               onClick={handleTriggerBuild}
-              disabled={isTriggeringBuild || isDeleting}
+              disabled={isTriggeringBuild}
             >
               {isTriggeringBuild ? (
                 <InlineLoading description={t('triggeringBuild', 'Triggering build') + '…'} />
@@ -120,12 +96,8 @@ const ViewPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPacka
                 t('triggerNewBuild', 'Trigger new build')
               )}
             </Button>
-            <Button
-              kind="danger--tertiary"
-              onClick={() => setIsDeleteModalOpen(true)}
-              disabled={isDeleting || isTriggeringBuild}
-            >
-              {isDeleting ? <InlineLoading description={t('deleting', 'Deleting') + '…'} /> : t('delete', 'Delete')}
+            <Button kind="danger--tertiary" onClick={launchDeleteModal} disabled={isTriggeringBuild}>
+              {t('delete', 'Delete')}
             </Button>
           </section>
         )}
@@ -189,33 +161,6 @@ const ViewPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPacka
           )}
         </section>
       </div>
-      <Modal
-        open={isDeleteModalOpen}
-        danger
-        modalHeading={t('deletePackage', 'Delete package')}
-        primaryButtonText={isDeleting ? t('deleting', 'Deleting') + '…' : t('delete', 'Delete')}
-        secondaryButtonText={t('cancel', 'Cancel')}
-        primaryButtonDisabled={isDeleting}
-        onRequestClose={() => {
-          if (!isDeleting) {
-            setIsDeleteModalOpen(false);
-          }
-        }}
-        onRequestSubmit={handleDelete}
-      >
-        <p className={styles.modalBody}>
-          {t('deletePackageConfirmation', 'Are you sure you want to delete {{name}}? Please provide a reason.', {
-            name: exportPackage.name,
-          })}
-        </p>
-        <TextArea
-          labelText={t('reason', 'Reason')}
-          placeholder={t('reasonPlaceholder', 'Enter a reason for deleting this package')}
-          value={deleteReason}
-          onChange={(event) => setDeleteReason(event.target.value)}
-          rows={3}
-        />
-      </Modal>
     </div>
   );
 };

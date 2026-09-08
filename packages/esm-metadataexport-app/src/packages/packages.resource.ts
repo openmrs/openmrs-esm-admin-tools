@@ -56,7 +56,7 @@ export function triggerBuild(
   });
 }
 
-export function deleteBuild(
+export function deletePackage(
   uuid: string,
   reason?: string,
   abortController?: AbortController,

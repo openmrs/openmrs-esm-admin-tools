@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import * as esmFramework from '@openmrs/esm-framework';
 import ViewPackageWorkspace from './view-package.workspace';
-import { usePackageBuilds, triggerBuild, deleteBuild } from '../../packages/packages.resource';
+import { usePackageBuilds, triggerBuild, deletePackage } from '../../packages/packages.resource';
 import type { ExportPackage, ExportPackageBuild } from '../../types';
 
 vi.mock('@openmrs/esm-framework', async (importOriginal) => {
@@ -18,11 +18,11 @@ vi.mock('@openmrs/esm-framework', async (importOriginal) => {
 vi.mock('../../packages/packages.resource', () => ({
   usePackageBuilds: vi.fn(),
   triggerBuild: vi.fn(),
-  deleteBuild: vi.fn(),
+  deletePackage: vi.fn(),
 }));
 
 const mockTriggerBuild = triggerBuild as Mock;
-const mockDeleteBuild = deleteBuild as Mock;
+const mockDeletePackage = deletePackage as Mock;
 const mockShowSnackbar = esmFramework.showSnackbar as Mock;
 
 const mockUsePackageBuilds = usePackageBuilds as Mock;
@@ -184,7 +184,7 @@ describe('ViewPackageWorkspace', () => {
 
   it('deletes the package with the provided reason and closes the workspace', async () => {
     const user = userEvent.setup();
-    mockDeleteBuild.mockResolvedValue({});
+    mockDeletePackage.mockResolvedValue({});
     renderWorkspace();
 
     // The first "Delete" button opens the confirmation modal; the modal footer holds the second.
@@ -194,14 +194,14 @@ describe('ViewPackageWorkspace', () => {
     await user.type(within(dialog).getByRole('textbox'), 'No longer needed');
     await user.click(within(dialog).getByRole('button', { name: /delete/i }));
 
-    expect(mockDeleteBuild).toHaveBeenCalledWith(exportPackage.uuid, 'No longer needed');
+    expect(mockDeletePackage).toHaveBeenCalledWith(exportPackage.uuid, 'No longer needed');
     await waitFor(() => expect(mockCloseWorkspace).toHaveBeenCalled());
     expect(mockShowSnackbar).toHaveBeenCalledWith(expect.objectContaining({ kind: 'success' }));
   });
 
   it('shows an error snackbar and keeps the workspace open when deletion fails', async () => {
     const user = userEvent.setup();
-    mockDeleteBuild.mockRejectedValue(new Error('Boom'));
+    mockDeletePackage.mockRejectedValue(new Error('Boom'));
     renderWorkspace();
 
     await user.click(screen.getAllByRole('button', { name: /delete/i })[0]);
