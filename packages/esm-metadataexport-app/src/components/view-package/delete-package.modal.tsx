@@ -57,6 +57,7 @@ const DeletePackageModal: React.FC<DeletePackageModalProps> = ({ closeModal, exp
           })}
         </p>
         <TextArea
+          id="delete-package-reason"
           labelText={t('reason', 'Reason')}
           placeholder={t('reasonPlaceholder', 'Enter a reason for deleting this package')}
           value={deleteReason}

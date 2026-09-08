@@ -37,7 +37,7 @@ describe('DeletePackageModal', () => {
     mockDeletePackage.mockResolvedValue({});
     renderModal();
 
-    await user.type(screen.getByRole('textbox'), 'No longer needed');
+    await user.type(screen.getByRole('textbox', { name: /reason/i }), 'No longer needed');
     await user.click(screen.getByRole('button', { name: /delete/i }));
 
     expect(mockDeletePackage).toHaveBeenCalledWith(exportPackage.uuid, 'No longer needed');
