@@ -39,6 +39,10 @@
     {
       "name": "cancel-report-modal",
       "component": "cancelReportModal"
+    },
+    {
+      "name": "report-export-columns-modal",
+      "component": "reportExportColumnsModal"
     }
   ]
 }
