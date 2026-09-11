@@ -39,7 +39,7 @@ export function usePackageBuilds(uuid: string) {
     openmrsFetch,
     {
       refreshInterval: (data) => {
-        const builds = data.data;
+        const builds = data?.data ?? [];
 
         const hasActiveBuild = builds.some((build) => activeBuildStatuses.includes(build.status));
 
@@ -49,7 +49,7 @@ export function usePackageBuilds(uuid: string) {
   );
 
   return {
-    builds: data.data,
+    builds: data?.data ?? [],
     isLoading,
     isValidating,
     error,
