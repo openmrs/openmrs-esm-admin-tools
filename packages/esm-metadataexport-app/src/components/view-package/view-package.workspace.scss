@@ -23,6 +23,18 @@
   gap: layout.$spacing-04;
 }
 
+.actionRow {
+  display: flex;
+  flex-direction: row;
+  gap: layout.$spacing-04;
+}
+
+.triggerButton {
+  flex: 1 1 auto;
+  max-width: none;
+  justify-content: center;
+}
+
 .sectionLabel {
   @include type.type-style('heading-compact-01');
   color: $text-02;

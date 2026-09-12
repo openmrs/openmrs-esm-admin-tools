@@ -1,6 +1,6 @@
 import useSWR from 'swr';
 import { type FetchResponse, openmrsFetch, restBaseUrl } from '@openmrs/esm-framework';
-import type { ExportPackage, ExportPackageRequest, ExportPackageBuild } from '../types';
+import type { ExportBuildStatus, ExportPackage, ExportPackageRequest, ExportPackageBuild } from '../types';
 
 export function useAllPackages(includeRetired = false) {
   const apiUrl = `${restBaseUrl}/metadataexport/packages?includeRetired=${includeRetired}`;
@@ -32,10 +32,22 @@ export function createPackage(
 
 export function usePackageBuilds(uuid: string) {
   const apiUrl = `${restBaseUrl}/metadataexport/packages/${uuid}/builds`;
+  const activeBuildStatuses: Array<ExportBuildStatus> = ['QUEUED', 'RUNNING'];
+
   const { data, error, isLoading, isValidating, mutate } = useSWR<FetchResponse<Array<ExportPackageBuild>>, Error>(
     apiUrl,
     openmrsFetch,
+    {
+      refreshInterval: (data) => {
+        const builds = data?.data ?? [];
+
+        const hasActiveBuild = builds.some((build) => activeBuildStatuses.includes(build.status));
+
+        return hasActiveBuild ? 2000 : 0;
+      },
+    },
   );
+
   return {
     builds: data?.data ?? [],
     isLoading,
@@ -43,4 +55,30 @@ export function usePackageBuilds(uuid: string) {
     error,
     mutate,
   };
+}
+
+export function triggerBuild(
+  uuid: string,
+  abortController?: AbortController,
+): Promise<FetchResponse<ExportPackageBuild>> {
+  return openmrsFetch<ExportPackageBuild>(`${restBaseUrl}/metadataexport/packages/${uuid}/builds`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    signal: abortController?.signal,
+  });
+}
+
+export function deletePackage(
+  uuid: string,
+  reason?: string,
+  abortController?: AbortController,
+): Promise<FetchResponse<void>> {
+  return openmrsFetch<void>(
+    `${restBaseUrl}/metadataexport/packages/${uuid}?reason=${encodeURIComponent(reason ?? '')}`,
+    {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      signal: abortController?.signal,
+    },
+  );
 }
