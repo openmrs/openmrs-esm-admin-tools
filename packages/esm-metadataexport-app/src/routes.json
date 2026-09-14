@@ -18,6 +18,12 @@
       "privileges": ["Get Metadata Export Packages"]
     }
   ],
+  "modals": [
+    {
+      "name": "delete-package-modal",
+      "component": "deletePackageModal"
+    }
+  ],
   "workspaces": [
     {
       "name": "new-package-workspace",

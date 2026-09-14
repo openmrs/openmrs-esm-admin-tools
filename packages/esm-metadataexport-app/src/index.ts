@@ -20,6 +20,10 @@ export const root = getAsyncLifecycle(() => import('./root.component'), options)
 export const metadataExportCardLink = getAsyncLifecycle(() => import('./admin-card-link.component'), options);
 
 // Modals
+export const deletePackageModal = getAsyncLifecycle(
+  () => import('./components/view-package/delete-package.modal'),
+  options,
+);
 
 // Workspaces
 export const newPackageWorkspace = getAsyncLifecycle(

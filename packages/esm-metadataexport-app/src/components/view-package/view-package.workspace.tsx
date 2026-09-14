@@ -1,20 +1,27 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { InlineLoading, Link, Tag } from '@carbon/react';
 import { Download } from '@carbon/react/icons';
+import { Button, InlineLoading, Link, Tag } from '@carbon/react';
+import { useSWRConfig } from 'swr';
 import {
   type DefaultWorkspaceProps,
   ErrorState,
+  OpenmrsFetchError,
   formatDurationBetween,
   makeUrl,
   restBaseUrl,
+  showModal,
+  showSnackbar,
   useSession,
   userHasAccess,
 } from '@openmrs/esm-framework';
 import { formatDomainLabel } from '../../domain-lookups/domain-lookups.resource';
-import { usePackageBuilds } from '../../packages/packages.resource';
-import { type ExportBuildStatus, type ExportPackage } from '../../types';
+import { triggerBuild, usePackageBuilds } from '../../packages/packages.resource';
+import type { ExportBuildStatus, ExportPackage } from '../../types';
 import styles from './view-package.workspace.scss';
+
+const packagesUrl = `${restBaseUrl}/metadataexport/packages`;
+const isPackagesCacheKey = (key: unknown) => typeof key === 'string' && key.startsWith(packagesUrl);
 
 interface ViewPackageWorkspaceProps extends DefaultWorkspaceProps {
   exportPackage: ExportPackage;
@@ -27,13 +34,63 @@ const statusTagType: Record<ExportBuildStatus, 'gray' | 'blue' | 'green' | 'red'
   FAILED: 'red',
 };
 
-const ViewPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPackage }) => {
+const ViewPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPackage, closeWorkspace }) => {
   const { t } = useTranslation();
   const session = useSession();
-  const { builds, isLoading, error } = usePackageBuilds(exportPackage.uuid);
+  const { mutate: globalMutate } = useSWRConfig();
+  const { builds, isLoading, error, mutate: mutateBuilds } = usePackageBuilds(exportPackage.uuid);
 
   // Downloading a build hits a Manage-gated backend endpoint, so hide it from Get-only viewers.
   const canManage = session.user ? userHasAccess('Manage Metadata Export Packages', session.user) : false;
+  const [isTriggeringBuild, setIsTriggeringBuild] = useState(false);
+
+  const handleTriggerBuild = useCallback(async () => {
+    setIsTriggeringBuild(true);
+    try {
+      await triggerBuild(exportPackage.uuid);
+      // Revalidate the builds list so the new build appears without a refresh, and the
+      // packages list so the table's Status column reflects the newly queued build.
+      await Promise.all([mutateBuilds(), globalMutate(isPackagesCacheKey)]);
+      showSnackbar({
+        title: t('buildTriggered', 'Build triggered'),
+        subtitle: t('buildTriggeredSubtitle', 'A new build was started for {{name}}', { name: exportPackage.name }),
+        kind: 'success',
+        isLowContrast: true,
+      });
+    } catch (triggerError) {
+      const responseBody = triggerError instanceof OpenmrsFetchError ? triggerError.responseBody : null;
+      const reason = typeof responseBody === 'object' && responseBody !== null ? responseBody.error : null;
+      showSnackbar({
+        title: t('buildTriggerFailed', 'Failed to trigger build'),
+        subtitle: reason ?? t('unexpectedError', 'An unexpected error occurred'),
+        kind: 'error',
+      });
+    } finally {
+      setIsTriggeringBuild(false);
+    }
+  }, [exportPackage.uuid, exportPackage.name, mutateBuilds, globalMutate, t]);
+
+  // revalidation: usePackageBuilds refreshes while a build is active, so when the
+  // set of build statuses changes (e.g. a build finishes) refresh the packages list too, keeping
+  const buildStatusVersion = builds.map((build) => `${build.uuid}:${build.status}`).join('|');
+  const previousBuildStatusVersion = useRef<string | null>(null);
+  useEffect(() => {
+    if (isLoading) {
+      return;
+    }
+    if (previousBuildStatusVersion.current !== null && previousBuildStatusVersion.current !== buildStatusVersion) {
+      globalMutate(isPackagesCacheKey);
+    }
+    previousBuildStatusVersion.current = buildStatusVersion;
+  }, [buildStatusVersion, isLoading, globalMutate]);
+
+  const launchDeleteModal = useCallback(() => {
+    const dispose = showModal('delete-package-modal', {
+      closeModal: () => dispose(),
+      exportPackage,
+      onDeleted: closeWorkspace,
+    });
+  }, [exportPackage, closeWorkspace]);
 
   const domainsLabel = useMemo(() => {
     // An empty entries list means the package includes every registered domain.
@@ -48,6 +105,26 @@ const ViewPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPacka
   return (
     <div className={styles.container}>
       <div className={styles.body}>
+        {canManage && (
+          <section className={styles.actionRow}>
+            <Button
+              className={styles.triggerButton}
+              kind="primary"
+              onClick={handleTriggerBuild}
+              disabled={isTriggeringBuild}
+            >
+              {isTriggeringBuild ? (
+                <InlineLoading description={t('triggeringBuild', 'Triggering build') + '…'} />
+              ) : (
+                t('triggerNewBuild', 'Trigger new build')
+              )}
+            </Button>
+            <Button kind="danger--tertiary" onClick={launchDeleteModal} disabled={isTriggeringBuild}>
+              {t('delete', 'Delete')}
+            </Button>
+          </section>
+        )}
+
         <section className={styles.section}>
           <span className={styles.sectionLabel}>{t('details', 'Details')}</span>
           <dl className={styles.detailList}>
