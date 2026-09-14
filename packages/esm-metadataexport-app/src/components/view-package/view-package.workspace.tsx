@@ -6,6 +6,7 @@ import { useSWRConfig } from 'swr';
 import {
   type DefaultWorkspaceProps,
   ErrorState,
+  OpenmrsFetchError,
   formatDurationBetween,
   makeUrl,
   restBaseUrl,
@@ -57,9 +58,11 @@ const ViewPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPacka
         isLowContrast: true,
       });
     } catch (triggerError) {
+      const responseBody = triggerError instanceof OpenmrsFetchError ? triggerError.responseBody : null;
+      const reason = typeof responseBody === 'object' && responseBody !== null ? responseBody.error : null;
       showSnackbar({
         title: t('buildTriggerFailed', 'Failed to trigger build'),
-        subtitle: triggerError?.message ?? t('unexpectedError', 'An unexpected error occurred'),
+        subtitle: reason ?? t('unexpectedError', 'An unexpected error occurred'),
         kind: 'error',
       });
     } finally {

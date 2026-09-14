@@ -38,13 +38,10 @@ const DeletePackageModal: React.FC<DeletePackageModalProps> = ({ closeModal, exp
       onDeleted();
     } catch (deleteError) {
       const responseBody = deleteError instanceof OpenmrsFetchError ? deleteError.responseBody : null;
-      const reason =
-        typeof responseBody === 'object' && responseBody !== null
-          ? Object.values(responseBody.fieldErrors ?? {})[0] ?? responseBody.error
-          : null;
+      const reason = typeof responseBody === 'object' && responseBody !== null ? responseBody.error : null;
       showSnackbar({
         title: t('packageDeleteFailed', 'Failed to delete package'),
-        subtitle: reason ?? deleteError?.message ?? t('unexpectedError', 'An unexpected error occurred'),
+        subtitle: reason ?? t('unexpectedError', 'An unexpected error occurred'),
         kind: 'error',
       });
     } finally {
