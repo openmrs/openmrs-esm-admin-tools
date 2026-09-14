@@ -48,13 +48,21 @@ describe('DeletePackageModal', () => {
 
   it('shows an error snackbar and keeps the modal open when deletion fails', async () => {
     const user = userEvent.setup();
-    mockDeletePackage.mockRejectedValue(new Error('Boom'));
+    const error = new esmFramework.OpenmrsFetchError(
+      '/url',
+      {} as Response,
+      { error: 'Package is referenced by an active build' },
+      new Error(),
+    );
+    mockDeletePackage.mockRejectedValue(error);
     renderModal();
 
     await user.click(screen.getByRole('button', { name: /delete/i }));
 
     await waitFor(() =>
-      expect(mockShowSnackbar).toHaveBeenCalledWith(expect.objectContaining({ kind: 'error', subtitle: 'Boom' })),
+      expect(mockShowSnackbar).toHaveBeenCalledWith(
+        expect.objectContaining({ kind: 'error', subtitle: 'Package is referenced by an active build' }),
+      ),
     );
     expect(mockCloseModal).not.toHaveBeenCalled();
     expect(mockOnDeleted).not.toHaveBeenCalled();

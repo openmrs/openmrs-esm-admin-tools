@@ -191,13 +191,21 @@ describe('ViewPackageWorkspace', () => {
 
   it('shows an error snackbar when triggering a build fails', async () => {
     const user = userEvent.setup();
-    mockTriggerBuild.mockRejectedValue(new Error('Boom'));
+    const error = new esmFramework.OpenmrsFetchError(
+      '/url',
+      {} as Response,
+      { error: 'A build is already running for this package' },
+      new Error(),
+    );
+    mockTriggerBuild.mockRejectedValue(error);
     renderWorkspace();
 
     await user.click(screen.getByRole('button', { name: 'Trigger new build' }));
 
     await waitFor(() =>
-      expect(mockShowSnackbar).toHaveBeenCalledWith(expect.objectContaining({ kind: 'error', subtitle: 'Boom' })),
+      expect(mockShowSnackbar).toHaveBeenCalledWith(
+        expect.objectContaining({ kind: 'error', subtitle: 'A build is already running for this package' }),
+      ),
     );
   });
 
