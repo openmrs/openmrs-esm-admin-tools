@@ -69,15 +69,17 @@ const ViewPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPacka
 
   // revalidation: usePackageBuilds refreshes while a build is active, so when the
   // set of build statuses changes (e.g. a build finishes) refresh the packages list too, keeping
-  // the table's Status column in sync. Skips the initial load via the null sentinel.
   const buildStatusVersion = builds.map((build) => `${build.uuid}:${build.status}`).join('|');
   const previousBuildStatusVersion = useRef<string | null>(null);
   useEffect(() => {
+    if (isLoading) {
+      return;
+    }
     if (previousBuildStatusVersion.current !== null && previousBuildStatusVersion.current !== buildStatusVersion) {
       globalMutate(isPackagesCacheKey);
     }
     previousBuildStatusVersion.current = buildStatusVersion;
-  }, [buildStatusVersion, globalMutate]);
+  }, [buildStatusVersion, isLoading, globalMutate]);
 
   const launchDeleteModal = useCallback(() => {
     const dispose = showModal('delete-package-modal', {
