@@ -17,6 +17,7 @@ import { formatDomainLabel } from '../../domain-lookups/domain-lookups.resource'
 import { triggerBuild, usePackageBuilds } from '../../packages/packages.resource';
 import type { ExportBuildStatus, ExportPackage } from '../../types';
 import styles from './view-package.workspace.scss';
+import { launchAddNewPackageWorkspace } from '../new-package/new-package-utils';
 
 interface ViewPackageWorkspaceProps extends DefaultWorkspaceProps {
   exportPackage: ExportPackage;
@@ -79,6 +80,10 @@ const ViewPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPacka
     return exportPackage.entries.map((entry) => formatDomainLabel(entry.domain)).join(', ');
   }, [exportPackage.entries, t]);
 
+  const editPackage = useCallback(() => {
+    launchAddNewPackageWorkspace(t, exportPackage.uuid);
+  }, [exportPackage.uuid, t]);
+
   return (
     <div className={styles.container}>
       <div className={styles.body}>
@@ -95,6 +100,9 @@ const ViewPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPacka
               ) : (
                 t('triggerNewBuild', 'Trigger new build')
               )}
+            </Button>
+            <Button kind="secondary" onClick={editPackage} disabled={isTriggeringBuild}>
+              {t('edit', 'Edit')}
             </Button>
             <Button kind="danger--tertiary" onClick={launchDeleteModal} disabled={isTriggeringBuild}>
               {t('delete', 'Delete')}

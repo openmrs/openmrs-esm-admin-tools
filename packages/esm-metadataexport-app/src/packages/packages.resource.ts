@@ -30,6 +30,14 @@ export function createPackage(
   });
 }
 
+export function usePackage(uuid: string) {
+  const { data, error, isLoading } = useSWR<FetchResponse<ExportPackage>, Error>(
+    uuid ? `${restBaseUrl}/metadataexport/packages/${uuid}` : null,
+    openmrsFetch,
+  );
+  return { exportPackage: data?.data, isLoading, error };
+}
+
 export function usePackageBuilds(uuid: string) {
   const apiUrl = `${restBaseUrl}/metadataexport/packages/${uuid}/builds`;
   const activeBuildStatuses: Array<ExportBuildStatus> = ['QUEUED', 'RUNNING'];
@@ -81,4 +89,17 @@ export function deletePackage(
       signal: abortController?.signal,
     },
   );
+}
+
+export function editPackage(
+  uuid: string,
+  payload: ExportPackageRequest,
+  abortController?: AbortController,
+): Promise<FetchResponse<ExportPackage>> {
+  return openmrsFetch<ExportPackage>(`${restBaseUrl}/metadataexport/packages/${uuid}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: payload,
+    signal: abortController?.signal,
+  });
 }

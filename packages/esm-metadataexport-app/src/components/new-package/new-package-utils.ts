@@ -1,8 +1,9 @@
 import { type TFunction } from 'i18next';
 import { launchWorkspace } from '@openmrs/esm-framework';
 
-export const launchAddNewPackageWorkspace = (t: TFunction) => {
+export const launchAddNewPackageWorkspace = (t: TFunction, uuid?: string) => {
   launchWorkspace('new-package-workspace', {
-    workspaceTitle: t('newpackage', 'New package'),
+    workspaceTitle: uuid ? t('editpackage', 'Edit package') : t('newpackage', 'New package'),
+    uuid,
   });
 };

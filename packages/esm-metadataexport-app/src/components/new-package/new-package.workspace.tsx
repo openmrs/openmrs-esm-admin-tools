@@ -21,13 +21,18 @@ import {
   OpenmrsFetchError,
 } from '@openmrs/esm-framework';
 import { formatDomainLabel, useDomains } from '../../domain-lookups/domain-lookups.resource';
-import { createPackage } from '../../packages/packages.resource';
+import { createPackage, editPackage, usePackage } from '../../packages/packages.resource';
 import styles from './new-package.workspace.scss';
 
 const packagesUrl = `${restBaseUrl}/metadataexport/packages`;
 const isPackagesCacheKey = (key: unknown) => typeof key === 'string' && key.startsWith(packagesUrl);
 
-const NewPackageWorkspace: React.FC<DefaultWorkspaceProps> = ({
+interface NewPackageWorkspaceProps extends DefaultWorkspaceProps {
+  uuid?: string;
+}
+
+const NewPackageWorkspace: React.FC<NewPackageWorkspaceProps> = ({
+  uuid,
   closeWorkspace,
   closeWorkspaceWithSavedChanges,
   promptBeforeClosing,
@@ -35,6 +40,7 @@ const NewPackageWorkspace: React.FC<DefaultWorkspaceProps> = ({
   const { t } = useTranslation();
   const { mutate } = useSWRConfig();
   const isTablet = useLayoutType() === 'tablet';
+  const isEditMode = Boolean(uuid);
   const { domains, isLoading, error } = useDomains();
 
   const [packageName, setPackageName] = useState('');
@@ -44,6 +50,8 @@ const NewPackageWorkspace: React.FC<DefaultWorkspaceProps> = ({
 
   const allSelected = domains.length > 0 && selectedDomains.size === domains.length;
   const someSelected = selectedDomains.size > 0 && !allSelected;
+
+  const { exportPackage, isLoading: isLoadingPackage, error: packageError } = usePackage(uuid ?? '');
 
   const toggleSelectAll = useCallback(
     (checked: boolean) => {
@@ -70,6 +78,20 @@ const NewPackageWorkspace: React.FC<DefaultWorkspaceProps> = ({
     promptBeforeClosing(() => hasUnsavedChanges);
   }, [hasUnsavedChanges, promptBeforeClosing]);
 
+  // Seed the form from the fetched package once it (and the domain list) arrive.
+  // An empty entries list means the package includes every registered domain.
+  useEffect(() => {
+    if (isEditMode && exportPackage) {
+      setPackageName(exportPackage.name);
+      setDescription(exportPackage.description ?? '');
+      setSelectedDomains(
+        exportPackage.entries.length === 0
+          ? new Set(domains)
+          : new Set(exportPackage.entries.map((entry) => entry.domain)),
+      );
+    }
+  }, [isEditMode, exportPackage, domains]);
+
   const handleSubmit = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
@@ -77,14 +99,21 @@ const NewPackageWorkspace: React.FC<DefaultWorkspaceProps> = ({
 
       // An explicit empty array tells the server to include every registered domain.
       const entries = allSelected ? [] : Array.from(selectedDomains, (domain) => ({ domain }));
+      const payload = { name: packageName.trim(), description: description.trim(), entries };
 
       try {
-        await createPackage({ name: packageName.trim(), description: description.trim(), entries });
-        // Revalidate the packages list so the table shows the new package without a refresh.
+        if (isEditMode && uuid) {
+          await editPackage(uuid, payload);
+        } else {
+          await createPackage(payload);
+        }
+        // Revalidate the packages list so the table reflects the change without a refresh.
         await mutate(isPackagesCacheKey);
         showSnackbar({
-          title: t('packageCreated', 'Package created'),
-          subtitle: t('packageCreatedSubtitle', '{{name}} was created successfully', { name: packageName.trim() }),
+          title: isEditMode ? t('packageUpdated', 'Package updated') : t('packageCreated', 'Package created'),
+          subtitle: isEditMode
+            ? t('packageUpdatedSubtitle', '{{name}} was updated successfully', { name: packageName.trim() })
+            : t('packageCreatedSubtitle', '{{name}} was created successfully', { name: packageName.trim() }),
           kind: 'success',
           isLowContrast: true,
         });
@@ -97,7 +126,9 @@ const NewPackageWorkspace: React.FC<DefaultWorkspaceProps> = ({
             ? Object.values(responseBody.fieldErrors ?? {})[0] ?? responseBody.error
             : null;
         showSnackbar({
-          title: t('packageCreationFailed', 'Failed to create package'),
+          title: isEditMode
+            ? t('packageUpdateFailed', 'Failed to update package')
+            : t('packageCreationFailed', 'Failed to create package'),
           subtitle: reason ?? t('unexpectedError', 'An unexpected error occurred'),
           kind: 'error',
           isLowContrast: false,
@@ -106,10 +137,41 @@ const NewPackageWorkspace: React.FC<DefaultWorkspaceProps> = ({
         setIsSubmitting(false);
       }
     },
-    [allSelected, closeWorkspaceWithSavedChanges, description, mutate, packageName, selectedDomains, t],
+    [
+      allSelected,
+      closeWorkspaceWithSavedChanges,
+      description,
+      isEditMode,
+      mutate,
+      packageName,
+      selectedDomains,
+      t,
+      uuid,
+    ],
   );
 
   const isSubmitDisabled = packageName.trim().length === 0 || selectedDomains.size === 0 || isSubmitting;
+
+  if (isEditMode && isLoadingPackage) {
+    return (
+      <div className={styles.form}>
+        <InlineLoading description={t('loadingPackage', 'Loading package…')} />
+      </div>
+    );
+  }
+
+  if (isEditMode && packageError) {
+    return (
+      <div className={styles.form}>
+        <InlineNotification
+          kind="error"
+          lowContrast
+          title={t('errorLoadingPackage', 'Error loading package')}
+          subtitle={packageError.message}
+        />
+      </div>
+    );
+  }
 
   return (
     <Form className={styles.form} onSubmit={handleSubmit}>
@@ -184,7 +246,9 @@ const NewPackageWorkspace: React.FC<DefaultWorkspaceProps> = ({
         </Button>
         <Button className={styles.button} kind="primary" type="submit" disabled={isSubmitDisabled}>
           {isSubmitting ? (
-            <InlineLoading description={t('creating', 'Creating') + '…'} />
+            <InlineLoading description={(isEditMode ? t('saving', 'Saving') : t('creating', 'Creating')) + '…'} />
+          ) : isEditMode ? (
+            t('saveChanges', 'Save changes')
           ) : (
             t('createPackage', 'Create package')
           )}
