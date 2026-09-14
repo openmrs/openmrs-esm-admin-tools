@@ -1,7 +1,8 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Download } from '@carbon/react/icons';
 import { Button, InlineLoading, Link, Tag } from '@carbon/react';
+import { useSWRConfig } from 'swr';
 import {
   type DefaultWorkspaceProps,
   ErrorState,
@@ -18,6 +19,9 @@ import { triggerBuild, usePackageBuilds } from '../../packages/packages.resource
 import type { ExportBuildStatus, ExportPackage } from '../../types';
 import styles from './view-package.workspace.scss';
 
+const packagesUrl = `${restBaseUrl}/metadataexport/packages`;
+const isPackagesCacheKey = (key: unknown) => typeof key === 'string' && key.startsWith(packagesUrl);
+
 interface ViewPackageWorkspaceProps extends DefaultWorkspaceProps {
   exportPackage: ExportPackage;
 }
@@ -32,6 +36,7 @@ const statusTagType: Record<ExportBuildStatus, 'gray' | 'blue' | 'green' | 'red'
 const ViewPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPackage, closeWorkspace }) => {
   const { t } = useTranslation();
   const session = useSession();
+  const { mutate: globalMutate } = useSWRConfig();
   const { builds, isLoading, error, mutate: mutateBuilds } = usePackageBuilds(exportPackage.uuid);
 
   // Downloading a build hits a Manage-gated backend endpoint, so hide it from Get-only viewers.
@@ -42,8 +47,9 @@ const ViewPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPacka
     setIsTriggeringBuild(true);
     try {
       await triggerBuild(exportPackage.uuid);
-      // Revalidate the builds list so the new build appears without a refresh.
-      await mutateBuilds();
+      // Revalidate the builds list so the new build appears without a refresh, and the
+      // packages list so the table's Status column reflects the newly queued build.
+      await Promise.all([mutateBuilds(), globalMutate(isPackagesCacheKey)]);
       showSnackbar({
         title: t('buildTriggered', 'Build triggered'),
         subtitle: t('buildTriggeredSubtitle', 'A new build was started for {{name}}', { name: exportPackage.name }),
@@ -59,7 +65,19 @@ const ViewPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPacka
     } finally {
       setIsTriggeringBuild(false);
     }
-  }, [exportPackage.uuid, exportPackage.name, mutateBuilds, t]);
+  }, [exportPackage.uuid, exportPackage.name, mutateBuilds, globalMutate, t]);
+
+  // revalidation: usePackageBuilds refreshes while a build is active, so when the
+  // set of build statuses changes (e.g. a build finishes) refresh the packages list too, keeping
+  // the table's Status column in sync. Skips the initial load via the null sentinel.
+  const buildStatusVersion = builds.map((build) => `${build.uuid}:${build.status}`).join('|');
+  const previousBuildStatusVersion = useRef<string | null>(null);
+  useEffect(() => {
+    if (previousBuildStatusVersion.current !== null && previousBuildStatusVersion.current !== buildStatusVersion) {
+      globalMutate(isPackagesCacheKey);
+    }
+    previousBuildStatusVersion.current = buildStatusVersion;
+  }, [buildStatusVersion, globalMutate]);
 
   const launchDeleteModal = useCallback(() => {
     const dispose = showModal('delete-package-modal', {
