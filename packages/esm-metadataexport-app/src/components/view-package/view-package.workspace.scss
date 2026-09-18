@@ -27,6 +27,7 @@
   display: flex;
   flex-direction: row;
   gap: layout.$spacing-04;
+  flex-wrap: wrap;
 }
 
 .triggerButton {
