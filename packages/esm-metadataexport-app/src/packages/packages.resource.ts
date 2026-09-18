@@ -98,7 +98,6 @@ export function editPackage(
   payload: ExportPackageRequest,
   abortController?: AbortController,
 ): Promise<FetchResponse<ExportPackage>> {
-  // The REST Web Services module uses POST (not PUT) to update a resource instance.
   return openmrsFetch<ExportPackage>(`${restBaseUrl}/metadataexport/packages/${uuid}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
