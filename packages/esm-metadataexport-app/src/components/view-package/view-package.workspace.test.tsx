@@ -153,7 +153,26 @@ describe('ViewPackageWorkspace', () => {
     renderWorkspace();
 
     expect(screen.getByText('QUEUED')).toBeInTheDocument();
+    expect(screen.getByText('Not started')).toBeInTheDocument();
+    expect(screen.queryByText(/^Completed/)).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Download' })).not.toBeInTheDocument();
+  });
+
+  it('shows the failure reason for a failed build', () => {
+    mockBuilds({
+      builds: [build({ status: 'FAILED', downloadUrl: null, errorMessage: 'Serialization failed for concept 5497' })],
+    });
+    renderWorkspace();
+
+    expect(screen.getByText('FAILED')).toBeInTheDocument();
+    expect(screen.getByText('Serialization failed for concept 5497')).toBeInTheDocument();
+  });
+
+  it('does not show a failure reason for a non-failed build', () => {
+    mockBuilds({ builds: [build({ status: 'COMPLETED', errorMessage: 'stale error' })] });
+    renderWorkspace();
+
+    expect(screen.queryByText('stale error')).not.toBeInTheDocument();
   });
 
   it('triggers a build and revalidates the builds list', async () => {
@@ -172,13 +191,21 @@ describe('ViewPackageWorkspace', () => {
 
   it('shows an error snackbar when triggering a build fails', async () => {
     const user = userEvent.setup();
-    mockTriggerBuild.mockRejectedValue(new Error('Boom'));
+    const error = new esmFramework.OpenmrsFetchError(
+      '/url',
+      {} as Response,
+      { error: 'A build is already running for this package' },
+      new Error(),
+    );
+    mockTriggerBuild.mockRejectedValue(error);
     renderWorkspace();
 
     await user.click(screen.getByRole('button', { name: 'Trigger new build' }));
 
     await waitFor(() =>
-      expect(mockShowSnackbar).toHaveBeenCalledWith(expect.objectContaining({ kind: 'error', subtitle: 'Boom' })),
+      expect(mockShowSnackbar).toHaveBeenCalledWith(
+        expect.objectContaining({ kind: 'error', subtitle: 'A build is already running for this package' }),
+      ),
     );
   });
 
