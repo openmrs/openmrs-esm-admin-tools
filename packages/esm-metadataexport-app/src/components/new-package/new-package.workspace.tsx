@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Button,
@@ -78,18 +78,26 @@ const NewPackageWorkspace: React.FC<NewPackageWorkspaceProps> = ({
     promptBeforeClosing(() => hasUnsavedChanges);
   }, [hasUnsavedChanges, promptBeforeClosing]);
 
-  // Seed the form from the fetched package once it (and the domain list) arrive.
+  // Seed the form from the fetched package exactly once, so a later SWR revalidation
+  // of the package or domain list doesn't clobber the user's in-progress edits.
   // An empty entries list means the package includes every registered domain.
+  const hasPrefilledFromPackage = useRef(false);
   useEffect(() => {
-    if (isEditMode && exportPackage) {
-      setPackageName(exportPackage.name);
-      setDescription(exportPackage.description ?? '');
-      setSelectedDomains(
-        exportPackage.entries.length === 0
-          ? new Set(domains)
-          : new Set(exportPackage.entries.map((entry) => entry.domain)),
-      );
+    if (!isEditMode || hasPrefilledFromPackage.current || !exportPackage) {
+      return;
     }
+    // Wait for the domain list before expanding an "all domains" package.
+    if (exportPackage.entries.length === 0 && domains.length === 0) {
+      return;
+    }
+    hasPrefilledFromPackage.current = true;
+    setPackageName(exportPackage.name);
+    setDescription(exportPackage.description ?? '');
+    setSelectedDomains(
+      exportPackage.entries.length === 0
+        ? new Set(domains)
+        : new Set(exportPackage.entries.map((entry) => entry.domain)),
+    );
   }, [isEditMode, exportPackage, domains]);
 
   const handleSubmit = useCallback(

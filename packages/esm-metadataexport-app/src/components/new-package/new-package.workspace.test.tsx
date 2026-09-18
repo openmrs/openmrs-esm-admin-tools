@@ -40,7 +40,7 @@ const fetchError = (responseBody: unknown) =>
   );
 
 function renderWorkspace(uuid?: string) {
-  render(
+  return render(
     <NewPackageWorkspace
       uuid={uuid}
       closeWorkspace={mockCloseWorkspace}
@@ -247,6 +247,38 @@ describe('NewPackageWorkspace', () => {
       expect(screen.getByRole('checkbox', { name: 'Concepts' })).toBeChecked();
       expect(screen.getByRole('checkbox', { name: 'Encounter types' })).toBeChecked();
       expect(screen.getByRole('checkbox', { name: 'Attribute types' })).not.toBeChecked();
+    });
+
+    it('does not overwrite in-progress edits when the package or domains revalidate', async () => {
+      // A fresh object each call mimics SWR handing back a new reference on revalidation.
+      const serverPackage = () => ({
+        exportPackage: { name: 'Original name', description: 'Original notes', entries: [{ domain: 'CONCEPTS' }] },
+        isLoading: false,
+        error: undefined,
+      });
+      mockUsePackage.mockReturnValue(serverPackage());
+      const user = userEvent.setup();
+      const { rerender } = renderWorkspace(uuid);
+
+      const nameInput = screen.getByRole('textbox', { name: 'Package name' });
+      await user.clear(nameInput);
+      await user.type(nameInput, 'My edited name');
+
+      // Simulate a background revalidation returning the original server values again.
+      mockUsePackage.mockReturnValue(serverPackage());
+      rerender(
+        <NewPackageWorkspace
+          uuid={uuid}
+          closeWorkspace={mockCloseWorkspace}
+          closeWorkspaceWithSavedChanges={mockCloseWorkspaceWithSavedChanges}
+          promptBeforeClosing={mockPromptBeforeClosing}
+          setTitle={vi.fn()}
+          // @ts-expect-error - the workspace only uses closeWorkspace and promptBeforeClosing from the default props
+          additionalProps={{}}
+        />,
+      );
+
+      expect(screen.getByRole('textbox', { name: 'Package name' })).toHaveValue('My edited name');
     });
 
     it('selects every domain when the package has no entries', () => {
