@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, InlineLoading, ModalBody, ModalFooter, ModalHeader, TextArea } from '@carbon/react';
 import { useSWRConfig } from 'swr';
-import { restBaseUrl, showSnackbar } from '@openmrs/esm-framework';
+import { OpenmrsFetchError, restBaseUrl, showSnackbar } from '@openmrs/esm-framework';
 import { deletePackage } from '../../packages/packages.resource';
 import type { ExportPackage } from '../../types';
 import styles from './delete-package.modal.scss';
@@ -37,9 +37,11 @@ const DeletePackageModal: React.FC<DeletePackageModalProps> = ({ closeModal, exp
       closeModal();
       onDeleted();
     } catch (deleteError) {
+      const responseBody = deleteError instanceof OpenmrsFetchError ? deleteError.responseBody : null;
+      const reason = typeof responseBody === 'object' && responseBody !== null ? responseBody.error : null;
       showSnackbar({
         title: t('packageDeleteFailed', 'Failed to delete package'),
-        subtitle: deleteError?.message ?? t('unexpectedError', 'An unexpected error occurred'),
+        subtitle: reason ?? t('unexpectedError', 'An unexpected error occurred'),
         kind: 'error',
       });
     } finally {
