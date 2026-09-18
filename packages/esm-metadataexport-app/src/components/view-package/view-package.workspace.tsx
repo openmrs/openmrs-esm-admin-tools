@@ -24,9 +24,6 @@ import { launchAddNewPackageWorkspace } from '../new-package/new-package-utils';
 const packagesUrl = `${restBaseUrl}/metadataexport/packages`;
 const isPackagesCacheKey = (key: unknown) => typeof key === 'string' && key.startsWith(packagesUrl);
 
-const packagesUrl = `${restBaseUrl}/metadataexport/packages`;
-const isPackagesCacheKey = (key: unknown) => typeof key === 'string' && key.startsWith(packagesUrl);
-
 interface ViewPackageWorkspaceProps extends DefaultWorkspaceProps {
   exportPackage: ExportPackage;
 }
