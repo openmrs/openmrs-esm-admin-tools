@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { OpenmrsFetchError, showSnackbar } from '@openmrs/esm-framework';
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { useDomains } from '../../domain-lookups/domain-lookups.resource';
-import { createPackage } from '../../packages/packages.resource';
+import { createPackage, usePackage } from '../../packages/packages.resource';
 import NewPackageWorkspace from './new-package.workspace';
 
 vi.mock('../../domain-lookups/domain-lookups.resource', async (importOriginal) => ({
@@ -14,10 +14,13 @@ vi.mock('../../domain-lookups/domain-lookups.resource', async (importOriginal) =
 
 vi.mock('../../packages/packages.resource', () => ({
   createPackage: vi.fn(),
+  editPackage: vi.fn(),
+  usePackage: vi.fn(),
 }));
 
 const mockUseDomains = useDomains as Mock;
 const mockCreatePackage = createPackage as Mock;
+const mockUsePackage = usePackage as Mock;
 const mockShowSnackbar = showSnackbar as Mock;
 const mockCloseWorkspace = vi.fn();
 const mockCloseWorkspaceWithSavedChanges = vi.fn();
@@ -51,6 +54,7 @@ function renderWorkspace() {
 describe('NewPackageWorkspace', () => {
   beforeEach(() => {
     mockUseDomains.mockReturnValue({ domains, isLoading: false, error: undefined });
+    mockUsePackage.mockReturnValue({ exportPackage: undefined, isLoading: false, error: undefined });
     mockCreatePackage.mockResolvedValue({ data: {} });
   });
 
