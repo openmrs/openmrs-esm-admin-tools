@@ -44,7 +44,6 @@
     "cronstrue": "^2.41.0",
     "dayjs": "^1.8.36",
     "lodash-es": "^4.17.21",
-    "react-image-annotate": "^1.8.0",
     "swr": "2.5.1"
   },
   "peerDependencies": {
