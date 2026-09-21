@@ -26,8 +26,8 @@ export const deletePackageModal = getAsyncLifecycle(
 );
 
 // Workspaces
-export const newPackageWorkspace = getAsyncLifecycle(
-  () => import('./components/new-package/new-package.workspace'),
+export const packageFormWorkspace = getAsyncLifecycle(
+  () => import('./components/package-form/package-form.workspace'),
   options,
 );
 

@@ -22,16 +22,16 @@ import {
 } from '@openmrs/esm-framework';
 import { formatDomainLabel, useDomains } from '../../domain-lookups/domain-lookups.resource';
 import { createPackage, editPackage, usePackage } from '../../packages/packages.resource';
-import styles from './new-package.workspace.scss';
+import styles from './package-form.workspace.scss';
 
 const packagesUrl = `${restBaseUrl}/metadataexport/packages`;
 const isPackagesCacheKey = (key: unknown) => typeof key === 'string' && key.startsWith(packagesUrl);
 
-interface NewPackageWorkspaceProps extends DefaultWorkspaceProps {
+interface PackageFormWorkspaceProps extends DefaultWorkspaceProps {
   uuid?: string;
 }
 
-const NewPackageWorkspace: React.FC<NewPackageWorkspaceProps> = ({
+const PackageFormWorkspace: React.FC<PackageFormWorkspaceProps> = ({
   uuid,
   closeWorkspace,
   closeWorkspaceWithSavedChanges,
@@ -266,4 +266,4 @@ const NewPackageWorkspace: React.FC<NewPackageWorkspaceProps> = ({
   );
 };
 
-export default NewPackageWorkspace;
+export default PackageFormWorkspace;

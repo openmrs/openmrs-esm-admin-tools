@@ -19,7 +19,7 @@ import { formatDomainLabel } from '../../domain-lookups/domain-lookups.resource'
 import { triggerBuild, usePackageBuilds } from '../../packages/packages.resource';
 import type { ExportBuildStatus, ExportPackage } from '../../types';
 import styles from './view-package.workspace.scss';
-import { launchAddNewPackageWorkspace } from '../new-package/new-package-utils';
+import { launchPackageFormWorkspace } from '../package-form/package-form-utils';
 
 const packagesUrl = `${restBaseUrl}/metadataexport/packages`;
 // useOpenmrsPagination keys the cache with absolute URLs, so match on inclusion rather than prefix.
@@ -105,7 +105,7 @@ const ViewPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPacka
   }, [exportPackage.entries, t]);
 
   const editPackage = useCallback(() => {
-    launchAddNewPackageWorkspace(t, exportPackage.uuid);
+    launchPackageFormWorkspace(t, exportPackage.uuid);
   }, [exportPackage.uuid, t]);
 
   return (

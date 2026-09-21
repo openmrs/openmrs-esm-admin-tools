@@ -26,8 +26,8 @@
   ],
   "workspaces": [
     {
-      "name": "new-package-workspace",
-      "component": "newPackageWorkspace",
+      "name": "package-form-workspace",
+      "component": "packageFormWorkspace",
       "title": "New package",
       "type": "form",
       "canMaximize": true,

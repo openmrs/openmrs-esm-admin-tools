@@ -3,16 +3,16 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@carbon/react';
 import { Add } from '@carbon/react/icons';
 import { useSession, userHasAccess } from '@openmrs/esm-framework';
-import { launchAddNewPackageWorkspace } from '../new-package-utils';
+import { launchPackageFormWorkspace } from '../package-form-utils';
 
-const NewPackageActionButton: React.FC = () => {
+const AddPackageActionButton: React.FC = () => {
   const { t } = useTranslation();
   const session = useSession();
 
   const canManage = session.user ? userHasAccess('Manage Metadata Export Packages', session.user) : false;
 
-  const handleAddNewPackageWorkspace = useCallback(() => {
-    launchAddNewPackageWorkspace(t);
+  const handleLaunchPackageForm = useCallback(() => {
+    launchPackageFormWorkspace(t);
   }, [t]);
 
   if (!canManage) {
@@ -21,7 +21,7 @@ const NewPackageActionButton: React.FC = () => {
 
   return (
     <Button
-      onClick={handleAddNewPackageWorkspace}
+      onClick={handleLaunchPackageForm}
       size="md"
       kind="primary"
       renderIcon={(props) => <Add size={16} {...props} />}
@@ -31,4 +31,4 @@ const NewPackageActionButton: React.FC = () => {
   );
 };
 
-export default NewPackageActionButton;
+export default AddPackageActionButton;

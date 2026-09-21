@@ -5,7 +5,7 @@ import { type Session, useSession, userHasAccess } from '@openmrs/esm-framework'
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { type ExportPackage } from '../../types/index';
 import { useAllPackages } from '../../packages/packages.resource';
-import { launchAddNewPackageWorkspace } from '../new-package/new-package-utils';
+import { launchPackageFormWorkspace } from '../package-form/package-form-utils';
 import { launchViewPackageWorkspace } from '../view-package/view-package-utils';
 import PackagesTable from './packages-table.component';
 
@@ -14,8 +14,8 @@ vi.mock('../../packages/packages.resource', async (importOriginal) => ({
   useAllPackages: vi.fn(),
 }));
 
-vi.mock('../new-package/new-package-utils', () => ({
-  launchAddNewPackageWorkspace: vi.fn(),
+vi.mock('../package-form/package-form-utils', () => ({
+  launchPackageFormWorkspace: vi.fn(),
 }));
 
 vi.mock('../view-package/view-package-utils', () => ({
@@ -25,7 +25,7 @@ vi.mock('../view-package/view-package-utils', () => ({
 const mockUseAllPackages = vi.mocked(useAllPackages);
 const mockUseSession = vi.mocked(useSession);
 const mockUserHasAccess = vi.mocked(userHasAccess);
-const mockLaunchAddNewPackageWorkspace = vi.mocked(launchAddNewPackageWorkspace);
+const mockLaunchPackageFormWorkspace = vi.mocked(launchPackageFormWorkspace);
 const mockLaunchViewPackageWorkspace = vi.mocked(launchViewPackageWorkspace);
 
 const sessionWithUser = () => ({ user: { uuid: 'cc8507b8-7c9a-486b-85dc-b8f25ad1e4cc' } }) as unknown as Session;
@@ -81,7 +81,7 @@ describe('PackagesTable', () => {
     await user.click(screen.getByRole('button', { name: 'Record packages' }));
 
     expect(mockUserHasAccess).toHaveBeenCalledWith('Manage Metadata Export Packages', expect.anything());
-    expect(mockLaunchAddNewPackageWorkspace).toHaveBeenCalledTimes(1);
+    expect(mockLaunchPackageFormWorkspace).toHaveBeenCalledTimes(1);
   });
 
   it('does not offer the empty-state action to users without the manage privilege', () => {
@@ -89,7 +89,7 @@ describe('PackagesTable', () => {
     render(<PackagesTable />);
 
     expect(screen.queryByRole('button', { name: 'Record packages' })).not.toBeInTheDocument();
-    expect(mockLaunchAddNewPackageWorkspace).not.toHaveBeenCalled();
+    expect(mockLaunchPackageFormWorkspace).not.toHaveBeenCalled();
   });
 
   it('renders the build status per package and launches the view workspace with the package for the clicked row', async () => {
