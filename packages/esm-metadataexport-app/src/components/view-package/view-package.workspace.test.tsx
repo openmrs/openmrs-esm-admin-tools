@@ -1,22 +1,29 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import * as esmFramework from '@openmrs/esm-framework';
 import ViewPackageWorkspace from './view-package.workspace';
-import { usePackageBuilds } from '../../packages/packages.resource';
-import { type ExportPackage, type ExportPackageBuild } from '../../types';
+import { usePackageBuilds, triggerBuild } from '../../packages/packages.resource';
+import type { ExportPackage, ExportPackageBuild } from '../../types';
 
 vi.mock('@openmrs/esm-framework', async (importOriginal) => {
   const original = await importOriginal<typeof esmFramework>();
   return {
     ...original,
     makeUrl: (path: string) => `${window.openmrsBase}${path}`,
+    showModal: vi.fn(() => vi.fn()),
   };
 });
 
 vi.mock('../../packages/packages.resource', () => ({
   usePackageBuilds: vi.fn(),
+  triggerBuild: vi.fn(),
 }));
+
+const mockTriggerBuild = triggerBuild as Mock;
+const mockShowModal = esmFramework.showModal as Mock;
+const mockShowSnackbar = esmFramework.showSnackbar as Mock;
 
 const mockUsePackageBuilds = usePackageBuilds as Mock;
 const mockUseSession = vi.mocked(esmFramework.useSession);
@@ -166,5 +173,55 @@ describe('ViewPackageWorkspace', () => {
     renderWorkspace();
 
     expect(screen.queryByText('stale error')).not.toBeInTheDocument();
+  });
+
+  it('triggers a build and revalidates the builds list', async () => {
+    const user = userEvent.setup();
+    const mutate = vi.fn();
+    mockBuilds({ mutate });
+    mockTriggerBuild.mockResolvedValue({});
+    renderWorkspace();
+
+    await user.click(screen.getByRole('button', { name: 'Trigger new build' }));
+
+    expect(mockTriggerBuild).toHaveBeenCalledWith(exportPackage.uuid);
+    await waitFor(() => expect(mutate).toHaveBeenCalled());
+    expect(mockShowSnackbar).toHaveBeenCalledWith(expect.objectContaining({ kind: 'success' }));
+  });
+
+  it('shows an error snackbar when triggering a build fails', async () => {
+    const user = userEvent.setup();
+    const error = new esmFramework.OpenmrsFetchError(
+      '/url',
+      {} as Response,
+      { error: 'A build is already running for this package' },
+      new Error(),
+    );
+    mockTriggerBuild.mockRejectedValue(error);
+    renderWorkspace();
+
+    await user.click(screen.getByRole('button', { name: 'Trigger new build' }));
+
+    await waitFor(() =>
+      expect(mockShowSnackbar).toHaveBeenCalledWith(
+        expect.objectContaining({ kind: 'error', subtitle: 'A build is already running for this package' }),
+      ),
+    );
+  });
+
+  it('launches the delete confirmation modal wired to close the workspace on success', async () => {
+    const user = userEvent.setup();
+    renderWorkspace();
+
+    await user.click(screen.getByRole('button', { name: /delete/i }));
+
+    expect(mockShowModal).toHaveBeenCalledWith(
+      'delete-package-modal',
+      expect.objectContaining({
+        exportPackage,
+        onDeleted: mockCloseWorkspace,
+        closeModal: expect.any(Function),
+      }),
+    );
   });
 });

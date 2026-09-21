@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   DataTable,
@@ -11,12 +11,9 @@ import {
   TableRow,
   Pagination,
   Button,
-  Modal,
-  Checkbox,
-  FormGroup,
 } from '@carbon/react';
 import { Download } from '@carbon/react/icons';
-import { isDesktop, useLayoutType, formatDatetime, getCoreTranslation, parseDate } from '@openmrs/esm-framework';
+import { isDesktop, useLayoutType, formatDatetime, parseDate, showModal } from '@openmrs/esm-framework';
 import styles from './reports.scss';
 
 interface ReportDataViewerProps {
@@ -31,7 +28,8 @@ const ReportDataViewer: React.FC<ReportDataViewerProps> = ({ reportData }) => {
   const layout = useLayoutType();
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [currentPage, setCurrentPage] = useState(1);
-  const [showExportModal, setShowExportModal] = useState(false);
+  const disposeModal = useRef<ReturnType<typeof showModal>>();
+  useEffect(() => () => disposeModal.current?.(), []);
   const [selectedColumns, setSelectedColumns] = useState<Record<string, boolean>>({});
 
   // Get the first dataset since we're only handling one dataset for now
@@ -47,13 +45,6 @@ const ReportDataViewer: React.FC<ReportDataViewerProps> = ({ reportData }) => {
     }, {});
     setSelectedColumns(initialSelection);
   }, [columns]);
-
-  const handleColumnToggle = (columnName: string) => {
-    setSelectedColumns((prev) => ({
-      ...prev,
-      [columnName]: !prev[columnName],
-    }));
-  };
 
   function formatCellValue(value: any): string {
     if (value === null || value === undefined) {
@@ -73,9 +64,9 @@ const ReportDataViewer: React.FC<ReportDataViewerProps> = ({ reportData }) => {
     return value.toString();
   }
 
-  const exportToCSV = () => {
+  const exportToCSV = (selection: Record<string, boolean>) => {
     // Filter selected columns
-    const selectedColumnNames = Object.entries(selectedColumns)
+    const selectedColumnNames = Object.entries(selection)
       .filter(([_, selected]) => selected)
       .map(([name]) => name);
 
@@ -120,7 +111,6 @@ const ReportDataViewer: React.FC<ReportDataViewerProps> = ({ reportData }) => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    setShowExportModal(false);
   };
 
   // Calculate pagination
@@ -149,7 +139,15 @@ const ReportDataViewer: React.FC<ReportDataViewerProps> = ({ reportData }) => {
           size="sm"
           renderIcon={Download}
           iconDescription={t('exportCSV', 'Export CSV')}
-          onClick={() => setShowExportModal(true)}
+          onClick={() => {
+            disposeModal.current?.();
+            disposeModal.current = showModal('report-export-columns-modal', {
+              columns,
+              selectedColumns,
+              onSelectionChange: setSelectedColumns,
+              onExport: exportToCSV,
+            });
+          }}
         >
           {t('exportCSV', 'Export CSV')}
         </Button>
@@ -206,27 +204,6 @@ const ReportDataViewer: React.FC<ReportDataViewerProps> = ({ reportData }) => {
           }}
         />
       </div>
-
-      <Modal
-        open={showExportModal}
-        modalHeading={t('selectColumns', 'Select Columns to Export')}
-        primaryButtonText={t('export', 'Export')}
-        secondaryButtonText={getCoreTranslation('cancel')}
-        onRequestClose={() => setShowExportModal(false)}
-        onRequestSubmit={exportToCSV}
-      >
-        <FormGroup legendText={t('availableColumns', 'Available Columns')}>
-          {columns.map((column) => (
-            <Checkbox
-              key={column.name}
-              id={column.name}
-              labelText={column.label}
-              checked={selectedColumns[column.name]}
-              onChange={() => handleColumnToggle(column.name)}
-            />
-          ))}
-        </FormGroup>
-      </Modal>
     </div>
   );
 };
