@@ -31,7 +31,7 @@ interface PackageFormWorkspaceProps extends DefaultWorkspaceProps {
   uuid?: string;
 }
 
-const PackageFormWorkspace: React.FC<PackageFormWorkspaceProps> = ({
+const MetadataPackageFormWorkspace: React.FC<PackageFormWorkspaceProps> = ({
   uuid,
   closeWorkspace,
   closeWorkspaceWithSavedChanges,
@@ -283,4 +283,4 @@ const PackageFormWorkspace: React.FC<PackageFormWorkspaceProps> = ({
   );
 };
 
-export default PackageFormWorkspace;
+export default MetadataPackageFormWorkspace;

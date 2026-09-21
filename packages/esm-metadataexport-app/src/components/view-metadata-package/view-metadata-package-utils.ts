@@ -1,8 +1,8 @@
 import { launchWorkspace } from '@openmrs/esm-framework';
 import { type ExportPackage } from '../../types/index';
 
-export const launchViewPackageWorkspace = (exportPackage: ExportPackage) => {
-  launchWorkspace('view-package-workspace', {
+export const launchViewMetadataPackageWorkspace = (exportPackage: ExportPackage) => {
+  launchWorkspace('view-metadata-package-workspace', {
     workspaceTitle: exportPackage.name,
     exportPackage,
   });

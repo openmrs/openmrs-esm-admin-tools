@@ -19,7 +19,7 @@ import { formatDomainLabel } from '../../domain-lookups/domain-lookups.resource'
 import { triggerBuild, usePackageBuilds } from '../../packages/packages.resource';
 import type { ExportBuildStatus, ExportPackage } from '../../types';
 import styles from './view-package.workspace.scss';
-import { launchPackageFormWorkspace } from '../package-form/package-form-utils';
+import { launchPackageFormWorkspace } from '../metadata-package-form/metadata-package-form-utils';
 
 const packagesUrl = `${restBaseUrl}/metadataexport/packages`;
 // useOpenmrsPagination keys the cache with absolute URLs, so match on inclusion rather than prefix.
@@ -36,7 +36,7 @@ const statusTagType: Record<ExportBuildStatus, 'gray' | 'blue' | 'green' | 'red'
   FAILED: 'red',
 };
 
-const ViewPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPackage, closeWorkspace }) => {
+const ViewMetadataPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPackage, closeWorkspace }) => {
   const { t } = useTranslation();
   const session = useSession();
   const { mutate: globalMutate } = useSWRConfig();
@@ -209,4 +209,4 @@ const ViewPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPacka
   );
 };
 
-export default ViewPackageWorkspace;
+export default ViewMetadataPackageWorkspace;

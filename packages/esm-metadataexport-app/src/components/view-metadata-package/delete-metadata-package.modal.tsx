@@ -16,7 +16,7 @@ interface DeletePackageModalProps {
   onDeleted: () => void;
 }
 
-const DeletePackageModal: React.FC<DeletePackageModalProps> = ({ closeModal, exportPackage, onDeleted }) => {
+const DeleteMetadataPackageModal: React.FC<DeletePackageModalProps> = ({ closeModal, exportPackage, onDeleted }) => {
   const { t } = useTranslation();
   const { mutate } = useSWRConfig();
   const [isDeleting, setIsDeleting] = useState(false);
@@ -79,4 +79,4 @@ const DeletePackageModal: React.FC<DeletePackageModalProps> = ({ closeModal, exp
   );
 };
 
-export default DeletePackageModal;
+export default DeleteMetadataPackageModal;

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@carbon/react';
 import { Add } from '@carbon/react/icons';
 import { useSession, userHasAccess } from '@openmrs/esm-framework';
-import { launchPackageFormWorkspace } from '../package-form-utils';
+import { launchPackageFormWorkspace } from '../metadata-package-form-utils';
 
 const AddPackageActionButton: React.FC = () => {
   const { t } = useTranslation();

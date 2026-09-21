@@ -5,7 +5,7 @@ import { OpenmrsFetchError, showSnackbar } from '@openmrs/esm-framework';
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { useDomains } from '../../domain-lookups/domain-lookups.resource';
 import { createPackage, editPackage, usePackage } from '../../packages/packages.resource';
-import PackageFormWorkspace from './package-form.workspace';
+import MetadataPackageFormWorkspace from './metadata-package-form.workspace';
 
 vi.mock('../../domain-lookups/domain-lookups.resource', async (importOriginal) => ({
   ...(await importOriginal<object>()),
@@ -41,7 +41,7 @@ const fetchError = (responseBody: unknown) =>
 
 function renderWorkspace(uuid?: string) {
   return render(
-    <PackageFormWorkspace
+    <MetadataPackageFormWorkspace
       uuid={uuid}
       closeWorkspace={mockCloseWorkspace}
       closeWorkspaceWithSavedChanges={mockCloseWorkspaceWithSavedChanges}
@@ -267,7 +267,7 @@ describe('PackageFormWorkspace', () => {
       // Simulate a background revalidation returning the original server values again.
       mockUsePackage.mockReturnValue(serverPackage());
       rerender(
-        <PackageFormWorkspace
+        <MetadataPackageFormWorkspace
           uuid={uuid}
           closeWorkspace={mockCloseWorkspace}
           closeWorkspaceWithSavedChanges={mockCloseWorkspaceWithSavedChanges}

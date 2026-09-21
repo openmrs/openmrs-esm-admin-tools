@@ -22,8 +22,8 @@ import {
 } from '@openmrs/esm-framework';
 import { formatDomainLabel } from '../../domain-lookups/domain-lookups.resource';
 import { useAllPackages } from '../../packages/packages.resource';
-import { launchPackageFormWorkspace } from '../package-form/package-form-utils';
-import ViewPackageActionButton from '../view-package/view-package-action-button/view-package-action-button.component';
+import { launchPackageFormWorkspace } from '../metadata-package-form/metadata-package-form-utils';
+import ViewPackageActionButton from '../view-metadata-package/view-package-action-button/view-package-action-button.component';
 import styles from './packages-table.scss';
 
 /**

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@carbon/react';
 import { ArrowRight } from '@carbon/react/icons';
 import { useSession, userHasAccess } from '@openmrs/esm-framework';
-import { launchViewPackageWorkspace } from '../view-package-utils';
+import { launchViewMetadataPackageWorkspace } from '../view-metadata-package-utils';
 import { type ExportPackage } from '../../../types';
 
 interface ViewPackageActionButtonProps {
@@ -17,7 +17,7 @@ const ViewPackageActionButton: React.FC<ViewPackageActionButtonProps> = ({ expor
   const canView = session.user ? userHasAccess('Get Metadata Export Packages', session.user) : false;
 
   const handleView = useCallback(() => {
-    launchViewPackageWorkspace(exportPackage);
+    launchViewMetadataPackageWorkspace(exportPackage);
   }, [exportPackage]);
 
   return (

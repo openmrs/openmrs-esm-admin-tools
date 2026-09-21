@@ -3,10 +3,10 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { type Session, useSession, userHasAccess } from '@openmrs/esm-framework';
-import { launchPackageFormWorkspace } from '../package-form-utils';
+import { launchPackageFormWorkspace } from '../metadata-package-form-utils';
 import AddPackageActionButton from './add-package-action-button.component';
 
-vi.mock('../package-form-utils', () => ({
+vi.mock('../metadata-package-form-utils', () => ({
   launchPackageFormWorkspace: vi.fn(),
 }));
 

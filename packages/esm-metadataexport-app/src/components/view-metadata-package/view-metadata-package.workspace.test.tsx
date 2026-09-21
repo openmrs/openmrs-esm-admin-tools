@@ -3,7 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import * as esmFramework from '@openmrs/esm-framework';
-import ViewPackageWorkspace from './view-package.workspace';
+import ViewMetadataPackageWorkspace from './view-metadata-package.workspace';
 import { usePackageBuilds, triggerBuild } from '../../packages/packages.resource';
 import type { ExportPackage, ExportPackageBuild } from '../../types';
 
@@ -75,7 +75,7 @@ function mockBuilds(overrides: Partial<ReturnType<typeof usePackageBuilds>> = {}
 
 function renderWorkspace(pkg: ExportPackage = exportPackage) {
   render(
-    <ViewPackageWorkspace
+    <ViewMetadataPackageWorkspace
       exportPackage={pkg}
       closeWorkspace={mockCloseWorkspace}
       closeWorkspaceWithSavedChanges={mockCloseWorkspaceWithSavedChanges}

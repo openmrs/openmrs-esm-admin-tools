@@ -20,18 +20,18 @@ export const root = getAsyncLifecycle(() => import('./root.component'), options)
 export const metadataExportCardLink = getAsyncLifecycle(() => import('./admin-card-link.component'), options);
 
 // Modals
-export const deletePackageModal = getAsyncLifecycle(
-  () => import('./components/view-package/delete-package.modal'),
+export const deleteMetadataPackageModal = getAsyncLifecycle(
+  () => import('./components/view-metadata-package/delete-metadata-package.modal'),
   options,
 );
 
 // Workspaces
-export const packageFormWorkspace = getAsyncLifecycle(
-  () => import('./components/package-form/package-form.workspace'),
+export const metadataPackageFormWorkspace = getAsyncLifecycle(
+  () => import('./components/metadata-package-form/metadata-package-form.workspace'),
   options,
 );
 
-export const viewPackageWorkspace = getAsyncLifecycle(
-  () => import('./components/view-package/view-package.workspace'),
+export const viewMetadataPackageWorkspace = getAsyncLifecycle(
+  () => import('./components/view-metadata-package/view-metadata-package.workspace'),
   options,
 );
