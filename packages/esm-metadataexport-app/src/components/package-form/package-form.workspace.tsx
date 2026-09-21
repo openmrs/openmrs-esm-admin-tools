@@ -110,21 +110,29 @@ const PackageFormWorkspace: React.FC<PackageFormWorkspaceProps> = ({
       const payload = { name: packageName.trim(), description: description.trim(), entries };
 
       try {
+        const name = packageName.trim();
+
         if (isEditMode && uuid) {
           await editPackage(uuid, payload);
+          // Revalidate the packages list so the table reflects the change without a refresh.
+          await mutate(isPackagesCacheKey);
+          showSnackbar({
+            title: t('packageUpdated', 'Package updated'),
+            subtitle: t('packageUpdatedSubtitle', '{{name}} was updated successfully', { name }),
+            kind: 'success',
+            isLowContrast: true,
+          });
         } else {
           await createPackage(payload);
+          // Revalidate the packages list so the table reflects the change without a refresh.
+          await mutate(isPackagesCacheKey);
+          showSnackbar({
+            title: t('packageCreated', 'Package created'),
+            subtitle: t('packageCreatedSubtitle', '{{name}} was created successfully', { name }),
+            kind: 'success',
+            isLowContrast: true,
+          });
         }
-        // Revalidate the packages list so the table reflects the change without a refresh.
-        await mutate(isPackagesCacheKey);
-        showSnackbar({
-          title: isEditMode ? t('packageUpdated', 'Package updated') : t('packageCreated', 'Package created'),
-          subtitle: isEditMode
-            ? t('packageUpdatedSubtitle', '{{name}} was updated successfully', { name: packageName.trim() })
-            : t('packageCreatedSubtitle', '{{name}} was created successfully', { name: packageName.trim() }),
-          kind: 'success',
-          isLowContrast: true,
-        });
         // Bypass the "unsaved changes" prompt now that the package is persisted.
         closeWorkspaceWithSavedChanges();
       } catch (submitError) {
@@ -133,14 +141,23 @@ const PackageFormWorkspace: React.FC<PackageFormWorkspaceProps> = ({
           typeof responseBody === 'object' && responseBody !== null
             ? Object.values(responseBody.fieldErrors ?? {})[0] ?? responseBody.error
             : null;
-        showSnackbar({
-          title: isEditMode
-            ? t('packageUpdateFailed', 'Failed to update package')
-            : t('packageCreationFailed', 'Failed to create package'),
-          subtitle: reason ?? t('unexpectedError', 'An unexpected error occurred'),
-          kind: 'error',
-          isLowContrast: false,
-        });
+        const subtitle = reason ?? t('unexpectedError', 'An unexpected error occurred');
+
+        if (isEditMode) {
+          showSnackbar({
+            title: t('packageUpdateFailed', 'Failed to update package'),
+            subtitle,
+            kind: 'error',
+            isLowContrast: false,
+          });
+        } else {
+          showSnackbar({
+            title: t('packageCreationFailed', 'Failed to create package'),
+            subtitle,
+            kind: 'error',
+            isLowContrast: false,
+          });
+        }
       } finally {
         setIsSubmitting(false);
       }
