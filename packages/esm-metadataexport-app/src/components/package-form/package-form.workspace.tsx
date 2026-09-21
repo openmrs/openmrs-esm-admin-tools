@@ -185,7 +185,7 @@ const PackageFormWorkspace: React.FC<PackageFormWorkspaceProps> = ({
     );
   }
 
-  if (isEditMode && packageError) {
+  if (packageError) {
     return (
       <div className={styles.form}>
         <InlineNotification
