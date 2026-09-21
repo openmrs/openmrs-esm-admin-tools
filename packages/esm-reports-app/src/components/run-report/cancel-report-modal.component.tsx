@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { mutate } from 'swr';
+import { useSWRConfig } from 'swr';
 import { ModalBody, Button, ModalFooter, ModalHeader, InlineLoading } from '@carbon/react';
 import { showSnackbar } from '@openmrs/esm-framework';
 import { cancelReportRequest } from '../reports.resource';
@@ -20,6 +20,7 @@ type ModalType = 'delete' | 'cancel' | 'schedule';
 
 const CancelReportModal: React.FC<CancelReportModalProps> = ({ closeModal, reportRequestUuid, modalType }) => {
   const { t } = useTranslation();
+  const { mutate } = useSWRConfig();
   const [isCanceling, setIsCanceling] = useState(false);
 
   const getModalTitleByType = useCallback(
@@ -85,6 +86,21 @@ const CancelReportModal: React.FC<CancelReportModalProps> = ({ closeModal, repor
     [t],
   );
 
+  const callMutates = useCallback(
+    (modalType: ModalType) => {
+      const baseUrl = '/ws/rest/v1/reportingrest/reportRequest?status=';
+      if (modalType === 'delete') {
+        mutate(baseUrl + RAN_REPORT_STATUSES.join(','));
+      } else if (modalType === 'cancel') {
+        mutate(baseUrl + RAN_REPORT_STATUSES.join(','));
+        mutate(baseUrl + PROCESSING_REPORT_STATUSES.join(','));
+      } else if (modalType === 'schedule') {
+        mutate(baseUrl + SCHEDULED_REPORT_STATUSES.join(',') + '&sortBy=name');
+      }
+    },
+    [mutate],
+  );
+
   const handleCancel = useCallback(async () => {
     try {
       setIsCanceling(true);
@@ -106,6 +122,7 @@ const CancelReportModal: React.FC<CancelReportModalProps> = ({ closeModal, repor
       setIsCanceling(false);
     }
   }, [
+    callMutates,
     closeModal,
     getFailedToastMessageByType,
     getModalTitleByType,
@@ -113,18 +130,6 @@ const CancelReportModal: React.FC<CancelReportModalProps> = ({ closeModal, repor
     modalType,
     reportRequestUuid,
   ]);
-
-  const callMutates = (modalType: ModalType) => {
-    let baseUrl = '/ws/rest/v1/reportingrest/reportRequest?status=';
-    if (modalType === 'delete') {
-      mutate(baseUrl + RAN_REPORT_STATUSES.join(','));
-    } else if (modalType === 'cancel') {
-      mutate(baseUrl + RAN_REPORT_STATUSES.join(','));
-      mutate(baseUrl + PROCESSING_REPORT_STATUSES.join(','));
-    } else if (modalType === 'schedule') {
-      mutate(baseUrl + SCHEDULED_REPORT_STATUSES.join(',') + '&sortBy=name');
-    }
-  };
 
   return (
     <div>
