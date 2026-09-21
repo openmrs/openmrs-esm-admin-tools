@@ -3,7 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, type Mock } from 'vitest';
 import * as esmFramework from '@openmrs/esm-framework';
-import DeletePackageModal from './delete-package.modal';
+import DeleteMetadataPackageModal from './delete-metadata-package.modal';
 import { deletePackage } from '../../packages/packages.resource';
 import type { ExportPackage } from '../../types';
 
@@ -28,7 +28,9 @@ const mockCloseModal = vi.fn();
 const mockOnDeleted = vi.fn();
 
 function renderModal() {
-  render(<DeletePackageModal closeModal={mockCloseModal} exportPackage={exportPackage} onDeleted={mockOnDeleted} />);
+  render(
+    <DeleteMetadataPackageModal closeModal={mockCloseModal} exportPackage={exportPackage} onDeleted={mockOnDeleted} />,
+  );
 }
 
 describe('DeletePackageModal', () => {

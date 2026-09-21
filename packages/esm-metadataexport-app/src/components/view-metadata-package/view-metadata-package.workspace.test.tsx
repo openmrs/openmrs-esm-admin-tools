@@ -3,7 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import * as esmFramework from '@openmrs/esm-framework';
-import ViewPackageWorkspace from './view-package.workspace';
+import ViewMetadataPackageWorkspace from './view-metadata-package.workspace';
 import { usePackageBuilds, triggerBuild } from '../../packages/packages.resource';
 import type { ExportPackage, ExportPackageBuild } from '../../types';
 
@@ -75,7 +75,7 @@ function mockBuilds(overrides: Partial<ReturnType<typeof usePackageBuilds>> = {}
 
 function renderWorkspace(pkg: ExportPackage = exportPackage) {
   render(
-    <ViewPackageWorkspace
+    <ViewMetadataPackageWorkspace
       exportPackage={pkg}
       closeWorkspace={mockCloseWorkspace}
       closeWorkspaceWithSavedChanges={mockCloseWorkspaceWithSavedChanges}
@@ -173,6 +173,56 @@ describe('ViewPackageWorkspace', () => {
     renderWorkspace();
 
     expect(screen.queryByText('stale error')).not.toBeInTheDocument();
+  });
+
+  it('triggers a build and revalidates the builds list', async () => {
+    const user = userEvent.setup();
+    const mutate = vi.fn();
+    mockBuilds({ mutate });
+    mockTriggerBuild.mockResolvedValue({});
+    renderWorkspace();
+
+    await user.click(screen.getByRole('button', { name: 'Trigger new build' }));
+
+    expect(mockTriggerBuild).toHaveBeenCalledWith(exportPackage.uuid);
+    await waitFor(() => expect(mutate).toHaveBeenCalled());
+    expect(mockShowSnackbar).toHaveBeenCalledWith(expect.objectContaining({ kind: 'success' }));
+  });
+
+  it('shows an error snackbar when triggering a build fails', async () => {
+    const user = userEvent.setup();
+    const error = new esmFramework.OpenmrsFetchError(
+      '/url',
+      {} as Response,
+      { error: 'A build is already running for this package' },
+      new Error(),
+    );
+    mockTriggerBuild.mockRejectedValue(error);
+    renderWorkspace();
+
+    await user.click(screen.getByRole('button', { name: 'Trigger new build' }));
+
+    await waitFor(() =>
+      expect(mockShowSnackbar).toHaveBeenCalledWith(
+        expect.objectContaining({ kind: 'error', subtitle: 'A build is already running for this package' }),
+      ),
+    );
+  });
+
+  it('launches the delete confirmation modal wired to close the workspace on success', async () => {
+    const user = userEvent.setup();
+    renderWorkspace();
+
+    await user.click(screen.getByRole('button', { name: /delete/i }));
+
+    expect(mockShowModal).toHaveBeenCalledWith(
+      'delete-package-modal',
+      expect.objectContaining({
+        exportPackage,
+        onDeleted: mockCloseWorkspace,
+        closeModal: expect.any(Function),
+      }),
+    );
   });
 
   it('triggers a build and revalidates the builds list', async () => {

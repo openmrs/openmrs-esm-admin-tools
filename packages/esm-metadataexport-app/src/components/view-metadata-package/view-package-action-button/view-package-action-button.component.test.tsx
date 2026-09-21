@@ -4,14 +4,14 @@ import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { type Session, useSession, userHasAccess } from '@openmrs/esm-framework';
 import ViewPackageActionButton from './view-package-action-button.component';
-import { launchViewPackageWorkspace } from '../view-package-utils';
+import { launchViewMetadataPackageWorkspace } from '../view-metadata-package-utils';
 import { type ExportPackage } from '../../../types';
 
-vi.mock('../view-package-utils', () => ({
-  launchViewPackageWorkspace: vi.fn(),
+vi.mock('../view-metadata-package-utils', () => ({
+  launchViewMetadataPackageWorkspace: vi.fn(),
 }));
 
-const mockLaunchViewPackageWorkspace = launchViewPackageWorkspace as Mock;
+const mockLaunchViewPackageWorkspace = launchViewMetadataPackageWorkspace as Mock;
 const mockUseSession = vi.mocked(useSession);
 const mockUserHasAccess = vi.mocked(userHasAccess);
 
