@@ -22,7 +22,8 @@ import styles from './view-package.workspace.scss';
 import { launchAddNewPackageWorkspace } from '../new-package/new-package-utils';
 
 const packagesUrl = `${restBaseUrl}/metadataexport/packages`;
-const isPackagesCacheKey = (key: unknown) => typeof key === 'string' && key.startsWith(packagesUrl);
+// useOpenmrsPagination keys the cache with absolute URLs, so match on inclusion rather than prefix.
+const isPackagesCacheKey = (key: unknown) => typeof key === 'string' && key.includes(packagesUrl);
 
 interface ViewPackageWorkspaceProps extends DefaultWorkspaceProps {
   exportPackage: ExportPackage;
@@ -124,12 +125,24 @@ const ViewPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPacka
                 t('triggerNewBuild', 'Trigger new build')
               )}
             </Button>
-            <Button kind="secondary" onClick={editPackage} disabled={isTriggeringBuild}>
-              {t('edit', 'Edit')}
-            </Button>
-            <Button kind="danger--tertiary" onClick={launchDeleteModal} disabled={isTriggeringBuild}>
-              {t('delete', 'Delete')}
-            </Button>
+            <div className={styles.secondaryActions}>
+              <Button
+                className={styles.secondaryButton}
+                kind="secondary"
+                onClick={editPackage}
+                disabled={isTriggeringBuild}
+              >
+                {t('edit', 'Edit')}
+              </Button>
+              <Button
+                className={styles.secondaryButton}
+                kind="danger--tertiary"
+                onClick={launchDeleteModal}
+                disabled={isTriggeringBuild}
+              >
+                {t('delete', 'Delete')}
+              </Button>
+            </div>
           </section>
         )}
 
