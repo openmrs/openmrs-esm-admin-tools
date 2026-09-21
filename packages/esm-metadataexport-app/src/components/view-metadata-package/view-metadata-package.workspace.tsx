@@ -18,7 +18,7 @@ import {
 import { formatDomainLabel } from '../../domain-lookups/domain-lookups.resource';
 import { triggerBuild, usePackageBuilds } from '../../packages/packages.resource';
 import type { ExportBuildStatus, ExportPackage } from '../../types';
-import styles from './view-package.workspace.scss';
+import styles from './view-metadata-package.workspace.scss';
 import { launchPackageFormWorkspace } from '../metadata-package-form/metadata-package-form-utils';
 
 const packagesUrl = `${restBaseUrl}/metadataexport/packages`;

@@ -22,7 +22,7 @@ import {
 } from '@openmrs/esm-framework';
 import { formatDomainLabel, useDomains } from '../../domain-lookups/domain-lookups.resource';
 import { createPackage, editPackage, usePackage } from '../../packages/packages.resource';
-import styles from './package-form.workspace.scss';
+import styles from './metadata-package-form.workspace.scss';
 
 const packagesUrl = `${restBaseUrl}/metadataexport/packages`;
 const isPackagesCacheKey = (key: unknown) => typeof key === 'string' && key.startsWith(packagesUrl);
