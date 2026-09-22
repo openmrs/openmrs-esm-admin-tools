@@ -6,14 +6,7 @@ import AddPackageActionButton from '../metadata-package-form/add-package-action-
 export const MetaDataExportHeader: React.FC<{ title: string }> = ({ title }) => {
   return (
     <PageHeader className={styles.header} data-testid="metadata-export-header">
-      <PageHeaderContent
-        illustration={
-          <>
-            <MetadataExportPictogram className={styles.metadataExportPictogram} />
-          </>
-        }
-        title={title}
-      />
+      <PageHeaderContent illustration={<MetadataExportPictogram size={72} />} title={title} />
 
       <div className={styles['right-justified-items']}>
         <AddPackageActionButton />
