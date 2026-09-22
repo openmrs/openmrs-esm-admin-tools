@@ -6,11 +6,9 @@
 .header {
   background-color: $ui-02;
   border: 1px solid $ui-03;
-  border-left: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-left: layout.$spacing-06;
   padding-right: layout.$spacing-03;
 }
 
@@ -18,4 +16,10 @@
   @include type.type-style('body-compact-02');
   color: colors.$gray-70;
   margin: layout.$spacing-03;
+}
+
+.MetadataExportPictogram {
+  width: 4.5rem;
+  height: 4.5rem;
+  fill: var(--brand-03);
 }
