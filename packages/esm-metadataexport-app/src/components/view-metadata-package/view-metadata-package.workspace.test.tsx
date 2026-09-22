@@ -216,7 +216,7 @@ describe('ViewPackageWorkspace', () => {
     await user.click(screen.getByRole('button', { name: /delete/i }));
 
     expect(mockShowModal).toHaveBeenCalledWith(
-      'delete-package-modal',
+      'delete-metadata-package-modal',
       expect.objectContaining({
         exportPackage,
         onDeleted: mockCloseWorkspace,
@@ -266,7 +266,7 @@ describe('ViewPackageWorkspace', () => {
     await user.click(screen.getByRole('button', { name: /delete/i }));
 
     expect(mockShowModal).toHaveBeenCalledWith(
-      'delete-package-modal',
+      'delete-metadata-package-modal',
       expect.objectContaining({
         exportPackage,
         onDeleted: mockCloseWorkspace,

@@ -87,7 +87,7 @@ const ViewMetadataPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exp
   }, [buildStatusVersion, isLoading, globalMutate]);
 
   const launchDeleteModal = useCallback(() => {
-    const dispose = showModal('delete-package-modal', {
+    const dispose = showModal('delete-metadata-package-modal', {
       closeModal: () => dispose(),
       exportPackage,
       onDeleted: closeWorkspace,
