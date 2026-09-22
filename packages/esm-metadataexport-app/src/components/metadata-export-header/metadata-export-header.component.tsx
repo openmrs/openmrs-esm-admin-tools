@@ -9,7 +9,7 @@ export const MetaDataExportHeader: React.FC<{ title: string }> = ({ title }) => 
       <PageHeaderContent
         illustration={
           <>
-            <MetadataExportPictogram className={styles.MetadataExportPictogram} />
+            <MetadataExportPictogram className={styles.metadataExportPictogram} />
           </>
         }
         title={title}
