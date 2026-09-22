@@ -6,6 +6,7 @@ import * as esmFramework from '@openmrs/esm-framework';
 import ViewMetadataPackageWorkspace from './view-metadata-package.workspace';
 import { usePackageBuilds, triggerBuild } from '../../packages/packages.resource';
 import type { ExportPackage, ExportPackageBuild } from '../../types';
+import routes from '../../routes.json';
 
 vi.mock('@openmrs/esm-framework', async (importOriginal) => {
   const original = await importOriginal<typeof esmFramework>();
@@ -216,7 +217,7 @@ describe('ViewPackageWorkspace', () => {
     await user.click(screen.getByRole('button', { name: /delete/i }));
 
     expect(mockShowModal).toHaveBeenCalledWith(
-      'delete-package-modal',
+      'delete-metadata-package-modal',
       expect.objectContaining({
         exportPackage,
         onDeleted: mockCloseWorkspace,
@@ -266,12 +267,23 @@ describe('ViewPackageWorkspace', () => {
     await user.click(screen.getByRole('button', { name: /delete/i }));
 
     expect(mockShowModal).toHaveBeenCalledWith(
-      'delete-package-modal',
+      'delete-metadata-package-modal',
       expect.objectContaining({
         exportPackage,
         onDeleted: mockCloseWorkspace,
         closeModal: expect.any(Function),
       }),
     );
+  });
+
+  it('launches a modal name that is registered in routes.json', async () => {
+    const user = userEvent.setup();
+    renderWorkspace();
+
+    await user.click(screen.getByRole('button', { name: /delete/i }));
+
+    const [modalName] = mockShowModal.mock.calls.at(-1);
+    const registeredModalNames = routes.modals.map((modal) => modal.name);
+    expect(registeredModalNames).toContain(modalName);
   });
 });
