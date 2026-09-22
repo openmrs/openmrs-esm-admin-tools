@@ -31,7 +31,7 @@
   "failed": "Gagal",
   "fetchReport": "Ambil Laporan",
   "invalidWebPreviewUrl": "Configured web preview URL is invalid.",
-  "missingParameters": "Harap berikan parameter berikut: {parameters}",
+  "missingParameters": "Harap berikan parameter berikut: {{parameters}}",
   "missingPlaceholder": "Configured web preview URL must include {reportRequestUuid} placeholder.",
   "nextPage": "Halaman berikutnya",
   "nextRun": "Jalankan berikutnya",

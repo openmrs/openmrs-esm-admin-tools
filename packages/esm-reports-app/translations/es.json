@@ -31,7 +31,7 @@
   "failed": "Fallido",
   "fetchReport": "Fetch Report",
   "invalidWebPreviewUrl": "Configured web preview URL is invalid.",
-  "missingParameters": "Por favor, proporcione los siguientes parámetros: {parameters}",
+  "missingParameters": "Por favor, proporcione los siguientes parámetros: {{parameters}}",
   "missingPlaceholder": "Configured web preview URL must include {reportRequestUuid} placeholder.",
   "nextPage": "Siguiente página",
   "nextRun": "Siguiente ejecución",

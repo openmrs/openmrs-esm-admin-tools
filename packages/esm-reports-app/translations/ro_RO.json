@@ -31,7 +31,7 @@
   "failed": "Eșuat",
   "fetchReport": "Preia raportul",
   "invalidWebPreviewUrl": "Configured web preview URL is invalid.",
-  "missingParameters": "Te rugăm să furnizezi următorii parametri: {parameters}",
+  "missingParameters": "Te rugăm să furnizezi următorii parametri: {{parameters}}",
   "missingPlaceholder": "Configured web preview URL must include {reportRequestUuid} placeholder.",
   "nextPage": "Pagina următoare",
   "nextRun": "Următoarea rulare",
