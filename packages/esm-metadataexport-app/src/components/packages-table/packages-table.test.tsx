@@ -131,4 +131,58 @@ describe('PackagesTable', () => {
 
     expect(mockLaunchViewPackageWorkspace).toHaveBeenCalledTimes(2);
   });
+
+  // 25 packages across pages of 10 gives three pages, so both Next and the page-size selector are active.
+  const firstPageOfMany = Array.from({ length: 10 }, (_, index) => ({
+    ...unbuiltPackage,
+    uuid: `a1b2c3d4-0000-0000-0000-00000000${(index + 10).toString().padStart(4, '0')}`,
+    name: `Package ${index + 1}`,
+  }));
+
+  it('advances to the next page when the "Next page" control is clicked', async () => {
+    const user = userEvent.setup();
+    const goTo = vi.fn();
+    mockUsePackages.mockReturnValue({
+      packages: firstPageOfMany,
+      totalCount: 25,
+      currentPage: 1,
+      currentPageSize: 10,
+      goTo,
+      isLoading: false,
+      isValidating: false,
+      error: undefined,
+      mutate: vi.fn(),
+    });
+    render(<PackagesTable />);
+
+    await user.click(screen.getByRole('button', { name: 'Next page' }));
+
+    expect(goTo).toHaveBeenCalledWith(2);
+  });
+
+  it('refetches with the new page size and resets to the first page when the page size changes', async () => {
+    const user = userEvent.setup();
+    const goTo = vi.fn();
+    mockUsePackages.mockReturnValue({
+      packages: firstPageOfMany,
+      totalCount: 25,
+      currentPage: 1,
+      currentPageSize: 10,
+      goTo,
+      isLoading: false,
+      isValidating: false,
+      error: undefined,
+      mutate: vi.fn(),
+    });
+    render(<PackagesTable />);
+
+    // The default page size is 10, so the hook starts out fetching pages of 10.
+    expect(mockUsePackages).toHaveBeenCalledWith(10);
+
+    await user.selectOptions(screen.getByLabelText(/items per page/i), '20');
+
+    // Changing the page size re-renders with the new size and (per Carbon) snaps back to page 1.
+    expect(mockUsePackages).toHaveBeenCalledWith(20);
+    expect(goTo).toHaveBeenCalledWith(1);
+  });
 });
