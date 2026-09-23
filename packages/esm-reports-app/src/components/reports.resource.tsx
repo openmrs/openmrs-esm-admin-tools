@@ -1,11 +1,9 @@
-import { openmrsFetch, openmrsObservableFetch } from '@openmrs/esm-framework';
-import type { FetchResponse } from '@openmrs/esm-framework';
-import { type Observable } from 'rxjs';
-import useSWR from 'swr';
-import type { ReportDefinition } from '../types/report-definition';
-import type { ReportDesign } from '../types/report-design';
-import type { ReportRequest } from '../types/report-request';
 import dayjs from 'dayjs';
+import useSWR from 'swr';
+import { openmrsFetch } from '@openmrs/esm-framework';
+import { type ReportDefinition } from '../types/report-definition';
+import { type ReportDesign } from '../types/report-design';
+import { type ReportRequest } from '../types/report-request';
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
 
@@ -131,10 +129,8 @@ export function useReportDesigns(reportDefinitionUuid: string) {
   };
 }
 
-export function runReportObservable(payload: any): Observable<FetchResponse<any>> {
-  const abortController = new AbortController();
-  return openmrsObservableFetch(`/ws/rest/v1/reportingrest/reportRequest`, {
-    signal: abortController.signal,
+export function runReport(payload: unknown) {
+  return openmrsFetch(`/ws/rest/v1/reportingrest/reportRequest`, {
     method: 'POST',
     headers: {
       'Content-type': 'application/json',
@@ -170,12 +166,12 @@ export async function downloadReport(reportRequestUuid: string) {
 export async function downloadMultipleReports(reportRequestUuids: string[]) {
   const apiUrl = `/ws/rest/v1/reportingrest/downloadMultipleReports?reportRequestUuids=${reportRequestUuids}`;
 
-  const { data } = await openmrsFetch<any>(apiUrl);
+  const { data } = await openmrsFetch(apiUrl);
 
   return data;
 }
 
-function mapReportResults(data: any): ReportModel {
+function mapReportResults(data): ReportModel {
   return {
     id: data.uuid,
     reportName: data.parameterizable.name,
