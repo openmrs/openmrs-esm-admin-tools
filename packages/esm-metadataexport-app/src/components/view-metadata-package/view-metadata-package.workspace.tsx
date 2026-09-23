@@ -18,10 +18,12 @@ import {
 import { formatDomainLabel } from '../../domain-lookups/domain-lookups.resource';
 import { triggerBuild, usePackageBuilds } from '../../packages/packages.resource';
 import type { ExportBuildStatus, ExportPackage } from '../../types';
-import styles from './view-package.workspace.scss';
+import styles from './view-metadata-package.workspace.scss';
+import { launchPackageFormWorkspace } from '../metadata-package-form/metadata-package-form-utils';
 
 const packagesUrl = `${restBaseUrl}/metadataexport/packages`;
-const isPackagesCacheKey = (key: unknown) => typeof key === 'string' && key.startsWith(packagesUrl);
+// useOpenmrsPagination keys the cache with absolute URLs, so match on inclusion rather than prefix.
+const isPackagesCacheKey = (key: unknown) => typeof key === 'string' && key.includes(packagesUrl);
 
 interface ViewPackageWorkspaceProps extends DefaultWorkspaceProps {
   exportPackage: ExportPackage;
@@ -34,7 +36,7 @@ const statusTagType: Record<ExportBuildStatus, 'gray' | 'blue' | 'green' | 'red'
   FAILED: 'red',
 };
 
-const ViewPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPackage, closeWorkspace }) => {
+const ViewMetadataPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPackage, closeWorkspace }) => {
   const { t } = useTranslation();
   const session = useSession();
   const { mutate: globalMutate } = useSWRConfig();
@@ -85,7 +87,7 @@ const ViewPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPacka
   }, [buildStatusVersion, isLoading, globalMutate]);
 
   const launchDeleteModal = useCallback(() => {
-    const dispose = showModal('delete-package-modal', {
+    const dispose = showModal('delete-metadata-package-modal', {
       closeModal: () => dispose(),
       exportPackage,
       onDeleted: closeWorkspace,
@@ -101,6 +103,10 @@ const ViewPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPacka
 
     return exportPackage.entries.map((entry) => formatDomainLabel(entry.domain)).join(', ');
   }, [exportPackage.entries, t]);
+
+  const editPackage = useCallback(() => {
+    launchPackageFormWorkspace(t, exportPackage.uuid);
+  }, [exportPackage.uuid, t]);
 
   return (
     <div className={styles.container}>
@@ -119,9 +125,24 @@ const ViewPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPacka
                 t('triggerNewBuild', 'Trigger new build')
               )}
             </Button>
-            <Button kind="danger--tertiary" onClick={launchDeleteModal} disabled={isTriggeringBuild}>
-              {t('delete', 'Delete')}
-            </Button>
+            <div className={styles.secondaryActions}>
+              <Button
+                className={styles.secondaryButton}
+                kind="secondary"
+                onClick={editPackage}
+                disabled={isTriggeringBuild}
+              >
+                {t('edit', 'Edit')}
+              </Button>
+              <Button
+                className={styles.secondaryButton}
+                kind="danger--tertiary"
+                onClick={launchDeleteModal}
+                disabled={isTriggeringBuild}
+              >
+                {t('delete', 'Delete')}
+              </Button>
+            </div>
           </section>
         )}
 
@@ -188,4 +209,4 @@ const ViewPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPacka
   );
 };
 
-export default ViewPackageWorkspace;
+export default ViewMetadataPackageWorkspace;

@@ -22,8 +22,8 @@ import {
 } from '@openmrs/esm-framework';
 import { formatDomainLabel } from '../../domain-lookups/domain-lookups.resource';
 import { useAllPackages } from '../../packages/packages.resource';
-import { launchAddNewPackageWorkspace } from '../new-package/new-package-utils';
-import ViewPackageActionButton from '../view-package/view-package-action-button/view-package-action-button.component';
+import { launchPackageFormWorkspace } from '../metadata-package-form/metadata-package-form-utils';
+import ViewPackageActionButton from '../view-metadata-package/view-package-action-button/view-package-action-button.component';
 import styles from './packages-table.scss';
 
 /**
@@ -97,7 +97,7 @@ const PackagesTable: React.FC = () => {
         <EmptyCard
           displayText={t('packages__lower', 'packages')}
           headerTitle={headerTitle}
-          launchForm={canManage ? () => launchAddNewPackageWorkspace(t) : undefined}
+          launchForm={canManage ? () => launchPackageFormWorkspace(t) : undefined}
         />
       </div>
     );

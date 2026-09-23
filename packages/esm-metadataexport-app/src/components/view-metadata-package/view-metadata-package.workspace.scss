@@ -25,12 +25,24 @@
 
 .actionRow {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: layout.$spacing-04;
 }
 
 .triggerButton {
-  flex: 1 1 auto;
+  width: 100%;
+  max-width: none;
+  justify-content: center;
+}
+
+.secondaryActions {
+  display: flex;
+  flex-direction: row;
+  gap: layout.$spacing-04;
+}
+
+.secondaryButton {
+  flex: 1 1 0;
   max-width: none;
   justify-content: center;
 }

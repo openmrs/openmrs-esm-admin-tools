@@ -20,22 +20,22 @@
   ],
   "modals": [
     {
-      "name": "delete-package-modal",
-      "component": "deletePackageModal"
+      "name": "delete-metadata-package-modal",
+      "component": "deleteMetadataPackageModal"
     }
   ],
   "workspaces": [
     {
-      "name": "new-package-workspace",
-      "component": "newPackageWorkspace",
+      "name": "metadata-package-form-workspace",
+      "component": "metadataPackageFormWorkspace",
       "title": "New package",
       "type": "form",
       "canMaximize": true,
       "width": "narrow"
     },
     {
-      "name": "view-package-workspace",
-      "component": "viewPackageWorkspace",
+      "name": "view-metadata-package-workspace",
+      "component": "viewMetadataPackageWorkspace",
       "title": "View package",
       "type": "form",
       "canMaximize": true,

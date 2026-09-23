@@ -3,14 +3,15 @@ import { type FetchResponse, openmrsFetch, restBaseUrl } from '@openmrs/esm-fram
 import type { ExportBuildStatus, ExportPackage, ExportPackageRequest, ExportPackageBuild } from '../types';
 
 export function useAllPackages(includeRetired = false) {
-  const apiUrl = `${restBaseUrl}/metadataexport/packages?includeRetired=${includeRetired}`;
-  const { data, error, isLoading, isValidating, mutate } = useSWR<FetchResponse<Array<ExportPackage>>, Error>(
-    apiUrl,
-    openmrsFetch,
-  );
+  // entries and latestBuild are only present in the full representation.
+  const apiUrl = `${restBaseUrl}/metadataexport/packages?includeAll=${includeRetired}&v=full`;
+  const { data, error, isLoading, isValidating, mutate } = useSWR<
+    FetchResponse<{ results: Array<ExportPackage> }>,
+    Error
+  >(apiUrl, openmrsFetch);
 
   return {
-    packages: data?.data ?? [],
+    packages: data?.data?.results ?? [],
     isLoading,
     isValidating,
     error,
@@ -30,26 +31,34 @@ export function createPackage(
   });
 }
 
+export function usePackage(uuid: string) {
+  const { data, error, isLoading } = useSWR<FetchResponse<ExportPackage>, Error>(
+    uuid ? `${restBaseUrl}/metadataexport/packages/${uuid}?v=full` : null,
+    openmrsFetch,
+  );
+  return { exportPackage: data?.data, isLoading, error };
+}
+
 export function usePackageBuilds(uuid: string) {
-  const apiUrl = `${restBaseUrl}/metadataexport/packages/${uuid}/builds`;
+  // Search responses default to the ref representation; request default so version, status and dates are present.
+  const apiUrl = uuid ? `${restBaseUrl}/metadataexport/builds?package=${uuid}&v=default` : null;
   const activeBuildStatuses: Array<ExportBuildStatus> = ['QUEUED', 'RUNNING'];
 
-  const { data, error, isLoading, isValidating, mutate } = useSWR<FetchResponse<Array<ExportPackageBuild>>, Error>(
-    apiUrl,
-    openmrsFetch,
-    {
-      refreshInterval: (data) => {
-        const builds = data?.data ?? [];
+  const { data, error, isLoading, isValidating, mutate } = useSWR<
+    FetchResponse<{ results: Array<ExportPackageBuild> }>,
+    Error
+  >(apiUrl, openmrsFetch, {
+    refreshInterval: (data) => {
+      const builds = data?.data?.results ?? [];
 
-        const hasActiveBuild = builds.some((build) => activeBuildStatuses.includes(build.status));
+      const hasActiveBuild = builds.some((build) => activeBuildStatuses.includes(build.status));
 
-        return hasActiveBuild ? 2000 : 0;
-      },
+      return hasActiveBuild ? 2000 : 0;
     },
-  );
+  });
 
   return {
-    builds: data?.data ?? [],
+    builds: data?.data?.results ?? [],
     isLoading,
     isValidating,
     error,
@@ -61,9 +70,10 @@ export function triggerBuild(
   uuid: string,
   abortController?: AbortController,
 ): Promise<FetchResponse<ExportPackageBuild>> {
-  return openmrsFetch<ExportPackageBuild>(`${restBaseUrl}/metadataexport/packages/${uuid}/builds`, {
+  return openmrsFetch<ExportPackageBuild>(`${restBaseUrl}/metadataexport/builds`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
+    body: { package: uuid },
     signal: abortController?.signal,
   });
 }
@@ -81,4 +91,17 @@ export function deletePackage(
       signal: abortController?.signal,
     },
   );
+}
+
+export function editPackage(
+  uuid: string,
+  payload: ExportPackageRequest,
+  abortController?: AbortController,
+): Promise<FetchResponse<ExportPackage>> {
+  return openmrsFetch<ExportPackage>(`${restBaseUrl}/metadataexport/packages/${uuid}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: payload,
+    signal: abortController?.signal,
+  });
 }

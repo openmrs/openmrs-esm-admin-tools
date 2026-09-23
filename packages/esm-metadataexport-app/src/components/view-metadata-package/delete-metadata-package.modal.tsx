@@ -5,7 +5,7 @@ import { useSWRConfig } from 'swr';
 import { OpenmrsFetchError, restBaseUrl, showSnackbar } from '@openmrs/esm-framework';
 import { deletePackage } from '../../packages/packages.resource';
 import type { ExportPackage } from '../../types';
-import styles from './delete-package.modal.scss';
+import styles from './delete-metadata-package.modal.scss';
 
 const packagesUrl = `${restBaseUrl}/metadataexport/packages`;
 const isPackagesCacheKey = (key: unknown) => typeof key === 'string' && key.startsWith(packagesUrl);
@@ -16,7 +16,7 @@ interface DeletePackageModalProps {
   onDeleted: () => void;
 }
 
-const DeletePackageModal: React.FC<DeletePackageModalProps> = ({ closeModal, exportPackage, onDeleted }) => {
+const DeleteMetadataPackageModal: React.FC<DeletePackageModalProps> = ({ closeModal, exportPackage, onDeleted }) => {
   const { t } = useTranslation();
   const { mutate } = useSWRConfig();
   const [isDeleting, setIsDeleting] = useState(false);
@@ -79,4 +79,4 @@ const DeletePackageModal: React.FC<DeletePackageModalProps> = ({ closeModal, exp
   );
 };
 
-export default DeletePackageModal;
+export default DeleteMetadataPackageModal;
