@@ -176,12 +176,10 @@ describe('PackagesTable', () => {
     });
     render(<PackagesTable />);
 
-    // The default page size is 10, so the hook starts out fetching pages of 10.
     expect(mockUsePackages).toHaveBeenCalledWith(10);
 
     await user.selectOptions(screen.getByLabelText(/items per page/i), '20');
 
-    // Changing the page size re-renders with the new size and (per Carbon) snaps back to page 1.
     expect(mockUsePackages).toHaveBeenCalledWith(20);
     expect(goTo).toHaveBeenCalledWith(1);
   });
