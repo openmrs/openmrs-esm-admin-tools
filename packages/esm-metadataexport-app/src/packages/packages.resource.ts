@@ -1,17 +1,19 @@
 import useSWR from 'swr';
-import { type FetchResponse, openmrsFetch, restBaseUrl } from '@openmrs/esm-framework';
+import { type FetchResponse, openmrsFetch, restBaseUrl, useOpenmrsPagination } from '@openmrs/esm-framework';
 import type { ExportBuildStatus, ExportPackage, ExportPackageRequest, ExportPackageBuild } from '../types';
 
-export function useAllPackages(includeRetired = false) {
+export function usePackages(pageSize: number, includeRetired = false) {
   // entries and latestBuild are only present in the full representation.
   const apiUrl = `${restBaseUrl}/metadataexport/packages?includeAll=${includeRetired}&v=full`;
-  const { data, error, isLoading, isValidating, mutate } = useSWR<
-    FetchResponse<{ results: Array<ExportPackage> }>,
-    Error
-  >(apiUrl, openmrsFetch);
+  const { data, error, isLoading, isValidating, currentPage, currentPageSize, totalCount, goTo, mutate } =
+    useOpenmrsPagination<ExportPackage>(apiUrl, pageSize);
 
   return {
-    packages: data?.data?.results ?? [],
+    packages: data ?? [],
+    totalCount,
+    currentPage,
+    currentPageSize,
+    goTo,
     isLoading,
     isValidating,
     error,

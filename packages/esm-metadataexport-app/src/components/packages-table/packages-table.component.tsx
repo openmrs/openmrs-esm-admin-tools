@@ -1,8 +1,9 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   DataTable,
   DataTableSkeleton,
+  Pagination,
   Table,
   TableBody,
   TableCell,
@@ -21,7 +22,7 @@ import {
   userHasAccess,
 } from '@openmrs/esm-framework';
 import { formatDomainLabel } from '../../domain-lookups/domain-lookups.resource';
-import { useAllPackages } from '../../packages/packages.resource';
+import { usePackages } from '../../packages/packages.resource';
 import { launchPackageFormWorkspace } from '../metadata-package-form/metadata-package-form-utils';
 import ViewPackageActionButton from '../view-metadata-package/view-package-action-button/view-package-action-button.component';
 import styles from './packages-table.scss';
@@ -38,7 +39,8 @@ const PackagesTable: React.FC = () => {
   const { t } = useTranslation();
   const layout = useLayoutType();
   const session = useSession();
-  const { packages, isLoading, error } = useAllPackages();
+  const [pageSize, setPageSize] = useState(10);
+  const { packages, totalCount, currentPage, goTo, isLoading, error } = usePackages(pageSize);
 
   const canManage = session.user ? userHasAccess('Manage Metadata Export Packages', session.user) : false;
 
@@ -138,6 +140,21 @@ const PackagesTable: React.FC = () => {
           </TableContainer>
         )}
       </DataTable>
+      <Pagination
+        forwardText={t('nextPage', 'Next page')}
+        backwardText={t('previousPage', 'Previous page')}
+        page={currentPage}
+        pageSize={pageSize}
+        pageSizes={[10, 20, 50, 100]}
+        totalItems={totalCount}
+        size={isDesktop(layout) ? 'sm' : 'lg'}
+        onChange={({ page, pageSize: newPageSize }) => {
+          if (newPageSize !== pageSize) {
+            setPageSize(newPageSize);
+          }
+          goTo(page);
+        }}
+      />
     </div>
   );
 };

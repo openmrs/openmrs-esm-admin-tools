@@ -4,14 +4,14 @@ import userEvent from '@testing-library/user-event';
 import { type Session, useSession, userHasAccess } from '@openmrs/esm-framework';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { type ExportPackage } from '../../types/index';
-import { useAllPackages } from '../../packages/packages.resource';
+import { usePackages } from '../../packages/packages.resource';
 import { launchPackageFormWorkspace } from '../metadata-package-form/metadata-package-form-utils';
 import { launchViewMetadataPackageWorkspace } from '../view-metadata-package/view-metadata-package-utils';
 import PackagesTable from './packages-table.component';
 
 vi.mock('../../packages/packages.resource', async (importOriginal) => ({
   ...(await importOriginal<object>()),
-  useAllPackages: vi.fn(),
+  usePackages: vi.fn(),
 }));
 
 vi.mock('../metadata-package-form/metadata-package-form-utils', () => ({
@@ -22,7 +22,7 @@ vi.mock('../view-metadata-package/view-metadata-package-utils', () => ({
   launchViewMetadataPackageWorkspace: vi.fn(),
 }));
 
-const mockUseAllPackages = vi.mocked(useAllPackages);
+const mockUsePackages = vi.mocked(usePackages);
 const mockUseSession = vi.mocked(useSession);
 const mockUserHasAccess = vi.mocked(userHasAccess);
 const mockLaunchPackageFormWorkspace = vi.mocked(launchPackageFormWorkspace);
@@ -63,8 +63,12 @@ const unbuiltPackage: ExportPackage = {
 
 describe('PackagesTable', () => {
   beforeEach(() => {
-    mockUseAllPackages.mockReturnValue({
+    mockUsePackages.mockReturnValue({
       packages: [],
+      totalCount: 0,
+      currentPage: 1,
+      currentPageSize: 10,
+      goTo: vi.fn(),
       isLoading: false,
       isValidating: false,
       error: undefined,
@@ -94,8 +98,12 @@ describe('PackagesTable', () => {
 
   it('renders the build status per package and launches the view workspace with the package for the clicked row', async () => {
     const user = userEvent.setup();
-    mockUseAllPackages.mockReturnValue({
+    mockUsePackages.mockReturnValue({
       packages: [builtPackage, unbuiltPackage],
+      totalCount: 2,
+      currentPage: 1,
+      currentPageSize: 10,
+      goTo: vi.fn(),
       isLoading: false,
       isValidating: false,
       error: undefined,
