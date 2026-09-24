@@ -15,4 +15,10 @@ describe('MetaDataExportHeader', () => {
 
     expect(screen.getByTestId('metadata-export-header')).toBeInTheDocument();
   });
+
+  it('renders the metadata export pictogram', () => {
+    render(<MetaDataExportHeader title="Metadata export packages" />);
+
+    expect(screen.getByText('MetadataExportPictogram')).toBeInTheDocument();
+  });
 });
