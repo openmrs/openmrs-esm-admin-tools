@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json.openmrs.org/routes.schema.json",
+  "backendDependencies": {
+    "webservices.rest": ">=2.2.0",
+    "auditlog": ">=1.0.0"
+  },
+  "extensions": [
+    {
+      "name": "audit-log-admin-page-link",
+      "slot": "system-admin-page-card-link-slot",
+      "component": "auditLogAdminPageLink",
+      "order": 10,
+      "meta": {
+        "name": "audit-log",
+        "slot": "audit-log-dashboard-slot",
+        "title": "Audit Log"
+      }
+    }
+  ],
+  "pages": [
+    {
+      "component": "auditLogDashboard",
+      "route": "audit-log"
+    }
+  ]
+}
