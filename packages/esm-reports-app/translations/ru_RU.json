@@ -31,7 +31,7 @@
   "failed": "Не удалось",
   "fetchReport": "Получить отчёт",
   "invalidWebPreviewUrl": "Настроенный URL предпросмотра недействителен.",
-  "missingParameters": "Пожалуйста, укажите параметры: {parameters}",
+  "missingParameters": "Пожалуйста, укажите параметры: {{parameters}}",
   "missingPlaceholder": "Настроенный URL предпросмотра должен содержать {reportRequestUuid}.",
   "nextPage": "Следующая страница",
   "nextRun": "Следующий запуск",

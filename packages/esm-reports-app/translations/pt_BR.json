@@ -31,7 +31,7 @@
   "failed": "Falhou",
   "fetchReport": "Obter relatório",
   "invalidWebPreviewUrl": "A URL de visualização web configurada é inválida.",
-  "missingParameters": "Por favor, forneça os seguintes parâmetros: {parameters}",
+  "missingParameters": "Por favor, forneça os seguintes parâmetros: {{parameters}}",
   "missingPlaceholder": "A URL de visualização web configurada deve incluir o marcador {reportRequestUuid}.",
   "nextPage": "Próxima página",
   "nextRun": "Próxima execução",

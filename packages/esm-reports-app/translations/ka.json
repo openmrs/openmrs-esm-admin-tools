@@ -31,7 +31,7 @@
   "failed": "ჩავარდა",
   "fetchReport": "ანგარიშის გამოთხოვა",
   "invalidWebPreviewUrl": "Configured web preview URL is invalid.",
-  "missingParameters": "Please provide the following parameters: {parameters}",
+  "missingParameters": "Please provide the following parameters: {{parameters}}",
   "missingPlaceholder": "Configured web preview URL must include {reportRequestUuid} placeholder.",
   "nextPage": "შემდეგი გვერდი",
   "nextRun": "შემდეგი გაშვება",

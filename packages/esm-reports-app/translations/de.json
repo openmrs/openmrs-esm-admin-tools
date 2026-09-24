@@ -31,7 +31,7 @@
   "failed": "fehlgeschlagen",
   "fetchReport": "Bericht abrufen",
   "invalidWebPreviewUrl": "Die konfigurierte URL für die Webvorschau ist ungültig.",
-  "missingParameters": "Bitte geben Sie die folgenden Parameter an: {parameters}",
+  "missingParameters": "Bitte geben Sie die folgenden Parameter an: {{parameters}}",
   "missingPlaceholder": "Die konfigurierte URL für die Webvorschau muss den Platzhalter {reportRequestUuid} enthalten.",
   "nextPage": "Nächste Seite",
   "nextRun": "Nächster Lauf",
