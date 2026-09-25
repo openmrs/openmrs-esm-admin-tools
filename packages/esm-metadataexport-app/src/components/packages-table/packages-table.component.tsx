@@ -110,53 +110,55 @@ const PackagesTable: React.FC = () => {
   return (
     <div className={styles.container}>
       <CardHeader title={headerTitle} />
-      <DataTable rows={rows} headers={headers} size={isDesktop(layout) ? 'sm' : 'lg'} useZebraStyles>
-        {({ rows, headers, getHeaderProps, getRowProps, getTableProps }) => (
-          <TableContainer>
-            <Table {...getTableProps()}>
-              <TableHead>
-                <TableRow>
-                  {headers.map((header) => (
-                    <TableHeader {...getHeaderProps({ header })} key={header.key}>
-                      {header.header}
-                    </TableHeader>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {rows.map((row) => (
-                  <TableRow {...getRowProps({ row })} key={row.id}>
-                    {row.cells.map((cell) =>
-                      cell.info.header === 'actions' ? (
-                        <TableCell key={cell.id}>
-                          <ViewPackageActionButton exportPackage={packagesByUuid.get(row.id)} />
-                        </TableCell>
-                      ) : (
-                        <TableCell key={cell.id}>{cell.value}</TableCell>
-                      ),
-                    )}
+      <div className={styles.widgetCard}>
+        <DataTable rows={rows} headers={headers} size={isDesktop(layout) ? 'sm' : 'lg'} useZebraStyles>
+          {({ rows, headers, getHeaderProps, getRowProps, getTableProps }) => (
+            <TableContainer>
+              <Table {...getTableProps()}>
+                <TableHead>
+                  <TableRow>
+                    {headers.map((header) => (
+                      <TableHeader {...getHeaderProps({ header })} key={header.key}>
+                        {header.header}
+                      </TableHeader>
+                    ))}
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        )}
-      </DataTable>
-      <Pagination
-        forwardText={t('nextPage', 'Next page')}
-        backwardText={t('previousPage', 'Previous page')}
-        page={currentPage}
-        pageSize={pageSize}
-        pageSizes={[10, 20, 50, 100]}
-        totalItems={totalCount}
-        size={isDesktop(layout) ? 'sm' : 'lg'}
-        onChange={({ page, pageSize: newPageSize }) => {
-          if (newPageSize !== pageSize) {
-            setPageSize(newPageSize);
-          }
-          goTo(page);
-        }}
-      />
+                </TableHead>
+                <TableBody>
+                  {rows.map((row) => (
+                    <TableRow {...getRowProps({ row })} key={row.id}>
+                      {row.cells.map((cell) =>
+                        cell.info.header === 'actions' ? (
+                          <TableCell key={cell.id}>
+                            <ViewPackageActionButton exportPackage={packagesByUuid.get(row.id)} />
+                          </TableCell>
+                        ) : (
+                          <TableCell key={cell.id}>{cell.value}</TableCell>
+                        ),
+                      )}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </DataTable>
+        <Pagination
+          forwardText={t('nextPage', 'Next page')}
+          backwardText={t('previousPage', 'Previous page')}
+          page={currentPage}
+          pageSize={pageSize}
+          pageSizes={[10, 20, 50, 100]}
+          totalItems={totalCount}
+          size={isDesktop(layout) ? 'sm' : 'lg'}
+          onChange={({ page, pageSize: newPageSize }) => {
+            if (newPageSize !== pageSize) {
+              setPageSize(newPageSize);
+            }
+            goTo(page);
+          }}
+        />
+      </div>
     </div>
   );
 };
