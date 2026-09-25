@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, ButtonSet, Form, Select, SelectItem } from '@carbon/react';
 import classNames from 'classnames';
-import { take } from 'rxjs/operators';
 import { useTranslation } from 'react-i18next';
 import { showSnackbar, useLayoutType } from '@openmrs/esm-framework';
 import ReportParameter from '../report-parameter.component';
 import { closeOverlay } from '../../hooks/useOverlay';
-import { useLocations, useReportDefinitions, useReportDesigns, runReportObservable } from '../reports.resource';
+import { useLocations, useReportDefinitions, useReportDesigns, runReport } from '../reports.resource';
 import styles from './run-report-form.scss';
 
 interface RunReportForm {
@@ -103,30 +102,27 @@ const RunReportForm: React.FC<RunReportForm> = ({ closePanel }) => {
         schedule: null,
       };
 
-      runReportObservable(reportRequest)
-        .pipe(take(1))
-        .subscribe(
-          () => {
-            // delayed handling because runReport returns before new reports is accessible via GET
-            setTimeout(() => {
-              showSnackbar({
-                kind: 'success',
-                title: t('reportRanSuccessfully', 'Report ran successfully'),
-              });
-              closePanel();
-              setIsSubmitting(false);
-            }, 500);
-          },
-          (error) => {
-            console.error(error);
+      runReport(reportRequest)
+        .then(() => {
+          // delayed handling because runReport returns before new reports is accessible via GET
+          setTimeout(() => {
             showSnackbar({
-              kind: 'error',
-              title: t('errorRunningReport', 'Error running report'),
-              subtitle: error?.message,
+              kind: 'success',
+              title: t('reportRanSuccessfully', 'Report ran successfully'),
             });
+            closePanel();
             setIsSubmitting(false);
-          },
-        );
+          }, 500);
+        })
+        .catch((error) => {
+          console.error(error);
+          showSnackbar({
+            kind: 'error',
+            title: t('errorRunningReport', 'Error running report'),
+            subtitle: error?.message,
+          });
+          setIsSubmitting(false);
+        });
     },
     [closePanel, reportParameters, reportUuid, renderModeUuid, t],
   );

@@ -1,10 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import classNames from 'classnames';
-import { take } from 'rxjs/operators';
 import { useTranslation } from 'react-i18next';
 import { Button, ButtonSet, Form, Select, SelectItem, Stack } from '@carbon/react';
 import { getCoreTranslation, showSnackbar, useLayoutType } from '@openmrs/esm-framework';
-import { useReportDefinition, useReportDesigns, useReportRequest, runReportObservable } from '../reports.resource';
+import { useReportDefinition, useReportDesigns, useReportRequest, runReport } from '../reports.resource';
 import ReportParameterInput from '../report-parameter-input.component';
 import SimpleCronEditor from '../simple-cron-editor/simple-cron-editor.component';
 import styles from './edit-scheduled-report-form.scss';
@@ -34,7 +33,6 @@ const EditScheduledReportForm: React.FC<EditScheduledReportForm> = ({
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmittable, setIsSubmittable] = useState(false);
-  const [ignoreChanges, setIgnoreChanges] = useState(true);
 
   useEffect(() => {
     setInitialCron(reportRequest?.schedule);
@@ -65,35 +63,28 @@ const EditScheduledReportForm: React.FC<EditScheduledReportForm> = ({
         schedule,
       };
 
-      runReportObservable(scheduleRequest)
-        .pipe(take(1))
-        .subscribe(
-          () => {
-            showSnackbar({
-              kind: 'success',
-              title: t('reportScheduled', 'Report scheduled'),
-              subtitle: t('reportScheduledSuccessfullyMsg', 'Report scheduled successfully'),
-            });
-            closePanel();
-            setIsSubmitting(false);
-          },
-          () => {
-            showSnackbar({
-              kind: 'error',
-              title: t('reportScheduledErrorMsg', 'Failed to schedule a report'),
-              subtitle: t('reportScheduledErrorMsg', 'Failed to schedule a report'),
-            });
-            closePanel();
-            setIsSubmitting(false);
-          },
-        );
+      runReport(scheduleRequest)
+        .then(() => {
+          showSnackbar({
+            kind: 'success',
+            title: t('reportScheduled', 'Report scheduled'),
+            subtitle: t('reportScheduledSuccessfullyMsg', 'Report scheduled successfully'),
+          });
+          closePanel();
+          setIsSubmitting(false);
+        })
+        .catch(() => {
+          showSnackbar({
+            kind: 'error',
+            title: t('reportScheduledErrorMsg', 'Failed to schedule a report'),
+            subtitle: t('reportScheduledErrorMsg', 'Failed to schedule a report'),
+          });
+          closePanel();
+          setIsSubmitting(false);
+        });
     },
     [reportRequestUuid, reportDefinitionUuid, reportParameters, renderModeUuid, schedule, t, closePanel],
   );
-
-  const handleOnChange = () => {
-    setIgnoreChanges((prevState) => !prevState);
-  };
 
   const handleCronEditorChange = (cron: string, isValid: boolean) => {
     setSchedule(isValid ? cron : '');
@@ -104,7 +95,7 @@ const EditScheduledReportForm: React.FC<EditScheduledReportForm> = ({
   }, [schedule, renderModeUuid]);
 
   return (
-    <Form className={styles.desktopEditSchedule} onChange={handleOnChange} onSubmit={handleSubmit}>
+    <Form className={styles.desktopEditSchedule} onSubmit={handleSubmit}>
       <Stack gap={8} className={styles.container}>
         <SimpleCronEditor initialCron={initialCron} onChange={handleCronEditorChange} />
         {reportDefinition?.parameters.map((parameter) => (
