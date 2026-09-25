@@ -20,6 +20,7 @@ vi.mock('@openmrs/esm-framework', async (importOriginal) => {
 vi.mock('../../packages/packages.resource', () => ({
   usePackageBuilds: vi.fn(),
   triggerBuild: vi.fn(),
+  isPackagesCacheKey: vi.fn(),
 }));
 
 const mockTriggerBuild = triggerBuild as Mock;

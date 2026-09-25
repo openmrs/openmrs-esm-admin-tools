@@ -9,6 +9,7 @@ import type { ExportPackage } from '../../types';
 
 vi.mock('../../packages/packages.resource', () => ({
   deletePackage: vi.fn(),
+  isPackagesCacheKey: vi.fn(),
 }));
 
 const mockDeletePackage = deletePackage as Mock;

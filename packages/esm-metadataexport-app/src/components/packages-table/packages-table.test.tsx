@@ -96,6 +96,42 @@ describe('PackagesTable', () => {
     expect(mockLaunchPackageFormWorkspace).not.toHaveBeenCalled();
   });
 
+  it('shows the loading skeleton on the initial load, before any packages have arrived', () => {
+    mockUsePackages.mockReturnValue({
+      packages: [],
+      totalCount: 0,
+      currentPage: 1,
+      currentPageSize: 10,
+      goTo: vi.fn(),
+      isLoading: true,
+      isValidating: false,
+      error: undefined,
+      mutate: vi.fn(),
+    });
+    render(<PackagesTable />);
+
+    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+  });
+
+  it('keeps the current page on screen while the next page loads instead of swapping in the skeleton', () => {
+    // keepPreviousData means isLoading can be true while the previous page's data is still present.
+    mockUsePackages.mockReturnValue({
+      packages: [builtPackage, unbuiltPackage],
+      totalCount: 25,
+      currentPage: 1,
+      currentPageSize: 10,
+      goTo: vi.fn(),
+      isLoading: true,
+      isValidating: false,
+      error: undefined,
+      mutate: vi.fn(),
+    });
+    render(<PackagesTable />);
+
+    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+    expect(screen.getByRole('row', { name: /Core reference data/ })).toBeInTheDocument();
+  });
+
   it('renders the build status per package and launches the view workspace with the package for the clicked row', async () => {
     const user = userEvent.setup();
     mockUsePackages.mockReturnValue({
