@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, ButtonSet, Form, Select, SelectItem } from '@carbon/react';
 import classNames from 'classnames';
-import { take } from 'rxjs/operators';
 import { useTranslation } from 'react-i18next';
 import { showSnackbar, useLayoutType } from '@openmrs/esm-framework';
 import ReportParameter from '../report-parameter.component';
