@@ -16,6 +16,7 @@ vi.mock('../../packages/packages.resource', () => ({
   createPackage: vi.fn(),
   editPackage: vi.fn(),
   usePackage: vi.fn(),
+  isPackagesCacheKey: vi.fn(),
 }));
 
 const mockUseDomains = useDomains as Mock;

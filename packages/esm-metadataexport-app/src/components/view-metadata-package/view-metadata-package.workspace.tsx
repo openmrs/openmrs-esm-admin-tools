@@ -16,14 +16,10 @@ import {
   userHasAccess,
 } from '@openmrs/esm-framework';
 import { formatDomainLabel } from '../../domain-lookups/domain-lookups.resource';
-import { triggerBuild, usePackageBuilds } from '../../packages/packages.resource';
+import { isPackagesCacheKey, triggerBuild, usePackageBuilds } from '../../packages/packages.resource';
 import type { ExportBuildStatus, ExportPackage } from '../../types';
 import styles from './view-metadata-package.workspace.scss';
 import { launchPackageFormWorkspace } from '../metadata-package-form/metadata-package-form-utils';
-
-const packagesUrl = `${restBaseUrl}/metadataexport/packages`;
-// useOpenmrsPagination keys the cache with absolute URLs, so match on inclusion rather than prefix.
-const isPackagesCacheKey = (key: unknown) => typeof key === 'string' && key.includes(packagesUrl);
 
 interface ViewPackageWorkspaceProps extends DefaultWorkspaceProps {
   exportPackage: ExportPackage;

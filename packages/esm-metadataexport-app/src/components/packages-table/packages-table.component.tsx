@@ -1,8 +1,9 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   DataTable,
   DataTableSkeleton,
+  Pagination,
   Table,
   TableBody,
   TableCell,
@@ -21,7 +22,7 @@ import {
   userHasAccess,
 } from '@openmrs/esm-framework';
 import { formatDomainLabel } from '../../domain-lookups/domain-lookups.resource';
-import { useAllPackages } from '../../packages/packages.resource';
+import { usePackages } from '../../packages/packages.resource';
 import { launchPackageFormWorkspace } from '../metadata-package-form/metadata-package-form-utils';
 import ViewPackageActionButton from '../view-metadata-package/view-package-action-button/view-package-action-button.component';
 import styles from './packages-table.scss';
@@ -38,7 +39,8 @@ const PackagesTable: React.FC = () => {
   const { t } = useTranslation();
   const layout = useLayoutType();
   const session = useSession();
-  const { packages, isLoading, error } = useAllPackages();
+  const [pageSize, setPageSize] = useState(10);
+  const { packages, totalCount, currentPage, goTo, isLoading, error } = usePackages(pageSize);
 
   const canManage = session.user ? userHasAccess('Manage Metadata Export Packages', session.user) : false;
 
@@ -75,7 +77,9 @@ const PackagesTable: React.FC = () => {
     [packages],
   );
 
-  if (isLoading) {
+  // keepPreviousData holds the current page on screen while the next one loads, so only show the
+  // skeleton on the initial load; otherwise paging swaps the table for the skeleton and drops focus.
+  if (isLoading && !packages.length) {
     return (
       <div className={styles.container}>
         <DataTableSkeleton role="progressbar" columnCount={headers.length} zebra />
@@ -105,39 +109,56 @@ const PackagesTable: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <CardHeader title={headerTitle} />
-      <DataTable rows={rows} headers={headers} size={isDesktop(layout) ? 'sm' : 'lg'} useZebraStyles>
-        {({ rows, headers, getHeaderProps, getRowProps, getTableProps }) => (
-          <TableContainer>
-            <Table {...getTableProps()}>
-              <TableHead>
-                <TableRow>
-                  {headers.map((header) => (
-                    <TableHeader {...getHeaderProps({ header })} key={header.key}>
-                      {header.header}
-                    </TableHeader>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {rows.map((row) => (
-                  <TableRow {...getRowProps({ row })} key={row.id}>
-                    {row.cells.map((cell) =>
-                      cell.info.header === 'actions' ? (
-                        <TableCell key={cell.id}>
-                          <ViewPackageActionButton exportPackage={packagesByUuid.get(row.id)} />
-                        </TableCell>
-                      ) : (
-                        <TableCell key={cell.id}>{cell.value}</TableCell>
-                      ),
-                    )}
+      <div className={styles.widgetCard}>
+        <CardHeader title={headerTitle} />
+        <DataTable rows={rows} headers={headers} size={isDesktop(layout) ? 'sm' : 'lg'} useZebraStyles>
+          {({ rows, headers, getHeaderProps, getRowProps, getTableProps }) => (
+            <TableContainer>
+              <Table {...getTableProps()}>
+                <TableHead>
+                  <TableRow>
+                    {headers.map((header) => (
+                      <TableHeader {...getHeaderProps({ header })} key={header.key}>
+                        {header.header}
+                      </TableHeader>
+                    ))}
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        )}
-      </DataTable>
+                </TableHead>
+                <TableBody>
+                  {rows.map((row) => (
+                    <TableRow {...getRowProps({ row })} key={row.id}>
+                      {row.cells.map((cell) =>
+                        cell.info.header === 'actions' ? (
+                          <TableCell key={cell.id}>
+                            <ViewPackageActionButton exportPackage={packagesByUuid.get(row.id)} />
+                          </TableCell>
+                        ) : (
+                          <TableCell key={cell.id}>{cell.value}</TableCell>
+                        ),
+                      )}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </DataTable>
+        <Pagination
+          forwardText={t('nextPage', 'Next page')}
+          backwardText={t('previousPage', 'Previous page')}
+          page={currentPage}
+          pageSize={pageSize}
+          pageSizes={[10, 20, 50, 100]}
+          totalItems={totalCount}
+          size={isDesktop(layout) ? 'sm' : 'lg'}
+          onChange={({ page, pageSize: newPageSize }) => {
+            if (newPageSize !== pageSize) {
+              setPageSize(newPageSize);
+            }
+            goTo(page);
+          }}
+        />
+      </div>
     </div>
   );
 };

@@ -1,5 +1,9 @@
 @use '@carbon/layout';
+@use '@openmrs/esm-styleguide/src/vars' as *;
 
 .container {
   margin: layout.$spacing-05;
+}
+.widgetCard {
+  border: 1px solid $ui-03;
 }
