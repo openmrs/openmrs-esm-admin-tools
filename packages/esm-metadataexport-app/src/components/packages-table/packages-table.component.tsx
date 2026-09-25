@@ -77,7 +77,9 @@ const PackagesTable: React.FC = () => {
     [packages],
   );
 
-  if (isLoading) {
+  // keepPreviousData holds the current page on screen while the next one loads, so only show the
+  // skeleton on the initial load; otherwise paging swaps the table for the skeleton and drops focus.
+  if (isLoading && !packages.length) {
     return (
       <div className={styles.container}>
         <DataTableSkeleton role="progressbar" columnCount={headers.length} zebra />

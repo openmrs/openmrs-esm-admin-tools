@@ -2,11 +2,16 @@ import useSWR from 'swr';
 import { type FetchResponse, openmrsFetch, restBaseUrl, useOpenmrsPagination } from '@openmrs/esm-framework';
 import type { ExportBuildStatus, ExportPackage, ExportPackageRequest, ExportPackageBuild } from '../types';
 
+const packagesUrl = `${restBaseUrl}/metadataexport/packages`;
+
+// useOpenmrsPagination keys the SWR cache with absolute URLs, so match on inclusion rather than prefix.
+export const isPackagesCacheKey = (key: unknown) => typeof key === 'string' && key.includes(packagesUrl);
+
 export function usePackages(pageSize: number, includeRetired = false) {
   // entries and latestBuild are only present in the full representation.
   const apiUrl = `${restBaseUrl}/metadataexport/packages?includeAll=${includeRetired}&v=full`;
   const { data, error, isLoading, isValidating, currentPage, currentPageSize, totalCount, goTo, mutate } =
-    useOpenmrsPagination<ExportPackage>(apiUrl, pageSize);
+    useOpenmrsPagination<ExportPackage>(apiUrl, pageSize, { swrConfig: { keepPreviousData: true } });
 
   return {
     packages: data ?? [],
