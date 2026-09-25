@@ -109,8 +109,8 @@ const PackagesTable: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <CardHeader title={headerTitle} />
       <div className={styles.widgetCard}>
+        <CardHeader title={headerTitle} />
         <DataTable rows={rows} headers={headers} size={isDesktop(layout) ? 'sm' : 'lg'} useZebraStyles>
           {({ rows, headers, getHeaderProps, getRowProps, getTableProps }) => (
             <TableContainer>
