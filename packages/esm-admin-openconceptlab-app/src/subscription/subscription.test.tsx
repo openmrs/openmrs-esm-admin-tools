@@ -148,13 +148,9 @@ describe('Subscription component', () => {
 });
 
 function waitForLoadingToFinish() {
-  return waitFor(() => {
-    expect(screen.getByText('Setup Subscription')).toBeVisible(), { timeout: 2000 };
-  });
+  return waitFor(() => expect(screen.getByText('Setup Subscription')).toBeVisible(), { timeout: 2000 });
 }
 
 function waitForLoadingSubscription() {
-  return waitFor(() => {
-    expect(screen.getByLabelText('Subscription URL')).not.toHaveValue(''), { timeout: 2000 };
-  });
+  return waitFor(() => expect(screen.getByLabelText('Subscription URL')).not.toHaveValue(''), { timeout: 2000 });
 }

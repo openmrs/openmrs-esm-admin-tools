@@ -1,12 +1,17 @@
 {
   "$schema": "https://turborepo.org/schema.json",
   "tasks": {
+    "clean": {
+      "cache": false
+    },
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
     "test": {},
-    "lint": {},
+    "lint": {
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/eslint.config.mjs"]
+    },
     "typescript": {},
     "extract-translations": {
       "outputs": ["./translations/*"]

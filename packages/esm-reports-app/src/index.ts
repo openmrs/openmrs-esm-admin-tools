@@ -56,3 +56,8 @@ export const cancelReportModal = getAsyncLifecycle(
   () => import('./components/run-report/cancel-report-modal.component'),
   options,
 );
+
+export const reportExportColumnsModal = getAsyncLifecycle(
+  () => import('./components/report-export-columns.modal'),
+  options,
+);

@@ -10,8 +10,9 @@
     "start": "openmrs develop",
     "serve": "rspack serve --mode=development",
     "build": "rspack --mode production",
+    "clean": "git clean -fdX -- dist",
     "analyze": "rspack --mode=production --env.analyze=true",
-    "lint": "eslint src --ext js,jsx,ts,tsx",
+    "lint": "eslint src",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest watch",
     "typescript": "tsc",
@@ -38,7 +39,7 @@
   },
   "dependencies": {
     "@carbon/react": "^1.83.0",
-    "swr": "2.2.5"
+    "swr": "2.5.1"
   },
   "peerDependencies": {
     "@carbon/icons-react": "^11.68.0",
@@ -49,7 +50,6 @@
     "react-dom": "18.x",
     "react-i18next": "16.x",
     "react-router-dom": "6.x",
-    "rxjs": "6.x",
     "swr": "2.x"
   },
   "devDependencies": {

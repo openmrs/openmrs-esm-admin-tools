@@ -9,6 +9,11 @@
   padding-right: 0;
 }
 
+.readOnlyNotice {
+  max-width: none;
+  margin-bottom: layout.$spacing-05;
+}
+
 .instructions {
   @include type.type-style('body-01');
   margin-bottom: layout.$spacing-05;

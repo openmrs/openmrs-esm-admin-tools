@@ -13,7 +13,6 @@ import { type APIRequestContext, type PlaywrightWorkerArgs, type WorkerFixture }
  * });
  * ```
  */
-/* eslint-disable react-hooks/rules-of-hooks */
 export const api: WorkerFixture<APIRequestContext, PlaywrightWorkerArgs> = async ({ playwright }, use) => {
   const ctx = await playwright.request.newContext({
     baseURL: `${process.env.E2E_BASE_URL}/ws/rest/v1/`,
@@ -25,4 +24,3 @@ export const api: WorkerFixture<APIRequestContext, PlaywrightWorkerArgs> = async
 
   await use(ctx);
 };
-/* eslint-enable react-hooks/rules-of-hooks */
