@@ -1,4 +1,4 @@
-@use "@carbon/colors";
+@use '@carbon/colors';
 
 .systemAdminPage {
   background-color: colors.$white-0;
@@ -24,6 +24,13 @@
 
     div {
       margin-top: 1rem;
+    }
+
+    // Cards come from different apps and load at different times, so reserve each card's
+    // final size (card plus margins) to stop late cards from pushing the others around.
+    > [data-extension-id] {
+      min-width: 15rem;
+      min-height: 9rem;
     }
 
     :global(.cds--link) {
