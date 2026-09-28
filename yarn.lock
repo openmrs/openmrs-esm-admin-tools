@@ -2758,6 +2758,7 @@ __metadata:
     dayjs: 1.x
     i18next: 25.x
     react: 18.x
+    react-dom: 18.x
     react-i18next: 16.x
     react-router-dom: 6.x
     swr: 2.x
@@ -2861,6 +2862,7 @@ __metadata:
     dayjs: 1.x
     i18next: 25.x
     react: 18.x
+    react-dom: 18.x
     react-i18next: 16.x
     react-router-dom: 6.x
     swr: 2.x
