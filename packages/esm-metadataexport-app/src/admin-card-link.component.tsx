@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Layer, ClickableTile } from '@carbon/react';
 import { ArrowRightIcon, navigate } from '@openmrs/esm-framework';
 
-const metadataExportUrl = `${window.spaBase}/metadataexport`;
+const metadataExportUrl = `${window.spaBase}/metadata-export`;
 
 // Navigate client-side on a plain left click; modified clicks fall through
 // to the anchor so they open a new tab or window as usual.

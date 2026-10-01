@@ -12,8 +12,8 @@ const AddPackageActionButton: React.FC = () => {
   const canManage = session.user ? userHasAccess('Manage Metadata Export Packages', session.user) : false;
 
   const handleLaunchPackageForm = useCallback(() => {
-    launchPackageFormWorkspace(t);
-  }, [t]);
+    launchPackageFormWorkspace();
+  }, []);
 
   if (!canManage) {
     return null;
@@ -26,7 +26,7 @@ const AddPackageActionButton: React.FC = () => {
       kind="primary"
       renderIcon={(props) => <Add size={16} {...props} />}
     >
-      {t('newpackage', 'New Package')}
+      {t('newPackage', 'New package')}
     </Button>
   );
 };

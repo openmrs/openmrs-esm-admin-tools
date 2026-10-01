@@ -23,17 +23,17 @@ describe('AddPackageActionButton', () => {
     mockUserHasAccess.mockReturnValue(true);
   });
 
-  it('renders a "New Package" button', () => {
+  it('renders a "New package" button', () => {
     render(<AddPackageActionButton />);
 
-    expect(screen.getByRole('button', { name: 'New Package' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'New package' })).toBeInTheDocument();
   });
 
   it('launches the new package workspace when a privileged user clicks', async () => {
     const user = userEvent.setup();
     render(<AddPackageActionButton />);
 
-    await user.click(screen.getByRole('button', { name: 'New Package' }));
+    await user.click(screen.getByRole('button', { name: 'New package' }));
 
     expect(mockUserHasAccess).toHaveBeenCalledWith('Manage Metadata Export Packages', expect.anything());
     expect(mockLaunchPackageFormWorkspace).toHaveBeenCalledTimes(1);
@@ -43,7 +43,7 @@ describe('AddPackageActionButton', () => {
     mockUserHasAccess.mockReturnValue(false);
     render(<AddPackageActionButton />);
 
-    expect(screen.queryByRole('button', { name: 'New Package' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'New package' })).not.toBeInTheDocument();
     expect(mockLaunchPackageFormWorkspace).not.toHaveBeenCalled();
   });
 
@@ -51,7 +51,7 @@ describe('AddPackageActionButton', () => {
     mockUseSession.mockReturnValue({ authenticated: false } as unknown as Session);
     render(<AddPackageActionButton />);
 
-    expect(screen.queryByRole('button', { name: 'New Package' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'New package' })).not.toBeInTheDocument();
     expect(mockUserHasAccess).not.toHaveBeenCalled();
   });
 });

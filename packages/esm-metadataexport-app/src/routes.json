@@ -5,7 +5,7 @@
   },
   "pages": [
     {
-      "route": "metadataexport",
+      "route": "metadata-export",
       "component": "root",
       "online": true
     }
@@ -24,22 +24,37 @@
       "component": "deleteMetadataPackageModal"
     }
   ],
-  "workspaces": [
+  "workspaceGroups2": [
     {
-      "name": "metadata-package-form-workspace",
-      "component": "metadataPackageFormWorkspace",
-      "title": "New package",
-      "type": "form",
+      "name": "metadata-export-group",
+      "scopePattern": "^/metadata-export",
+      "overlay": true
+    }
+  ],
+  "workspaceWindows2": [
+    {
+      "name": "metadata-package-form-window",
+      "group": "metadata-export-group",
       "canMaximize": true,
       "width": "narrow"
     },
     {
-      "name": "view-metadata-package-workspace",
-      "component": "viewMetadataPackageWorkspace",
-      "title": "View package",
-      "type": "form",
+      "name": "view-metadata-package-window",
+      "group": "metadata-export-group",
       "canMaximize": true,
       "width": "narrow"
+    }
+  ],
+  "workspaces2": [
+    {
+      "name": "metadata-package-form-workspace",
+      "component": "metadataPackageFormWorkspace",
+      "window": "metadata-package-form-window"
+    },
+    {
+      "name": "view-metadata-package-workspace",
+      "component": "viewMetadataPackageWorkspace",
+      "window": "view-metadata-package-window"
     }
   ]
 }
