@@ -158,7 +158,7 @@ const MetadataPackageFormWorkspace: React.FC<Workspace2DefinitionProps<PackageFo
   );
 
   const isSubmitDisabled = packageName.trim().length === 0 || selectedDomains.size === 0 || isSubmitting;
-  const title = isEditMode ? t('editpackage', 'Edit package') : t('newpackage', 'New Package');
+  const title = isEditMode ? t('editPackage', 'Edit package') : t('newPackage', 'New package');
 
   if (isEditMode && isLoadingPackage) {
     return (

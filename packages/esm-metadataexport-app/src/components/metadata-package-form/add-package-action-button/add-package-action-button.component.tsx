@@ -26,7 +26,7 @@ const AddPackageActionButton: React.FC = () => {
       kind="primary"
       renderIcon={(props) => <Add size={16} {...props} />}
     >
-      {t('newpackage', 'New Package')}
+      {t('newPackage', 'New package')}
     </Button>
   );
 };

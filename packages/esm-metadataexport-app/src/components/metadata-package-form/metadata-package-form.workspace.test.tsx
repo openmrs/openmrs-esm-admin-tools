@@ -219,7 +219,7 @@ describe('PackageFormWorkspace', () => {
     renderWorkspace();
 
     expect(mockWorkspace2).toHaveBeenLastCalledWith(
-      expect.objectContaining({ title: 'New Package', hasUnsavedChanges: false }),
+      expect.objectContaining({ title: 'New package', hasUnsavedChanges: false }),
       expect.anything(),
     );
 
