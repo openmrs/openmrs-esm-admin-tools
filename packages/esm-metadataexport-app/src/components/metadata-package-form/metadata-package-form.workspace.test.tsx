@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { OpenmrsFetchError, showSnackbar } from '@openmrs/esm-framework';
+import { OpenmrsFetchError, showSnackbar, Workspace2, type Workspace2DefinitionProps } from '@openmrs/esm-framework';
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { useDomains } from '../../domain-lookups/domain-lookups.resource';
 import { createPackage, editPackage, usePackage } from '../../packages/packages.resource';
@@ -25,8 +25,7 @@ const mockEditPackage = editPackage as Mock;
 const mockUsePackage = usePackage as Mock;
 const mockShowSnackbar = showSnackbar as Mock;
 const mockCloseWorkspace = vi.fn();
-const mockCloseWorkspaceWithSavedChanges = vi.fn();
-const mockPromptBeforeClosing = vi.fn();
+const mockWorkspace2 = vi.mocked(Workspace2);
 
 const domains = ['ATTRIBUTE_TYPES', 'CONCEPTS', 'ENCOUNTER_TYPES'];
 
@@ -40,18 +39,22 @@ const fetchError = (responseBody: unknown) =>
     new Error(),
   );
 
+function workspaceProps(uuid?: string): Workspace2DefinitionProps<{ uuid?: string }> {
+  return {
+    workspaceProps: { uuid },
+    windowProps: null,
+    groupProps: null,
+    closeWorkspace: mockCloseWorkspace,
+    launchChildWorkspace: vi.fn(),
+    workspaceName: 'metadata-package-form-workspace',
+    windowName: 'metadata-package-form-window',
+    isRootWorkspace: true,
+    showActionMenu: false,
+  };
+}
+
 function renderWorkspace(uuid?: string) {
-  return render(
-    <MetadataPackageFormWorkspace
-      uuid={uuid}
-      closeWorkspace={mockCloseWorkspace}
-      closeWorkspaceWithSavedChanges={mockCloseWorkspaceWithSavedChanges}
-      promptBeforeClosing={mockPromptBeforeClosing}
-      setTitle={vi.fn()}
-      // @ts-expect-error - the workspace only uses closeWorkspace and promptBeforeClosing from the default props
-      additionalProps={{}}
-    />,
-  );
+  return render(<MetadataPackageFormWorkspace {...workspaceProps(uuid)} />);
 }
 
 describe('PackageFormWorkspace', () => {
@@ -135,8 +138,7 @@ describe('PackageFormWorkspace', () => {
       expect.objectContaining({ title: 'Package created', kind: 'success' }),
     );
     // Closes without triggering the "unsaved changes" prompt.
-    expect(mockCloseWorkspaceWithSavedChanges).toHaveBeenCalled();
-    expect(mockCloseWorkspace).not.toHaveBeenCalled();
+    expect(mockCloseWorkspace).toHaveBeenCalledWith({ discardUnsavedChanges: true });
   });
 
   it('sends an empty entries array when every domain is selected', async () => {
@@ -209,7 +211,24 @@ describe('PackageFormWorkspace', () => {
 
     await user.click(screen.getByRole('button', { name: 'Cancel' }));
 
-    expect(mockCloseWorkspace).toHaveBeenCalled();
+    expect(mockCloseWorkspace).toHaveBeenCalledWith();
+  });
+
+  it('marks the workspace as having unsaved changes once the user starts filling the form', async () => {
+    const user = userEvent.setup();
+    renderWorkspace();
+
+    expect(mockWorkspace2).toHaveBeenLastCalledWith(
+      expect.objectContaining({ title: 'New Package', hasUnsavedChanges: false }),
+      expect.anything(),
+    );
+
+    await user.type(screen.getByRole('textbox', { name: 'Package name' }), 'Core reference data');
+
+    expect(mockWorkspace2).toHaveBeenLastCalledWith(
+      expect.objectContaining({ hasUnsavedChanges: true }),
+      expect.anything(),
+    );
   });
 
   describe('edit mode', () => {
@@ -267,17 +286,7 @@ describe('PackageFormWorkspace', () => {
 
       // Simulate a background revalidation returning the original server values again.
       mockUsePackage.mockReturnValue(serverPackage());
-      rerender(
-        <MetadataPackageFormWorkspace
-          uuid={uuid}
-          closeWorkspace={mockCloseWorkspace}
-          closeWorkspaceWithSavedChanges={mockCloseWorkspaceWithSavedChanges}
-          promptBeforeClosing={mockPromptBeforeClosing}
-          setTitle={vi.fn()}
-          // @ts-expect-error - the workspace only uses closeWorkspace and promptBeforeClosing from the default props
-          additionalProps={{}}
-        />,
-      );
+      rerender(<MetadataPackageFormWorkspace {...workspaceProps(uuid)} />);
 
       expect(screen.getByRole('textbox', { name: 'Package name' })).toHaveValue('My edited name');
     });
@@ -320,7 +329,7 @@ describe('PackageFormWorkspace', () => {
       expect(mockShowSnackbar).toHaveBeenCalledWith(
         expect.objectContaining({ title: 'Package updated', kind: 'success' }),
       );
-      expect(mockCloseWorkspaceWithSavedChanges).toHaveBeenCalled();
+      expect(mockCloseWorkspace).toHaveBeenCalledWith({ discardUnsavedChanges: true });
     });
 
     it('shows an update-failure snackbar and keeps the workspace open on error', async () => {
@@ -342,7 +351,7 @@ describe('PackageFormWorkspace', () => {
           kind: 'error',
         }),
       );
-      expect(mockCloseWorkspaceWithSavedChanges).not.toHaveBeenCalled();
+      expect(mockCloseWorkspace).not.toHaveBeenCalled();
     });
   });
 });

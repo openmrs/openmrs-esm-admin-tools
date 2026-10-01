@@ -101,7 +101,7 @@ const PackagesTable: React.FC = () => {
         <EmptyCard
           displayText={t('packages__lower', 'packages')}
           headerTitle={headerTitle}
-          launchForm={canManage ? () => launchPackageFormWorkspace(t) : undefined}
+          launchForm={canManage ? () => launchPackageFormWorkspace() : undefined}
         />
       </div>
     );

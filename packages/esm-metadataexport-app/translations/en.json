@@ -20,6 +20,7 @@
   "domains": "Domains",
   "download": "Download",
   "edit": "Edit",
+  "editpackage": "Edit package",
   "errorLoadingDomains": "Error loading domains",
   "errorLoadingPackage": "Error loading package",
   "FAILED": "Failed",
