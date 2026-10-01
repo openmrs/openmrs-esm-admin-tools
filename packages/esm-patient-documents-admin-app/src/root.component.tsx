@@ -9,7 +9,11 @@ const Root: React.FC = () => {
   return (
     <main className={`omrs-main-content ${styles.main}`}>
       {/* illustration is required by the type; no styleguide pictogram fits this page yet. */}
-      <PageHeader illustration={<></>} title={t('moduleTitle', 'Visit Summary Configuration')} />
+      <PageHeader
+        className={styles.header}
+        illustration={<></>}
+        title={t('moduleTitle', 'Visit Summary Configuration')}
+      />
       <VisitSummaryConfig />
     </main>
   );
