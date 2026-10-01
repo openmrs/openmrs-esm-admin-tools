@@ -8,8 +8,8 @@ const Root: React.FC = () => {
   const { t } = useTranslation();
   return (
     <main className={`omrs-main-content ${styles.main}`}>
-      {/* illustration is required by the type; no styleguide pictogram fits this page yet. */}
       <PageHeader
+        className={styles.header}
         illustration={<PatientDocumentsPictogram />}
         title={t('moduleTitle', 'Visit Summary Configuration')}
       />

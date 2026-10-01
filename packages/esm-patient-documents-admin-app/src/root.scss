@@ -1,5 +1,11 @@
 @use '@carbon/colors';
+@use '@carbon/layout';
 
 .main {
   background-color: colors.$white-0;
+}
+
+.header {
+  border-bottom: 1px solid colors.$gray-20;
+  margin-bottom: layout.$spacing-05;
 }
