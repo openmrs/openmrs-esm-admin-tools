@@ -38,10 +38,6 @@
   background-color: white;
 }
 
-.emptyButton {
-  width: 100px;
-}
-
 .actionsContainer {
   display: flex;
   flex-wrap: wrap;
@@ -62,11 +58,6 @@
 .reportsLabelDiv {
   margin-left: layout.$spacing-05;
   padding-top: layout.$spacing-05;
-}
-
-.breadcrumbsSlot {
-  grid-row: 1 / 2;
-  grid-column: 1 / 2;
 }
 
 .downloadReportsVisible {
