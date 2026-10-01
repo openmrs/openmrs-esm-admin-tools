@@ -13,19 +13,10 @@ import {
   TextInput,
 } from '@carbon/react';
 import { useSWRConfig } from 'swr';
-import {
-  type DefaultWorkspaceProps,
-  restBaseUrl,
-  showSnackbar,
-  useLayoutType,
-  OpenmrsFetchError,
-} from '@openmrs/esm-framework';
+import { type DefaultWorkspaceProps, showSnackbar, useLayoutType, OpenmrsFetchError } from '@openmrs/esm-framework';
 import { formatDomainLabel, useDomains } from '../../domain-lookups/domain-lookups.resource';
-import { createPackage, editPackage, usePackage } from '../../packages/packages.resource';
+import { createPackage, editPackage, isPackagesCacheKey, usePackage } from '../../packages/packages.resource';
 import styles from './metadata-package-form.workspace.scss';
-
-const packagesUrl = `${restBaseUrl}/metadataexport/packages`;
-const isPackagesCacheKey = (key: unknown) => typeof key === 'string' && key.startsWith(packagesUrl);
 
 interface PackageFormWorkspaceProps extends DefaultWorkspaceProps {
   uuid?: string;
