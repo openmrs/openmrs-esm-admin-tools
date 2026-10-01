@@ -250,6 +250,25 @@ describe('PackageFormWorkspace', () => {
       expect(screen.getByText('Not found')).toBeInTheDocument();
     });
 
+    it('still reports unsaved changes when a refetch fails after the user has edited the package', async () => {
+      const exportPackage = { name: 'Original name', description: '', entries: [{ domain: 'CONCEPTS' }] };
+      mockUsePackage.mockReturnValue({ exportPackage, isLoading: false, error: undefined });
+      const user = userEvent.setup();
+      const { rerender } = renderWorkspace(uuid);
+
+      await user.type(screen.getByRole('textbox', { name: 'Package name' }), ' edited');
+
+      // SWR keeps the cached package but reports the error from a failed background revalidation.
+      mockUsePackage.mockReturnValue({ exportPackage, isLoading: false, error: new Error('Network error') });
+      rerender(<MetadataPackageFormWorkspace {...workspaceProps(uuid)} />);
+
+      expect(screen.getByText('Error loading package')).toBeInTheDocument();
+      expect(mockWorkspace2).toHaveBeenLastCalledWith(
+        expect.objectContaining({ hasUnsavedChanges: true }),
+        expect.anything(),
+      );
+    });
+
     it('seeds the form from the fetched package', () => {
       mockUsePackage.mockReturnValue({
         exportPackage: {

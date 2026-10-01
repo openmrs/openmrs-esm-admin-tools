@@ -172,7 +172,7 @@ const MetadataPackageFormWorkspace: React.FC<Workspace2DefinitionProps<PackageFo
 
   if (packageError) {
     return (
-      <Workspace2 title={title}>
+      <Workspace2 title={title} hasUnsavedChanges={hasUnsavedChanges}>
         <div className={styles.form}>
           <InlineNotification
             kind="error"
