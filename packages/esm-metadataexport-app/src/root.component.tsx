@@ -5,7 +5,7 @@ import Dashboard from './components/dashboard/home-dashboard.component';
 const Root: React.FC = () => (
   <BrowserRouter basename={window.getOpenmrsSpaBase()}>
     <Routes>
-      <Route path="metadataexport" element={<Dashboard />} />
+      <Route path="metadata-export" element={<Dashboard />} />
     </Routes>
   </BrowserRouter>
 );

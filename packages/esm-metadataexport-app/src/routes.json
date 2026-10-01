@@ -5,7 +5,7 @@
   },
   "pages": [
     {
-      "route": "metadataexport",
+      "route": "metadata-export",
       "component": "root",
       "online": true
     }
@@ -27,7 +27,7 @@
   "workspaceGroups2": [
     {
       "name": "metadata-export-group",
-      "scopePattern": "^/metadataexport",
+      "scopePattern": "^/metadata-export",
       "overlay": true
     }
   ],
