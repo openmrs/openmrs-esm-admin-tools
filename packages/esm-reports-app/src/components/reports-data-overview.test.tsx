@@ -7,7 +7,6 @@ import ReportsDataOverviewComponent from './reports-data-overview.component';
 import { useReportDefinitions, useReportData, useLocations } from './reports.resource';
 
 vi.mock('@openmrs/esm-framework', () => ({
-  ExtensionSlot: vi.fn(({ name }) => <div data-testid={`extension-slot-${name}`} />),
   showSnackbar: vi.fn(),
   getCoreTranslation: vi.fn((key: string) => key),
   useConfig: vi.fn(),

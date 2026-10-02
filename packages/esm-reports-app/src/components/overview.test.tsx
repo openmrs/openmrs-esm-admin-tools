@@ -16,7 +16,14 @@ vi.mock('@openmrs/esm-framework', () => ({
   useLayoutType: vi.fn(() => 'desktop'),
   isDesktop: vi.fn(() => true),
   userHasAccess: vi.fn(() => true),
-  ExtensionSlot: vi.fn(({ name }) => <div data-testid={`extension-slot-${name}`} />),
+  PageHeader: vi.fn(({ children }) => <div>{children}</div>),
+  PageHeaderContent: vi.fn(({ illustration, title }) => (
+    <div>
+      {illustration}
+      <h1>{title}</h1>
+    </div>
+  )),
+  ReportsPictogram: vi.fn(() => <svg data-testid="reports-pictogram" />),
   navigate: vi.fn(),
   showModal: vi.fn(),
   getGlobalStore: vi.fn(() => ({
@@ -64,6 +71,9 @@ describe('OverviewComponent', () => {
     await waitFor(() => {
       expect(screen.getByText('Actions')).toBeInTheDocument();
     });
+
+    expect(screen.getByRole('heading', { name: 'Reports' })).toBeInTheDocument();
+    expect(screen.getByTestId('reports-pictogram')).toBeInTheDocument();
 
     const expectedColumnHeaders = [
       /report name/i,

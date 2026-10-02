@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from '@carbon/react';
-import { ExtensionSlot, isDesktop, useLayoutType, usePagination } from '@openmrs/esm-framework';
+import { isDesktop, useLayoutType, usePagination } from '@openmrs/esm-framework';
 import { useScheduledReports } from './reports.resource';
 import Overlay from './overlay.component';
 import ScheduledOverviewCellContent from './scheduled-overview-cell-content.component';
@@ -54,8 +54,7 @@ const ScheduledOverviewComponent: React.FC = () => {
   );
 
   return (
-    <div>
-      <ExtensionSlot name="breadcrumbs-slot" className={styles.breadcrumb} />
+    <div className={styles.page}>
       <div className={styles.mainPanelDiv}>
         <div className={styles.reportsLabelDiv}>
           <h3>{t('scheduledReports', 'Scheduld Reports')}</h3>
