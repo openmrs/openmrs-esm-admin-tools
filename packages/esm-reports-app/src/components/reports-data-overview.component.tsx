@@ -107,7 +107,7 @@ const ReportsDataOverviewComponent: React.FC = () => {
   }, [reportData, t]);
 
   return (
-    <div>
+    <div className={styles.page}>
       <ExtensionSlot name="breadcrumbs-slot" className={styles.breadcrumb} />
       <div className={styles.mainPanelDiv}>
         <div className={styles.reportsLabelDiv}>

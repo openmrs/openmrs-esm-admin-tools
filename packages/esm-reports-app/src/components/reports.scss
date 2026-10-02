@@ -38,6 +38,33 @@
   background-color: white;
 }
 
+.header {
+  background-color: colors.$white;
+  border-bottom: 1px solid colors.$gray-20;
+  margin-bottom: layout.$spacing-05;
+}
+
+.content {
+  padding: 0 layout.$spacing-07 layout.$spacing-07;
+}
+
+.page {
+  padding: layout.$spacing-07;
+}
+
+.actionsRow {
+  text-align: right;
+  margin-bottom: layout.$spacing-03;
+
+  .mainActionButtonsDiv {
+    height: auto;
+  }
+
+  .mainActionButton {
+    margin-top: 0;
+  }
+}
+
 .actionsContainer {
   display: flex;
   flex-wrap: wrap;

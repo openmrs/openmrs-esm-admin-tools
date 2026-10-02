@@ -20,6 +20,9 @@ import {
   ExtensionSlot,
   isDesktop,
   navigate,
+  PageHeader,
+  PageHeaderContent,
+  ReportsPictogram,
   showModal,
   showSnackbar,
   useConfig,
@@ -292,157 +295,159 @@ const OverviewComponent: React.FC = () => {
 
   return (
     <div>
-      <ExtensionSlot name="breadcrumbs-slot" className={styles.breadcrumb} />
-      <div className={styles.mainPanelDiv}>
-        <div className={styles.reportsLabelDiv}>
-          <h3>{t('reports', 'Reports')}</h3>
+      <ExtensionSlot name="breadcrumbs-slot" />
+      <PageHeader className={styles.header}>
+        <PageHeaderContent illustration={<ReportsPictogram />} title={t('reports', 'Reports')} />
+      </PageHeader>
+      <div className={styles.content}>
+        <div className={styles.actionsRow}>
+          <div className={styles.mainActionButtonsDiv}>
+            <Button
+              kind="ghost"
+              renderIcon={() => <Download size={16} className={styles.actionButtonIcon} />}
+              iconDescription="Download reports"
+              onClick={() => handleDownloadMultipleReports(checkedReportUuidsArray.join(','))}
+              className={classNames(styles.mainActionButton, {
+                [styles.downloadReportsVisible]: downloadReportButtonVisible,
+                [styles.downloadReportsHidden]: !downloadReportButtonVisible,
+              })}
+            >
+              {t('downloadReports', 'Download reports')}
+            </Button>
+            <Button
+              kind="ghost"
+              renderIcon={() => <Play size={16} className={styles.actionButtonIcon} />}
+              iconDescription="Run reports"
+              onClick={() => {
+                launchOverlay(
+                  t('runReport', 'Run Report'),
+                  <RunReportForm
+                    closePanel={() => {
+                      closeOverlay();
+                      mutateReports();
+                    }}
+                  />,
+                );
+              }}
+              className={styles.mainActionButton}
+            >
+              {t('runReports', 'Run reports')}
+            </Button>
+            <Overlay />
+            <Button
+              className={styles.mainActionButton}
+              iconDescription="Report schedule"
+              kind="ghost"
+              onClick={() => navigate({ to: `\${openmrsSpaBase}/reports/scheduled-overview` })}
+              renderIcon={() => <Calendar size={16} className={styles.actionButtonIcon} />}
+            >
+              {t('reportSchedule', 'Report schedule')}
+            </Button>
+            <Button
+              className={styles.mainActionButton}
+              iconDescription="Report schedule"
+              kind="ghost"
+              onClick={() => navigate({ to: `\${openmrsSpaBase}/reports/reports-data-overview` })}
+              renderIcon={() => <Calendar size={16} className={styles.actionButtonIcon} />}
+            >
+              {t('viewReports', 'Reports Webview')}
+            </Button>
+          </div>
         </div>
-        <div className={styles.mainActionButtonsDiv}>
-          <Button
-            kind="ghost"
-            renderIcon={() => <Download size={16} className={styles.actionButtonIcon} />}
-            iconDescription="Download reports"
-            onClick={() => handleDownloadMultipleReports(checkedReportUuidsArray.join(','))}
-            className={classNames(styles.mainActionButton, {
-              [styles.downloadReportsVisible]: downloadReportButtonVisible,
-              [styles.downloadReportsHidden]: !downloadReportButtonVisible,
-            })}
-          >
-            {t('downloadReports', 'Download reports')}
-          </Button>
-          <Button
-            kind="ghost"
-            renderIcon={() => <Play size={16} className={styles.actionButtonIcon} />}
-            iconDescription="Run reports"
-            onClick={() => {
-              launchOverlay(
-                t('runReport', 'Run Report'),
-                <RunReportForm
-                  closePanel={() => {
-                    closeOverlay();
-                    mutateReports();
-                  }}
-                />,
-              );
-            }}
-            className={styles.mainActionButton}
-          >
-            {t('runReports', 'Run reports')}
-          </Button>
-          <Overlay />
-          <Button
-            className={styles.mainActionButton}
-            iconDescription="Report schedule"
-            kind="ghost"
-            onClick={() => navigate({ to: `\${openmrsSpaBase}/reports/scheduled-overview` })}
-            renderIcon={() => <Calendar size={16} className={styles.actionButtonIcon} />}
-          >
-            {t('reportSchedule', 'Report schedule')}
-          </Button>
-          <Button
-            className={styles.mainActionButton}
-            iconDescription="Report schedule"
-            kind="ghost"
-            onClick={() => navigate({ to: `\${openmrsSpaBase}/reports/reports-data-overview` })}
-            renderIcon={() => <Calendar size={16} className={styles.actionButtonIcon} />}
-          >
-            {t('viewReports', 'Reports Webview')}
-          </Button>
-        </div>
-      </div>
-      <DataTable rows={reports} headers={tableHeaders} isSortable>
-        {({ rows, headers }) => (
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <th></th>
-                  {headers.map((header) => (
-                    <TableHeader key={header.key}>{header.header}</TableHeader>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {rows.map((row, index) => (
-                  <TableRow className={styles.tableRow} key={index}>
-                    {renderRowCheckbox(row, index)}
-                    {row.cells.map((cell) => (
-                      <TableCell
-                        key={cell.id}
-                        className={classNames({
-                          [styles.rowCellEven]: index % 2 === 0,
-                          [styles.rowCellOdd]: index % 2 !== 0,
-                        })}
-                      >
-                        {cell.info.header === 'actions' ? (
-                          <div className={styles.actionsContainer}>
-                            <ReportOverviewButton
-                              icon={() => <View size={16} className={styles.actionButtonIcon} />}
-                              label={t('view', 'View')}
-                              onClick={() => handleViewReport(row.id)}
-                              reportRequestUuid={row.id}
-                              shouldBeDisplayed={shouldShowViewButton(row)}
-                            />
-                            <ReportOverviewButton
-                              icon={() => <Download size={16} className={styles.actionButtonIcon} />}
-                              label={t('download', 'Download')}
-                              onClick={() => handleDownloadReport(row.id)}
-                              reportRequestUuid={row.id}
-                              shouldBeDisplayed={shouldShowDownloadButton(row)}
-                            />
-                            <ReportOverviewButton
-                              icon={() => <Save size={16} className={styles.actionButtonIcon} />}
-                              label={t('preserve', 'Preserve')}
-                              onClick={() => handlePreserveReport(row.id)}
-                              reportRequestUuid={row.id}
-                              shouldBeDisplayed={getReportStatus(row) === COMPLETED && isEligibleReportUser(row.id)}
-                            />
-                            <ReportOverviewButton
-                              icon={() => <TrashCan size={16} className={styles.actionButtonIcon} />}
-                              label={t('delete', 'Delete')}
-                              onClick={() => launchDeleteReportDialog(row.id)}
-                              reportRequestUuid={row.id}
-                              shouldBeDisplayed={isEligibleReportUser(row.id)}
-                            />
-                          </div>
-                        ) : cell.info.header === 'status' ? (
-                          <div>
-                            <ReportStatus status={cell.value} />
-                          </div>
-                        ) : cell.info.header === 'reportName' ? (
-                          <div>{cell.value?.content ?? cell.value}</div>
-                        ) : (
-                          cell.value?.content ?? cell.value
-                        )}
-                      </TableCell>
+        <DataTable rows={reports} headers={tableHeaders} isSortable>
+          {({ rows, headers }) => (
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <th></th>
+                    {headers.map((header) => (
+                      <TableHeader key={header.key}>{header.header}</TableHeader>
                     ))}
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        )}
-      </DataTable>
-      {reports.length > 0 ? (
-        <Pagination
-          backwardText={t('previousPage', 'Previous page')}
-          forwardText={t('nextPage', 'Next page')}
-          onChange={({ pageSize: newPageSize, page: newPage }) => {
-            if (newPageSize !== pageSize) {
-              setPageSize(newPageSize);
-            }
+                </TableHead>
+                <TableBody>
+                  {rows.map((row, index) => (
+                    <TableRow className={styles.tableRow} key={index}>
+                      {renderRowCheckbox(row, index)}
+                      {row.cells.map((cell) => (
+                        <TableCell
+                          key={cell.id}
+                          className={classNames({
+                            [styles.rowCellEven]: index % 2 === 0,
+                            [styles.rowCellOdd]: index % 2 !== 0,
+                          })}
+                        >
+                          {cell.info.header === 'actions' ? (
+                            <div className={styles.actionsContainer}>
+                              <ReportOverviewButton
+                                icon={() => <View size={16} className={styles.actionButtonIcon} />}
+                                label={t('view', 'View')}
+                                onClick={() => handleViewReport(row.id)}
+                                reportRequestUuid={row.id}
+                                shouldBeDisplayed={shouldShowViewButton(row)}
+                              />
+                              <ReportOverviewButton
+                                icon={() => <Download size={16} className={styles.actionButtonIcon} />}
+                                label={t('download', 'Download')}
+                                onClick={() => handleDownloadReport(row.id)}
+                                reportRequestUuid={row.id}
+                                shouldBeDisplayed={shouldShowDownloadButton(row)}
+                              />
+                              <ReportOverviewButton
+                                icon={() => <Save size={16} className={styles.actionButtonIcon} />}
+                                label={t('preserve', 'Preserve')}
+                                onClick={() => handlePreserveReport(row.id)}
+                                reportRequestUuid={row.id}
+                                shouldBeDisplayed={getReportStatus(row) === COMPLETED && isEligibleReportUser(row.id)}
+                              />
+                              <ReportOverviewButton
+                                icon={() => <TrashCan size={16} className={styles.actionButtonIcon} />}
+                                label={t('delete', 'Delete')}
+                                onClick={() => launchDeleteReportDialog(row.id)}
+                                reportRequestUuid={row.id}
+                                shouldBeDisplayed={isEligibleReportUser(row.id)}
+                              />
+                            </div>
+                          ) : cell.info.header === 'status' ? (
+                            <div>
+                              <ReportStatus status={cell.value} />
+                            </div>
+                          ) : cell.info.header === 'reportName' ? (
+                            <div>{cell.value?.content ?? cell.value}</div>
+                          ) : (
+                            cell.value?.content ?? cell.value
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </DataTable>
+        {reports.length > 0 ? (
+          <Pagination
+            backwardText={t('previousPage', 'Previous page')}
+            forwardText={t('nextPage', 'Next page')}
+            onChange={({ pageSize: newPageSize, page: newPage }) => {
+              if (newPageSize !== pageSize) {
+                setPageSize(newPageSize);
+              }
 
-            if (newPage !== currentPage) {
-              setCurrentPage(newPage);
-            }
-          }}
-          page={currentPage}
-          pageSize={pageSize}
-          pageSizes={DEFAULT_PAGE_SIZES}
-          size={isDesktop(layout) ? 'sm' : 'lg'}
-          totalItems={reportsTotalCount}
-        />
-      ) : null}
+              if (newPage !== currentPage) {
+                setCurrentPage(newPage);
+              }
+            }}
+            page={currentPage}
+            pageSize={pageSize}
+            pageSizes={DEFAULT_PAGE_SIZES}
+            size={isDesktop(layout) ? 'sm' : 'lg'}
+            totalItems={reportsTotalCount}
+          />
+        ) : null}
+      </div>
     </div>
   );
 };
