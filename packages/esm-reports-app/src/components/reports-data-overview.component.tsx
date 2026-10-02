@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Select, SelectItem, Button } from '@carbon/react';
 import dayjs from 'dayjs';
-import { ExtensionSlot, showSnackbar, getCoreTranslation, useConfig } from '@openmrs/esm-framework';
+import { showSnackbar, getCoreTranslation, useConfig } from '@openmrs/esm-framework';
 import Overlay from './overlay.component';
 import ReportDataViewer from './report-data-viewer.component';
 import ReportParameter from './report-parameter.component';
@@ -108,7 +108,6 @@ const ReportsDataOverviewComponent: React.FC = () => {
 
   return (
     <div className={styles.page}>
-      <ExtensionSlot name="breadcrumbs-slot" className={styles.breadcrumb} />
       <div className={styles.mainPanelDiv}>
         <div className={styles.reportsLabelDiv}>
           <h3>{t('reports', 'Reports')}</h3>
