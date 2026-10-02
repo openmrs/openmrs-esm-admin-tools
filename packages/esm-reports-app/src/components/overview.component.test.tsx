@@ -17,6 +17,14 @@ vi.mock('@openmrs/esm-framework', () => ({
   isDesktop: vi.fn(() => true),
   userHasAccess: vi.fn(() => true),
   ExtensionSlot: vi.fn(({ name }) => <div data-testid={`extension-slot-${name}`} />),
+  PageHeader: vi.fn(({ children }) => <div>{children}</div>),
+  PageHeaderContent: vi.fn(({ illustration, title }) => (
+    <div>
+      {illustration}
+      <h1>{title}</h1>
+    </div>
+  )),
+  ReportsPictogram: vi.fn(() => <svg data-testid="reports-pictogram" />),
   navigate: vi.fn(),
   showModal: vi.fn(),
   getGlobalStore: vi.fn(() => ({
