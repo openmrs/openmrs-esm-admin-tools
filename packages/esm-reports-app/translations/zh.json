@@ -31,7 +31,7 @@
   "failed": "失败",
   "fetchReport": "获取报告",
   "invalidWebPreviewUrl": "无效的Web预览URL",
-  "missingParameters": "缺少参数",
+  "missingParameters": "Please provide the following parameters: {{parameters}}",
   "missingPlaceholder": "缺少占位符",
   "nextPage": "下一页",
   "nextRun": "下次运行",
