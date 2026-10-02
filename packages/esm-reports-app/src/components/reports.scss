@@ -33,11 +33,6 @@
   margin-top: layout.$spacing-06;
 }
 
-.mainPanelDiv {
-  height: 130px;
-  background-color: white;
-}
-
 .header {
   background-color: colors.$white;
   border-bottom: 1px solid colors.$gray-20;
@@ -45,10 +40,6 @@
 }
 
 .content {
-  padding: 0 layout.$spacing-07 layout.$spacing-07;
-}
-
-.page {
   padding: 0 layout.$spacing-07 layout.$spacing-07;
 }
 
@@ -80,11 +71,6 @@
 .mainActionButtonsDiv {
   text-align: right;
   height: 48px;
-}
-
-.reportsLabelDiv {
-  margin-left: layout.$spacing-05;
-  padding-top: layout.$spacing-05;
 }
 
 .downloadReportsVisible {

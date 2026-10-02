@@ -2,7 +2,14 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Select, SelectItem, Button } from '@carbon/react';
 import dayjs from 'dayjs';
-import { showSnackbar, getCoreTranslation, useConfig } from '@openmrs/esm-framework';
+import {
+  getCoreTranslation,
+  PageHeader,
+  PageHeaderContent,
+  ReportsPictogram,
+  showSnackbar,
+  useConfig,
+} from '@openmrs/esm-framework';
 import Overlay from './overlay.component';
 import ReportDataViewer from './report-data-viewer.component';
 import ReportParameter from './report-parameter.component';
@@ -107,11 +114,11 @@ const ReportsDataOverviewComponent: React.FC = () => {
   }, [reportData, t]);
 
   return (
-    <div className={styles.page}>
-      <div className={styles.mainPanelDiv}>
-        <div className={styles.reportsLabelDiv}>
-          <h3>{t('reports', 'Reports')}</h3>
-        </div>
+    <div>
+      <PageHeader className={styles.header}>
+        <PageHeaderContent illustration={<ReportsPictogram />} title={t('reports', 'Reports')} />
+      </PageHeader>
+      <div className={styles.content}>
         <div className={styles.filterForm}>
           <div className={styles.formField}>
             <Select
