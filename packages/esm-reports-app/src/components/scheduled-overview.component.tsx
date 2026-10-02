@@ -12,7 +12,14 @@ import {
   TableHeader,
   TableRow,
 } from '@carbon/react';
-import { isDesktop, useLayoutType, usePagination } from '@openmrs/esm-framework';
+import {
+  isDesktop,
+  PageHeader,
+  PageHeaderContent,
+  ReportsPictogram,
+  useLayoutType,
+  usePagination,
+} from '@openmrs/esm-framework';
 import { useScheduledReports } from './reports.resource';
 import Overlay from './overlay.component';
 import ScheduledOverviewCellContent from './scheduled-overview-cell-content.component';
@@ -54,12 +61,11 @@ const ScheduledOverviewComponent: React.FC = () => {
   );
 
   return (
-    <div className={styles.page}>
-      <div className={styles.mainPanelDiv}>
-        <div className={styles.reportsLabelDiv}>
-          <h3>{t('scheduledReports', 'Scheduld Reports')}</h3>
-        </div>
-        <div className={styles.mainActionButtonsDiv}></div>
+    <div>
+      <PageHeader className={styles.header}>
+        <PageHeaderContent illustration={<ReportsPictogram />} title={t('scheduledReports', 'Scheduled reports')} />
+      </PageHeader>
+      <div className={styles.content}>
         <DataTable rows={results} headers={tableHeaders} isSortable={false}>
           {({ rows, headers }) => (
             <TableContainer>

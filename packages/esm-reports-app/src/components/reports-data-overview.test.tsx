@@ -7,6 +7,14 @@ import ReportsDataOverviewComponent from './reports-data-overview.component';
 import { useReportDefinitions, useReportData, useLocations } from './reports.resource';
 
 vi.mock('@openmrs/esm-framework', () => ({
+  PageHeader: vi.fn(({ children }) => <div>{children}</div>),
+  PageHeaderContent: vi.fn(({ illustration, title }) => (
+    <div>
+      {illustration}
+      <h1>{title}</h1>
+    </div>
+  )),
+  ReportsPictogram: vi.fn(() => <svg data-testid="reports-pictogram" />),
   showSnackbar: vi.fn(),
   getCoreTranslation: vi.fn((key: string) => key),
   useConfig: vi.fn(),
@@ -62,6 +70,9 @@ beforeEach(() => {
 describe('ReportsDataOverviewComponent', () => {
   it('lists the names of missing required parameters instead of a literal placeholder', () => {
     renderComponent();
+
+    expect(screen.getByRole('heading', { name: 'Reports' })).toBeInTheDocument();
+    expect(screen.getByTestId('reports-pictogram')).toBeInTheDocument();
 
     fireEvent.change(screen.getByRole('combobox'), { target: { value: 'report-uuid' } });
     fireEvent.click(screen.getByRole('button', { name: 'Fetch Report' }));
