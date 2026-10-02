@@ -20,6 +20,7 @@ vi.mock('@openmrs/esm-framework', async (importOriginal) => {
 vi.mock('../../packages/packages.resource', () => ({
   usePackageBuilds: vi.fn(),
   triggerBuild: vi.fn(),
+  isPackagesCacheKey: vi.fn(),
 }));
 
 const mockTriggerBuild = triggerBuild as Mock;
@@ -33,8 +34,7 @@ const mockUserHasAccess = vi.mocked(esmFramework.userHasAccess);
 const sessionWithUser = () =>
   ({ user: { uuid: 'cc8507b8-7c9a-486b-85dc-b8f25ad1e4cc' } }) as unknown as esmFramework.Session;
 const mockCloseWorkspace = vi.fn();
-const mockCloseWorkspaceWithSavedChanges = vi.fn();
-const mockPromptBeforeClosing = vi.fn();
+const mockLaunchWorkspace2 = vi.mocked(esmFramework.launchWorkspace2);
 
 const build = (overrides: Partial<ExportPackageBuild> = {}): ExportPackageBuild => ({
   uuid: '23dbfd25-eec7-4f4e-b26c-d95324346ce3',
@@ -77,11 +77,15 @@ function mockBuilds(overrides: Partial<ReturnType<typeof usePackageBuilds>> = {}
 function renderWorkspace(pkg: ExportPackage = exportPackage) {
   render(
     <ViewMetadataPackageWorkspace
-      exportPackage={pkg}
+      workspaceProps={{ exportPackage: pkg }}
+      windowProps={null}
+      groupProps={null}
       closeWorkspace={mockCloseWorkspace}
-      closeWorkspaceWithSavedChanges={mockCloseWorkspaceWithSavedChanges}
-      promptBeforeClosing={mockPromptBeforeClosing}
-      setTitle={vi.fn()}
+      launchChildWorkspace={vi.fn()}
+      workspaceName="view-metadata-package-workspace"
+      windowName="view-metadata-package-window"
+      isRootWorkspace
+      showActionMenu={false}
     />,
   );
 }
@@ -208,6 +212,28 @@ describe('ViewPackageWorkspace', () => {
         expect.objectContaining({ kind: 'error', subtitle: 'A build is already running for this package' }),
       ),
     );
+  });
+
+  it('replaces the workspace with the edit form when Edit is clicked', async () => {
+    const user = userEvent.setup();
+    mockCloseWorkspace.mockResolvedValue(true);
+    renderWorkspace();
+
+    await user.click(screen.getByRole('button', { name: 'Edit' }));
+
+    expect(mockCloseWorkspace).toHaveBeenCalled();
+    expect(mockLaunchWorkspace2).toHaveBeenCalledWith('metadata-package-form-workspace', { uuid: exportPackage.uuid });
+  });
+
+  it('does not launch the edit form if the workspace stays open', async () => {
+    const user = userEvent.setup();
+    mockCloseWorkspace.mockResolvedValue(false);
+    renderWorkspace();
+
+    await user.click(screen.getByRole('button', { name: 'Edit' }));
+
+    expect(mockCloseWorkspace).toHaveBeenCalled();
+    expect(mockLaunchWorkspace2).not.toHaveBeenCalled();
   });
 
   it('launches the delete confirmation modal wired to close the workspace on success', async () => {

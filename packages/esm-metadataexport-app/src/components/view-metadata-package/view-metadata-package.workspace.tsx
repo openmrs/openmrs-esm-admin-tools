@@ -4,7 +4,6 @@ import { Download } from '@carbon/react/icons';
 import { Button, InlineLoading, Link, Tag } from '@carbon/react';
 import { useSWRConfig } from 'swr';
 import {
-  type DefaultWorkspaceProps,
   ErrorState,
   OpenmrsFetchError,
   formatDurationBetween,
@@ -14,18 +13,16 @@ import {
   showSnackbar,
   useSession,
   userHasAccess,
+  Workspace2,
+  type Workspace2DefinitionProps,
 } from '@openmrs/esm-framework';
 import { formatDomainLabel } from '../../domain-lookups/domain-lookups.resource';
-import { triggerBuild, usePackageBuilds } from '../../packages/packages.resource';
+import { isPackagesCacheKey, triggerBuild, usePackageBuilds } from '../../packages/packages.resource';
 import type { ExportBuildStatus, ExportPackage } from '../../types';
 import styles from './view-metadata-package.workspace.scss';
 import { launchPackageFormWorkspace } from '../metadata-package-form/metadata-package-form-utils';
 
-const packagesUrl = `${restBaseUrl}/metadataexport/packages`;
-// useOpenmrsPagination keys the cache with absolute URLs, so match on inclusion rather than prefix.
-const isPackagesCacheKey = (key: unknown) => typeof key === 'string' && key.includes(packagesUrl);
-
-interface ViewPackageWorkspaceProps extends DefaultWorkspaceProps {
+interface ViewPackageWorkspaceProps {
   exportPackage: ExportPackage;
 }
 
@@ -36,7 +33,11 @@ const statusTagType: Record<ExportBuildStatus, 'gray' | 'blue' | 'green' | 'red'
   FAILED: 'red',
 };
 
-const ViewMetadataPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exportPackage, closeWorkspace }) => {
+const ViewMetadataPackageWorkspace: React.FC<Workspace2DefinitionProps<ViewPackageWorkspaceProps>> = ({
+  workspaceProps,
+  closeWorkspace,
+}) => {
+  const { exportPackage } = workspaceProps;
   const { t } = useTranslation();
   const session = useSession();
   const { mutate: globalMutate } = useSWRConfig();
@@ -104,108 +105,113 @@ const ViewMetadataPackageWorkspace: React.FC<ViewPackageWorkspaceProps> = ({ exp
     return exportPackage.entries.map((entry) => formatDomainLabel(entry.domain)).join(', ');
   }, [exportPackage.entries, t]);
 
-  const editPackage = useCallback(() => {
-    launchPackageFormWorkspace(t, exportPackage.uuid);
-  }, [exportPackage.uuid, t]);
+  // Replace this workspace with the edit form so it doesn't reappear with stale package details
+  const editPackage = useCallback(async () => {
+    if (await closeWorkspace()) {
+      launchPackageFormWorkspace(exportPackage.uuid);
+    }
+  }, [closeWorkspace, exportPackage.uuid]);
 
   return (
-    <div className={styles.container}>
-      <div className={styles.body}>
-        {canManage && (
-          <section className={styles.actionRow}>
-            <Button
-              className={styles.triggerButton}
-              kind="primary"
-              onClick={handleTriggerBuild}
-              disabled={isTriggeringBuild}
-            >
-              {isTriggeringBuild ? (
-                <InlineLoading description={t('triggeringBuild', 'Triggering build') + '…'} />
-              ) : (
-                t('triggerNewBuild', 'Trigger new build')
-              )}
-            </Button>
-            <div className={styles.secondaryActions}>
+    <Workspace2 title={exportPackage.name}>
+      <div className={styles.container}>
+        <div className={styles.body}>
+          {canManage && (
+            <section className={styles.actionRow}>
               <Button
-                className={styles.secondaryButton}
-                kind="secondary"
-                onClick={editPackage}
+                className={styles.triggerButton}
+                kind="primary"
+                onClick={handleTriggerBuild}
                 disabled={isTriggeringBuild}
               >
-                {t('edit', 'Edit')}
+                {isTriggeringBuild ? (
+                  <InlineLoading description={t('triggeringBuild', 'Triggering build') + '…'} />
+                ) : (
+                  t('triggerNewBuild', 'Trigger new build')
+                )}
               </Button>
-              <Button
-                className={styles.secondaryButton}
-                kind="danger--tertiary"
-                onClick={launchDeleteModal}
-                disabled={isTriggeringBuild}
-              >
-                {t('delete', 'Delete')}
-              </Button>
-            </div>
-          </section>
-        )}
-
-        <section className={styles.section}>
-          <span className={styles.sectionLabel}>{t('details', 'Details')}</span>
-          <dl className={styles.detailList}>
-            <dt className={styles.detailKey}>{t('domains', 'Domains')}</dt>
-            <dd className={styles.detailValue}>{domainsLabel}</dd>
-          </dl>
-        </section>
-
-        <section className={styles.section}>
-          <span className={styles.sectionLabel}>{t('builds', 'Builds')}</span>
-          {isLoading ? (
-            <InlineLoading description={t('loadingBuilds', 'Loading builds…')} />
-          ) : error ? (
-            <ErrorState error={error} headerTitle={t('builds', 'Builds')} />
-          ) : builds.length === 0 ? (
-            <p className={styles.emptyBuilds}>{t('noBuildsYet', 'No builds yet')}</p>
-          ) : (
-            <ul className={styles.buildList}>
-              {builds.map((build) => (
-                <li key={build.uuid} className={styles.buildItem}>
-                  <div className={styles.buildRow}>
-                    <span className={styles.buildVersion}>
-                      {t('buildVersion', 'Build {{version}}', { version: build.version })}
-                    </span>
-                    <Tag type={statusTagType[build.status]} size="sm">
-                      {t(build.status)}
-                    </Tag>
-                  </div>
-                  <div className={styles.buildRow}>
-                    <span className={styles.buildMeta}>
-                      {build.dateStarted
-                        ? t('startedAgo', 'Started {{time}} ago', { time: formatDurationBetween(build.dateStarted) })
-                        : t('notStarted', 'Not started')}
-                    </span>
-                    {build.dateCompleted && (
-                      <span className={styles.buildMeta}>
-                        {t('completedAgo', 'Completed {{time}} ago', {
-                          time: formatDurationBetween(build.dateCompleted),
-                        })}
-                      </span>
-                    )}
-                  </div>
-                  {build.status === 'FAILED' && build.errorMessage && (
-                    <p className={styles.buildError}>{build.errorMessage}</p>
-                  )}
-                  {canManage && build.downloadUrl && (
-                    <Link
-                      href={makeUrl(`${restBaseUrl}/metadataexport/builds/${build.uuid}/download`)}
-                      renderIcon={() => <Download size={16} />}
-                    >
-                      {t('download', 'Download')}
-                    </Link>
-                  )}
-                </li>
-              ))}
-            </ul>
+              <div className={styles.secondaryActions}>
+                <Button
+                  className={styles.secondaryButton}
+                  kind="secondary"
+                  onClick={editPackage}
+                  disabled={isTriggeringBuild}
+                >
+                  {t('edit', 'Edit')}
+                </Button>
+                <Button
+                  className={styles.secondaryButton}
+                  kind="danger--tertiary"
+                  onClick={launchDeleteModal}
+                  disabled={isTriggeringBuild}
+                >
+                  {t('delete', 'Delete')}
+                </Button>
+              </div>
+            </section>
           )}
-        </section>
+
+          <section className={styles.section}>
+            <span className={styles.sectionLabel}>{t('details', 'Details')}</span>
+            <dl className={styles.detailList}>
+              <dt className={styles.detailKey}>{t('domains', 'Domains')}</dt>
+              <dd className={styles.detailValue}>{domainsLabel}</dd>
+            </dl>
+          </section>
+
+          <section className={styles.section}>
+            <span className={styles.sectionLabel}>{t('builds', 'Builds')}</span>
+            {isLoading ? (
+              <InlineLoading description={t('loadingBuilds', 'Loading builds…')} />
+            ) : error ? (
+              <ErrorState error={error} headerTitle={t('builds', 'Builds')} />
+            ) : builds.length === 0 ? (
+              <p className={styles.emptyBuilds}>{t('noBuildsYet', 'No builds yet')}</p>
+            ) : (
+              <ul className={styles.buildList}>
+                {builds.map((build) => (
+                  <li key={build.uuid} className={styles.buildItem}>
+                    <div className={styles.buildRow}>
+                      <span className={styles.buildVersion}>
+                        {t('buildVersion', 'Build {{version}}', { version: build.version })}
+                      </span>
+                      <Tag type={statusTagType[build.status]} size="sm">
+                        {t(build.status)}
+                      </Tag>
+                    </div>
+                    <div className={styles.buildRow}>
+                      <span className={styles.buildMeta}>
+                        {build.dateStarted
+                          ? t('startedAgo', 'Started {{time}} ago', { time: formatDurationBetween(build.dateStarted) })
+                          : t('notStarted', 'Not started')}
+                      </span>
+                      {build.dateCompleted && (
+                        <span className={styles.buildMeta}>
+                          {t('completedAgo', 'Completed {{time}} ago', {
+                            time: formatDurationBetween(build.dateCompleted),
+                          })}
+                        </span>
+                      )}
+                    </div>
+                    {build.status === 'FAILED' && build.errorMessage && (
+                      <p className={styles.buildError}>{build.errorMessage}</p>
+                    )}
+                    {canManage && build.downloadUrl && (
+                      <Link
+                        href={makeUrl(`${restBaseUrl}/metadataexport/builds/${build.uuid}/download`)}
+                        renderIcon={() => <Download size={16} />}
+                      >
+                        {t('download', 'Download')}
+                      </Link>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        </div>
       </div>
-    </div>
+    </Workspace2>
   );
 };
 

@@ -70,25 +70,3 @@
   padding: 0 layout.$spacing-05;
   color: $ui-05;
 }
-
-.closeButton {
-  background-color: $ui-background;
-  color: $ui-05;
-  fill: $ui-05;
-}
-
-/* Desktop */
-:global(.omrs-breakpoint-gt-tablet) {
-  .overlayContent {
-    padding: 0 0 0 0;
-    overflow-y: auto;
-  }
-}
-
-/* Tablet */
-:global(.omrs-breakpoint-lt-desktop) {
-  .overlayContent {
-    padding: 0 0 0 0;
-    overflow-y: auto;
-  }
-}

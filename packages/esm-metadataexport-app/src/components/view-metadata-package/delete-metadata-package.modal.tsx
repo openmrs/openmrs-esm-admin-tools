@@ -2,13 +2,10 @@ import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, InlineLoading, ModalBody, ModalFooter, ModalHeader, TextArea } from '@carbon/react';
 import { useSWRConfig } from 'swr';
-import { OpenmrsFetchError, restBaseUrl, showSnackbar } from '@openmrs/esm-framework';
-import { deletePackage } from '../../packages/packages.resource';
+import { OpenmrsFetchError, showSnackbar } from '@openmrs/esm-framework';
+import { deletePackage, isPackagesCacheKey } from '../../packages/packages.resource';
 import type { ExportPackage } from '../../types';
 import styles from './delete-metadata-package.modal.scss';
-
-const packagesUrl = `${restBaseUrl}/metadataexport/packages`;
-const isPackagesCacheKey = (key: unknown) => typeof key === 'string' && key.startsWith(packagesUrl);
 
 interface DeletePackageModalProps {
   closeModal: () => void;
