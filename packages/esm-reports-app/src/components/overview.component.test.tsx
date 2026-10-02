@@ -73,6 +73,9 @@ describe('OverviewComponent', () => {
       expect(screen.getByText('Actions')).toBeInTheDocument();
     });
 
+    expect(screen.getByRole('heading', { name: 'Reports' })).toBeInTheDocument();
+    expect(screen.getByTestId('reports-pictogram')).toBeInTheDocument();
+
     const expectedColumnHeaders = [
       /report name/i,
       /status/i,
