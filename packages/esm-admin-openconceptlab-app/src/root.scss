@@ -1,16 +1,13 @@
-@use "@carbon/colors";
-@use "@carbon/layout";
-@use "@carbon/type";
+@use '@carbon/colors';
+@use '@carbon/layout';
 
 .main {
   background-color: colors.$white-0;
 }
 
-.moduleHeader {
-  @include type.type-style('heading-03');
-  padding-left: layout.$spacing-05;
-  padding-top: layout.$spacing-05;
-  padding-bottom: layout.$spacing-05;
+.header {
+  border-bottom: 1px solid colors.$gray-20;
+  margin-bottom: layout.$spacing-05;
 }
 
 .tabList {
