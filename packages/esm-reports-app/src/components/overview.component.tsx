@@ -17,7 +17,6 @@ import {
 import { Calendar, Download, Play, Save, TrashCan, View } from '@carbon/react/icons';
 import { downloadMultipleReports, downloadReport, preserveReport, useReports } from './reports.resource';
 import {
-  ExtensionSlot,
   isDesktop,
   navigate,
   PageHeader,
@@ -295,7 +294,6 @@ const OverviewComponent: React.FC = () => {
 
   return (
     <div>
-      <ExtensionSlot name="breadcrumbs-slot" />
       <PageHeader className={styles.header}>
         <PageHeaderContent illustration={<ReportsPictogram />} title={t('reports', 'Reports')} />
       </PageHeader>

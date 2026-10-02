@@ -16,7 +16,6 @@ vi.mock('@openmrs/esm-framework', () => ({
   useLayoutType: vi.fn(() => 'desktop'),
   isDesktop: vi.fn(() => true),
   userHasAccess: vi.fn(() => true),
-  ExtensionSlot: vi.fn(({ name }) => <div data-testid={`extension-slot-${name}`} />),
   PageHeader: vi.fn(({ children }) => <div>{children}</div>),
   PageHeaderContent: vi.fn(({ illustration, title }) => (
     <div>
