@@ -74,7 +74,7 @@ const ReportsDataOverviewComponent: React.FC = () => {
         showSnackbar({
           kind: 'error',
           title: getCoreTranslation('error'),
-          subtitle: t('missingParameters', 'Please provide the following parameters: {parameters}', {
+          subtitle: t('missingParameters', 'Please provide the following parameters: {{parameters}}', {
             parameters: missingParameters.join(', '),
           }),
         });
