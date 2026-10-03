@@ -49,7 +49,7 @@ describe('Subscription component', () => {
     expect(screen.getByRole('button', { name: /danger\s*Unsubscribe/i })).toBeEnabled();
   });
 
-  it.skip('allows adding a new subscription', async () => {
+  it('allows adding a new subscription', async () => {
     const user = userEvent.setup();
     mockOpenmrsFetch.mockResolvedValueOnce({ data: { results: [] } } as unknown as FetchResponse);
     renderWithSwr(<Subscription />);
@@ -80,7 +80,7 @@ describe('Subscription component', () => {
     expect(mockShowNotification).toHaveBeenCalledTimes(1);
   });
 
-  it.skip('allows changing the saved subscription', async () => {
+  it('allows changing the saved subscription', async () => {
     const user = userEvent.setup();
     mockOpenmrsFetch.mockResolvedValueOnce({ data: { results: [mockSubscription] } } as unknown as FetchResponse);
     renderWithSwr(<Subscription />);
@@ -116,6 +116,37 @@ describe('Subscription component', () => {
       }),
     );
     expect(mockShowNotification).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps the entered values and shows an error when saving the subscription fails', async () => {
+    const user = userEvent.setup();
+    mockOpenmrsFetch.mockResolvedValueOnce({ data: { results: [] } } as unknown as FetchResponse);
+    renderWithSwr(<Subscription />);
+    await waitForLoadingToFinish();
+
+    const urlInputField = screen.getByLabelText('Subscription URL');
+    const tokenInputField = screen.getByLabelText('Token');
+    const saveButton = screen.getByRole('button', { name: 'Save changes' });
+
+    mockUpdateSubscription.mockRejectedValueOnce(new Error('Server responded with 500 (Internal Server Error)'));
+
+    await user.type(urlInputField, mockSubscription.url);
+    await user.type(tokenInputField, mockSubscription.token);
+    await user.click(saveButton);
+
+    await waitFor(() =>
+      expect(mockShowNotification).toHaveBeenCalledWith(
+        expect.objectContaining({
+          kind: 'error',
+          title: 'Error occured while saving the subscription',
+          description: 'Server responded with 500 (Internal Server Error)',
+        }),
+      ),
+    );
+    expect(mockUpdateSubscription).toHaveBeenCalledTimes(1);
+    expect(mockOpenmrsFetch).toHaveBeenCalledTimes(1);
+    expect(urlInputField).toHaveValue(mockSubscription.url);
+    expect(tokenInputField).toHaveValue(mockSubscription.token);
   });
 
   it.skip('allows removing the saved subscription', async () => {
