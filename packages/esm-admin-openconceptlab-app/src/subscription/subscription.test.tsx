@@ -128,7 +128,11 @@ describe('Subscription component', () => {
     const tokenInputField = screen.getByLabelText('Token');
     const saveButton = screen.getByRole('button', { name: 'Save changes' });
 
-    mockUpdateSubscription.mockRejectedValueOnce(new Error('Server responded with 500 (Internal Server Error)'));
+    mockUpdateSubscription.mockRejectedValueOnce(
+      Object.assign(new Error('Server responded with 500 (Internal Server Error)'), {
+        responseBody: { error: { message: 'Wrong url address' } },
+      }),
+    );
 
     await user.type(urlInputField, mockSubscription.url);
     await user.type(tokenInputField, mockSubscription.token);
@@ -139,7 +143,7 @@ describe('Subscription component', () => {
         expect.objectContaining({
           kind: 'error',
           title: 'Error occured while saving the subscription',
-          description: 'Server responded with 500 (Internal Server Error)',
+          description: 'Wrong url address',
         }),
       ),
     );

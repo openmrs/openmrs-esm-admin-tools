@@ -101,11 +101,14 @@ const Subscription: React.FC = () => {
           ),
         });
       } catch (error) {
+        // A rejected save carries the backend's reason in the response body; fall back to the fetch error itself.
+        const serverMessage = (error as { responseBody?: { error?: { message?: string } } })?.responseBody?.error
+          ?.message;
         showNotification({
           title: t('errorSavingSubscription', 'Error occured while saving the subscription'),
           kind: 'error',
           critical: true,
-          description: error instanceof Error ? error.message : String(error),
+          description: serverMessage ?? (error instanceof Error ? error.message : String(error)),
         });
       }
 
