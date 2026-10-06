@@ -143,14 +143,24 @@ describe('ViewPackageWorkspace', () => {
     );
   });
 
-  it('hides the download link from users without the Manage Metadata Export Packages privilege', () => {
-    mockUserHasAccess.mockReturnValue(false);
+  it('shows the download link to users with only the Download Metadata Export Packages privilege', () => {
+    mockUserHasAccess.mockImplementation((privilege) => privilege === 'Download Metadata Export Packages');
+    mockBuilds({ builds: [build()] });
+    renderWorkspace();
+
+    expect(screen.getByRole('link', { name: 'Download' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Trigger new build' })).not.toBeInTheDocument();
+    expect(mockUserHasAccess).toHaveBeenCalledWith('Download Metadata Export Packages', expect.anything());
+  });
+
+  it('hides the download link from users with only the Manage Metadata Export Packages privilege', () => {
+    mockUserHasAccess.mockImplementation((privilege) => privilege === 'Manage Metadata Export Packages');
     mockBuilds({ builds: [build()] });
     renderWorkspace();
 
     expect(screen.getByText('COMPLETED')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Trigger new build' })).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Download' })).not.toBeInTheDocument();
-    expect(mockUserHasAccess).toHaveBeenCalledWith('Manage Metadata Export Packages', expect.anything());
   });
 
   it('omits the download link for a build without a download URL', () => {
