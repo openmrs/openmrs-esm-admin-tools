@@ -333,7 +333,7 @@ const SimpleCronEditor: React.FC<SimpleCronEditorProps> = ({ initialCron, onChan
   }, [editorState.cron]);
 
   return (
-    <div className={styles.cronContainer}>
+    <div>
       {renderScheduleTypeSelect()}
       {editorState.scheduleType !== ST_ADVANCED && editorState.scheduleType !== ST_EVERY_DAY && (
         <div className={styles.cronEditorFieldSeparator}>

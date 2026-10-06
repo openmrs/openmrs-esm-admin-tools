@@ -20,7 +20,7 @@
 }
 
 .container {
-  margin: layout.$spacing-05 0rem;
+  padding: layout.$spacing-05;
   background-color: $ui-background;
 
   & section {
@@ -33,21 +33,6 @@
   background-color: $ui-background;
   display: flex;
   flex-direction: column;
-}
-
-.outputFormatDiv {
-  margin-bottom: 50px;
-  display: flex;
-  padding: 32px 16px 16px 16px;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 16px;
-}
-
-.basicInputElement {
-  width: 300px;
-  height: 30px;
-  margin-bottom: 30px;
 }
 
 .buttonsDiv {
