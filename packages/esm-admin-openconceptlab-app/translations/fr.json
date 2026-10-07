@@ -48,6 +48,7 @@
   "subscriptionDeleted": "Désabonnement réussi",
   "subscriptionError": "Une erreur s'est produite lors de la récupération de l'abonnement.",
   "subscriptionUrl": "URL d'abonnement",
+  "unexpectedError": "An unexpected error occurred",
   "unsubscribe": "Se désabonner",
   "unsubscribeButton": "Se désabonner",
   "unsubscribeInfo": "Si vous vous désabonnez, aucun concept ne sera supprimé ni modifié. Toutes les informations relatives à votre abonnement seront supprimées de votre système.",

@@ -48,6 +48,7 @@
   "subscriptionDeleted": "Assinatura cancelada com sucesso",
   "subscriptionError": "Erro ao buscar a assinatura",
   "subscriptionUrl": "URL da assinatura",
+  "unexpectedError": "An unexpected error occurred",
   "unsubscribe": "Cancelar assinatura",
   "unsubscribeButton": "Cancelar assinatura",
   "unsubscribeInfo": "Se você cancelar a assinatura, nenhum conceito será excluído nem alterado. Todas as informações sobre a assinatura serão removidas do seu sistema.",

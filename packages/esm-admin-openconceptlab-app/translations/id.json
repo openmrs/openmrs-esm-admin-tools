@@ -48,6 +48,7 @@
   "subscriptionDeleted": "Berhasil berhenti berlangganan",
   "subscriptionError": "Terjadi kesalahan saat mengambil langganan",
   "subscriptionUrl": "URL Langganan",
+  "unexpectedError": "An unexpected error occurred",
   "unsubscribe": "Berhenti Berlangganan",
   "unsubscribeButton": "Berhenti Berlangganan",
   "unsubscribeInfo": "Jika Anda berhenti berlangganan, tidak ada konsep yang akan dihapus atau diubah. Semua informasi tentang langganan akan dihapus dari sistem Anda.",

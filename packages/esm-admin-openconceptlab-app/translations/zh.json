@@ -48,6 +48,7 @@
   "subscriptionDeleted": "订阅已删除",
   "subscriptionError": "订阅错误",
   "subscriptionUrl": "订阅URL",
+  "unexpectedError": "An unexpected error occurred",
   "unsubscribe": "取消订阅",
   "unsubscribeButton": "取消订阅",
   "unsubscribeInfo": "确定要取消订阅吗？",

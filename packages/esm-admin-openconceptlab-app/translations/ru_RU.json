@@ -48,6 +48,7 @@
   "subscriptionDeleted": "Подписка успешно отменена",
   "subscriptionError": "Произошла ошибка при получении подписки",
   "subscriptionUrl": "URL подписки",
+  "unexpectedError": "An unexpected error occurred",
   "unsubscribe": "Отписаться",
   "unsubscribeButton": "Отписаться",
   "unsubscribeInfo": "При отписке данные не будут удалены или изменены. Информация о подписке будет удалена из вашей системы.",
