@@ -127,7 +127,6 @@ const ReportParameterInput: React.FC<ReportParameterInputProps> = ({ parameter, 
             id={parameter.name}
             name={parameter.name}
             labelText={parameter.label}
-            className={styles.basicInputElement}
             onChange={(e) => handleOnChange(e)}
             value={valueInternal}
           />
@@ -138,7 +137,6 @@ const ReportParameterInput: React.FC<ReportParameterInputProps> = ({ parameter, 
             id={parameter.name}
             name={parameter.name}
             labelText={parameter.label}
-            className={styles.basicInputElement}
             onChange={(e) => handleOnChange(e)}
             value={valueInternal}
           >
@@ -185,7 +183,7 @@ const ReportParameterInput: React.FC<ReportParameterInputProps> = ({ parameter, 
     onChange(newDate.toISOString());
   }
 
-  return <div className={styles.runReportInnerDivElement}>{renderParameterElementBasedOnType()}</div>;
+  return <div>{renderParameterElementBasedOnType()}</div>;
 };
 
 export default ReportParameterInput;

@@ -96,7 +96,7 @@ const EditScheduledReportForm: React.FC<EditScheduledReportForm> = ({
 
   return (
     <Form className={styles.desktopEditSchedule} onSubmit={handleSubmit}>
-      <Stack gap={8} className={styles.container}>
+      <Stack gap={5} className={styles.container}>
         <SimpleCronEditor initialCron={initialCron} onChange={handleCronEditorChange} />
         {reportDefinition?.parameters.map((parameter) => (
           <ReportParameterInput
@@ -111,22 +111,19 @@ const EditScheduledReportForm: React.FC<EditScheduledReportForm> = ({
             value={reportRequest?.parameterMappings[parameter.name]}
           />
         ))}
-        <div className={styles.outputFormatDiv}>
-          <Select
-            id="outputFormat"
-            className={styles.basicInputElement}
-            labelText={t('outputFormat', 'Output format')}
-            onChange={(e) => setRenderModeUuid(e.target.value)}
-            value={renderModeUuid}
-          >
-            <SelectItem text="" value={''} />
-            {reportDesigns?.map((reportDesign) => (
-              <SelectItem key={reportDesign.uuid} text={reportDesign.name} value={reportDesign.uuid}>
-                {reportDesign.name}
-              </SelectItem>
-            ))}
-          </Select>
-        </div>
+        <Select
+          id="outputFormat"
+          labelText={t('outputFormat', 'Output format')}
+          onChange={(e) => setRenderModeUuid(e.target.value)}
+          value={renderModeUuid}
+        >
+          <SelectItem text="" value={''} />
+          {reportDesigns?.map((reportDesign) => (
+            <SelectItem key={reportDesign.uuid} text={reportDesign.name} value={reportDesign.uuid}>
+              {reportDesign.name}
+            </SelectItem>
+          ))}
+        </Select>
       </Stack>
       <div className={styles.buttonsDiv}>
         <ButtonSet className={classNames({ [styles.tablet]: isTablet, [styles.desktop]: !isTablet })}>
