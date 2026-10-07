@@ -2,7 +2,7 @@ import React from 'react';
 import { vi, describe, it, expect } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { screen, waitFor } from '@testing-library/react';
-import { type FetchResponse, openmrsFetch, showNotification } from '@openmrs/esm-framework';
+import { type FetchResponse, OpenmrsFetchError, openmrsFetch, showNotification } from '@openmrs/esm-framework';
 import { renderWithSwr } from '@tools/test-helpers';
 import { mockSubscription } from '@mocks/openconceptlab.mock';
 import { deleteSubscription, updateSubscription } from './subscription.resource';
@@ -129,9 +129,12 @@ describe('Subscription component', () => {
     const saveButton = screen.getByRole('button', { name: 'Save changes' });
 
     mockUpdateSubscription.mockRejectedValueOnce(
-      Object.assign(new Error('Server responded with 500 (Internal Server Error)'), {
-        responseBody: { error: { message: 'Wrong url address' } },
-      }),
+      new OpenmrsFetchError(
+        '/ws/rest/v1/openconceptlab/subscription',
+        new Response(null, { status: 500, statusText: 'Internal Server Error' }),
+        { error: { message: 'Wrong url address' } },
+        new Error(),
+      ),
     );
 
     await user.type(urlInputField, mockSubscription.url);

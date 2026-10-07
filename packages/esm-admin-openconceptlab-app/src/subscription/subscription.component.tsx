@@ -16,7 +16,7 @@ import {
   TextInputSkeleton,
 } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
-import { showNotification } from '@openmrs/esm-framework';
+import { OpenmrsFetchError, showNotification } from '@openmrs/esm-framework';
 import { deleteSubscription, updateSubscription, useSubscription } from './subscription.resource';
 import { isVersionDefinedInUrl } from '../utils';
 import styles from './subscription.scss';
@@ -101,14 +101,13 @@ const Subscription: React.FC = () => {
           ),
         });
       } catch (error) {
-        // A rejected save carries the backend's reason in the response body; fall back to the fetch error itself.
-        const serverMessage = (error as { responseBody?: { error?: { message?: string } } })?.responseBody?.error
-          ?.message;
+        const responseBody = error instanceof OpenmrsFetchError ? error.responseBody : null;
+        const reason = typeof responseBody === 'object' && responseBody !== null ? responseBody.error?.message : null;
         showNotification({
           title: t('errorSavingSubscription', 'Error occured while saving the subscription'),
           kind: 'error',
           critical: true,
-          description: serverMessage ?? (error instanceof Error ? error.message : String(error)),
+          description: reason ?? t('unexpectedError', 'An unexpected error occurred'),
         });
       }
 
