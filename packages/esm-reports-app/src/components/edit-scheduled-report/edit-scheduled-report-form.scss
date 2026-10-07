@@ -29,10 +29,10 @@
 }
 
 .desktopEditSchedule {
+  flex: 1;
   background-color: $ui-background;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
 }
 
 .outputFormatDiv {
@@ -51,5 +51,5 @@
 }
 
 .buttonsDiv {
-  margin-top: 50px;
+  margin-top: auto;
 }

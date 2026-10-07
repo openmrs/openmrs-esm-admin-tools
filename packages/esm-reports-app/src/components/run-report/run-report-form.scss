@@ -12,10 +12,10 @@
 }
 
 .desktopRunReport {
+  flex: 1;
   background-color: $ui-background;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
 }
 
 .runReportInnerDivElement {
@@ -42,7 +42,7 @@
 }
 
 .buttonsDiv {
-  margin-top: 50px;
+  margin-top: auto;
 }
 
 .datePicker {
