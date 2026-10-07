@@ -21,18 +21,6 @@
     {
       "component": "root",
       "route": "reports"
-    },
-    {
-      "component": "overview",
-      "route": "overview"
-    },
-    {
-      "component": "scheduled-overview",
-      "route": "scheduled-overview"
-    },
-    {
-      "component": "reports-data-overview",
-      "route": "reports-data-overview"
     }
   ],
   "modals": [

@@ -17,10 +17,6 @@ export const root = getAsyncLifecycle(() => import('./reports.component'), optio
 
 export const reportsLink = getAsyncLifecycle(() => import('./reports-link'), options);
 
-export const overview = getAsyncLifecycle(() => import('./components/overview.component'), options);
-
-export const scheduledOverview = getAsyncLifecycle(() => import('./components/scheduled-overview.component'), options);
-
 export const runReport = getAsyncLifecycle(() => import('./components/run-report/run-report-form.component'), options);
 
 export const cancelReportModal = getAsyncLifecycle(
