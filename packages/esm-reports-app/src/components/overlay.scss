@@ -3,6 +3,8 @@
 @use '@openmrs/esm-styleguide/src/vars' as *;
 
 .desktopOverlay {
+  display: flex;
+  flex-direction: column;
   position: fixed;
   top: layout.$spacing-09;
   width: 700px;
@@ -21,6 +23,8 @@
 }
 
 .tabletOverlay {
+  display: flex;
+  flex-direction: column;
   position: fixed;
   top: 0;
   bottom: 0;
