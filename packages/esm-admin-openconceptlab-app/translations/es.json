@@ -48,6 +48,7 @@
   "subscriptionDeleted": "Cancelada la suscripción con éxito",
   "subscriptionError": "Se ha producido un error al obtener la suscripción",
   "subscriptionUrl": "URL de suscripción",
+  "unexpectedError": "An unexpected error occurred",
   "unsubscribe": "Cancelar suscripción",
   "unsubscribeButton": "Cancelar suscripción",
   "unsubscribeInfo": "Si te cancelas la suscripción, ningún concepto será eliminado ni modificado. Toda la información sobre la suscripción será eliminada de tu sistema.",

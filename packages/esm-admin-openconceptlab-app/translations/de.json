@@ -48,6 +48,7 @@
   "subscriptionDeleted": "Abonnement erfolgreich gekündigt",
   "subscriptionError": "Beim Abrufen des Abonnements ist ein Fehler aufgetreten",
   "subscriptionUrl": "Abbonement URL",
+  "unexpectedError": "An unexpected error occurred",
   "unsubscribe": "Abo beenden",
   "unsubscribeButton": "Abo beenden",
   "unsubscribeInfo": "Wenn Sie sich vom Abonnement abmelden, werden keine Konzepte gelöscht oder geändert. Alle Informationen zum Abonnement werden aus Ihrem System gelöscht.",

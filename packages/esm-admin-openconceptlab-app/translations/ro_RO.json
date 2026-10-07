@@ -48,6 +48,7 @@
   "subscriptionDeleted": "Abonament sters cu succes",
   "subscriptionError": "Eroare la incarcarea abonamentului",
   "subscriptionUrl": "URL abonament",
+  "unexpectedError": "An unexpected error occurred",
   "unsubscribe": "Dezaboneaza-te",
   "unsubscribeButton": "Dezaboneaza-te",
   "unsubscribeInfo": "Daca te dezabonezi, conceptele nu vor fi sterse sau modificate. Doar informatiile despre abonament vor fi sterse din sistem.",
