@@ -16,7 +16,7 @@ import {
   TextInputSkeleton,
 } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
-import { showNotification } from '@openmrs/esm-framework';
+import { OpenmrsFetchError, showNotification } from '@openmrs/esm-framework';
 import { deleteSubscription, updateSubscription, useSubscription } from './subscription.resource';
 import { isVersionDefinedInUrl } from '../utils';
 import styles from './subscription.scss';
@@ -89,12 +89,10 @@ const Subscription: React.FC = () => {
         validationType: validationType,
         subscribedToSnapshot: isSubscribedToSnapshot,
       };
-      mutate('/ws/rest/v1/openconceptlab/subscription?v=full', updatedSubscription, false);
 
-      const response = await updateSubscription(updatedSubscription, abortController);
-      mutate('/ws/rest/v1/openconceptlab/subscription?v=full');
-
-      if (response.ok) {
+      try {
+        const response = await updateSubscription(updatedSubscription, abortController);
+        mutate('/ws/rest/v1/openconceptlab/subscription?v=full');
         showNotification({
           kind: 'success',
           description: t(
@@ -102,12 +100,14 @@ const Subscription: React.FC = () => {
             response.status === 201 ? 'Subscription created successfully' : 'Subscription updated successfully',
           ),
         });
-      } else {
+      } catch (error) {
+        const responseBody = error instanceof OpenmrsFetchError ? error.responseBody : null;
+        const reason = typeof responseBody === 'object' && responseBody !== null ? responseBody.error?.message : null;
         showNotification({
           title: t('errorSavingSubscription', 'Error occured while saving the subscription'),
           kind: 'error',
           critical: true,
-          description: JSON.stringify(response.data),
+          description: reason ?? t('unexpectedError', 'An unexpected error occurred'),
         });
       }
 

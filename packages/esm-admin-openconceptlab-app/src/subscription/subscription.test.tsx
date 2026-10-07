@@ -2,7 +2,7 @@ import React from 'react';
 import { vi, describe, it, expect } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { screen, waitFor } from '@testing-library/react';
-import { type FetchResponse, openmrsFetch, showNotification } from '@openmrs/esm-framework';
+import { type FetchResponse, OpenmrsFetchError, openmrsFetch, showNotification } from '@openmrs/esm-framework';
 import { renderWithSwr } from '@tools/test-helpers';
 import { mockSubscription } from '@mocks/openconceptlab.mock';
 import { deleteSubscription, updateSubscription } from './subscription.resource';
@@ -49,7 +49,7 @@ describe('Subscription component', () => {
     expect(screen.getByRole('button', { name: /danger\s*Unsubscribe/i })).toBeEnabled();
   });
 
-  it.skip('allows adding a new subscription', async () => {
+  it('allows adding a new subscription', async () => {
     const user = userEvent.setup();
     mockOpenmrsFetch.mockResolvedValueOnce({ data: { results: [] } } as unknown as FetchResponse);
     renderWithSwr(<Subscription />);
@@ -80,7 +80,7 @@ describe('Subscription component', () => {
     expect(mockShowNotification).toHaveBeenCalledTimes(1);
   });
 
-  it.skip('allows changing the saved subscription', async () => {
+  it('allows changing the saved subscription', async () => {
     const user = userEvent.setup();
     mockOpenmrsFetch.mockResolvedValueOnce({ data: { results: [mockSubscription] } } as unknown as FetchResponse);
     renderWithSwr(<Subscription />);
@@ -116,6 +116,44 @@ describe('Subscription component', () => {
       }),
     );
     expect(mockShowNotification).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps the entered values and shows an error when saving the subscription fails', async () => {
+    const user = userEvent.setup();
+    mockOpenmrsFetch.mockResolvedValueOnce({ data: { results: [] } } as unknown as FetchResponse);
+    renderWithSwr(<Subscription />);
+    await waitForLoadingToFinish();
+
+    const urlInputField = screen.getByLabelText('Subscription URL');
+    const tokenInputField = screen.getByLabelText('Token');
+    const saveButton = screen.getByRole('button', { name: 'Save changes' });
+
+    mockUpdateSubscription.mockRejectedValueOnce(
+      new OpenmrsFetchError(
+        '/ws/rest/v1/openconceptlab/subscription',
+        new Response(null, { status: 500, statusText: 'Internal Server Error' }),
+        { error: { message: 'Wrong url address' } },
+        new Error(),
+      ),
+    );
+
+    await user.type(urlInputField, mockSubscription.url);
+    await user.type(tokenInputField, mockSubscription.token);
+    await user.click(saveButton);
+
+    await waitFor(() =>
+      expect(mockShowNotification).toHaveBeenCalledWith(
+        expect.objectContaining({
+          kind: 'error',
+          title: 'Error occured while saving the subscription',
+          description: 'Wrong url address',
+        }),
+      ),
+    );
+    expect(mockUpdateSubscription).toHaveBeenCalledTimes(1);
+    expect(mockOpenmrsFetch).toHaveBeenCalledTimes(1);
+    expect(urlInputField).toHaveValue(mockSubscription.url);
+    expect(tokenInputField).toHaveValue(mockSubscription.token);
   });
 
   it.skip('allows removing the saved subscription', async () => {
