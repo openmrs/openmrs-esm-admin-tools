@@ -17,14 +17,6 @@ import { showNotification } from '@openmrs/esm-framework';
 import { startImportWithFile, startImportWithSubscription, useSubscription } from './import.resource';
 import styles from './import.scss';
 
-// MIME types the backend accepts for a ZIP upload; browsers report ZIPs under any of these, or with no type at all.
-const allowedMimeTypes = [
-  'application/zip',
-  'application/x-zip-compressed',
-  'application/x-zip',
-  'application/octet-stream',
-];
-
 const isZipFile = (file: File) => file.name.toLowerCase().endsWith('.zip');
 
 const Import: React.FC = () => {
@@ -43,8 +35,8 @@ const Import: React.FC = () => {
 
   const onAddFiles = useCallback(
     (evt: React.DragEvent<HTMLInputElement>, { addedFiles }) => {
-      const fileToUpload: File = addedFiles[0];
-      if (!isZipFile(fileToUpload)) {
+      const fileToUpload: File | undefined = addedFiles[0];
+      if (!fileToUpload || !isZipFile(fileToUpload)) {
         showNotification({
           kind: 'error',
           description: t('fileFormatError', 'Only .zip files are allowed'),
@@ -188,7 +180,7 @@ const Import: React.FC = () => {
             />
           ) : (
             <FileUploaderDropContainer
-              accept={['.zip', ...allowedMimeTypes]}
+              accept={['.zip']}
               multiple
               labelText={t('importFromFileDragInfo', 'Drag and drop file here or click to upload')}
               onAddFiles={onAddFiles}

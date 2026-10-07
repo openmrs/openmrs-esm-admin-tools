@@ -24,7 +24,7 @@ vi.mock('./import.resource', async () => {
 
 describe('Import component', () => {
   it('accepts a .zip file whatever MIME type the browser reports, and rejects other files', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ applyAccept: false });
     mockOpenmrsFetch.mockResolvedValueOnce({ data: { results: [] } } as unknown as FetchResponse);
     renderWithSwr(<Import />);
     await waitForLoadingToFinish();
@@ -36,6 +36,10 @@ describe('Import component', () => {
       expect.objectContaining({ kind: 'error', description: 'Only .zip files are allowed' }),
     );
     expect(screen.queryByText('concepts.bin')).not.toBeInTheDocument();
+
+    // Carbon drops a file whose name fails its extension pattern, so onAddFiles receives an empty list.
+    await user.upload(dropZone, new File(['x'], 'README_', { type: '' }));
+    expect(mockShowNotification).toHaveBeenCalledTimes(2);
 
     await user.upload(dropZone, new File(['zip'], 'concepts.zip', { type: '' }));
     expect(await screen.findByText('concepts.zip')).toBeInTheDocument();
