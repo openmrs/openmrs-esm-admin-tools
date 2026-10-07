@@ -9,6 +9,11 @@
     }
   }
 
+  .pageHeader {
+    background-color: colors.$white-0;
+    border-block: 1px solid colors.$gray-20;
+  }
+
   .cardsView {
     background-color: colors.$gray-10;
     padding-top: 3rem;
