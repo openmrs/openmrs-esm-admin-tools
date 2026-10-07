@@ -43,8 +43,9 @@ const ViewMetadataPackageWorkspace: React.FC<Workspace2DefinitionProps<ViewPacka
   const { mutate: globalMutate } = useSWRConfig();
   const { builds, isLoading, error, mutate: mutateBuilds } = usePackageBuilds(exportPackage.uuid);
 
-  // Downloading a build hits a Manage-gated backend endpoint, so hide it from Get-only viewers.
   const canManage = session.user ? userHasAccess('Manage Metadata Export Packages', session.user) : false;
+  // The build download endpoint requires the Download privilege, independently of Manage.
+  const canDownload = session.user ? userHasAccess('Download Metadata Export Packages', session.user) : false;
   const [isTriggeringBuild, setIsTriggeringBuild] = useState(false);
 
   const handleTriggerBuild = useCallback(async () => {
@@ -196,7 +197,7 @@ const ViewMetadataPackageWorkspace: React.FC<Workspace2DefinitionProps<ViewPacka
                     {build.status === 'FAILED' && build.errorMessage && (
                       <p className={styles.buildError}>{build.errorMessage}</p>
                     )}
-                    {canManage && build.downloadUrl && (
+                    {canDownload && build.downloadUrl && (
                       <Link
                         href={makeUrl(`${restBaseUrl}/metadataexport/builds/${build.uuid}/download`)}
                         renderIcon={() => <Download size={16} />}

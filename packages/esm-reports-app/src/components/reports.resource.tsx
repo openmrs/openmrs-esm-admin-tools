@@ -1,11 +1,12 @@
 import dayjs from 'dayjs';
-import useSWR from 'swr';
+import useSWR, { useSWRConfig } from 'swr';
 import { openmrsFetch } from '@openmrs/esm-framework';
 import { type ReportDefinition } from '../types/report-definition';
 import { type ReportDesign } from '../types/report-design';
 import { type ReportRequest } from '../types/report-request';
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
+import { PROCESSING_REPORT_STATUSES } from './report-statuses-constants';
 
 interface ReportModel {
   reportName: string;
@@ -42,9 +43,19 @@ export function useReports(statuses: string, pageNumber: number, pageSize: numbe
     `/ws/rest/v1/reportingrest/reportRequest?status=${statuses}&startIndex=${pageNumber}&limit=${pageSize}&totalCount=true` +
     (sortBy ? `&sortBy=${sortBy}` : '');
 
+  // Poll while any listed request is still being processed. The interval is derived from the cached
+  // list rather than passed as a function, because SWR re-arms a function interval on every render,
+  // which keeps pushing the next poll out.
+  const { cache } = useSWRConfig();
+  const cachedReports: Array<{ status: string }> =
+    (cache.get(reportsUrl) as { data?: { data?: { results?: Array<{ status: string }> } } } | undefined)?.data?.data
+      ?.results ?? [];
+  const hasProcessingReport = cachedReports.some((report) => PROCESSING_REPORT_STATUSES.includes(report.status));
+
   const { data, error, isValidating, mutate } = useSWR<{ data: { results: Array<any>; totalCount: number } }, Error>(
     reportsUrl,
     openmrsFetch,
+    { refreshInterval: hasProcessingReport ? 5000 : 0 },
   );
 
   const reports = data?.data?.results;
