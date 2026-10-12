@@ -312,6 +312,24 @@ describe('ViewPackageWorkspace', () => {
     );
   });
 
+  it('closes the workspace when Close is clicked', async () => {
+    const user = userEvent.setup();
+    renderWorkspace();
+
+    await user.click(screen.getByRole('button', { name: 'Close' }));
+
+    expect(mockCloseWorkspace).toHaveBeenCalled();
+  });
+
+  it('hides the edit, delete, and trigger build actions from users without the manage privilege', () => {
+    mockUserHasAccess.mockReturnValue(false);
+    renderWorkspace();
+
+    expect(screen.queryByRole('button', { name: 'Edit' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Delete' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Trigger new build' })).not.toBeInTheDocument();
+  });
+
   it('launches a modal name that is registered in routes.json', async () => {
     const user = userEvent.setup();
     renderWorkspace();

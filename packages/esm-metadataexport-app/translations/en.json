@@ -6,6 +6,7 @@
   "buildTriggerFailed": "Failed to trigger build",
   "buildVersion": "Build {{version}}",
   "cancel": "Cancel",
+  "close": "Close",
   "COMPLETED": "Completed",
   "completedAgo": "Completed {{time}} ago",
   "createPackage": "Create package",

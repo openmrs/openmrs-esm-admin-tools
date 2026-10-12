@@ -168,6 +168,24 @@ describe('PackagesTable', () => {
     expect(mockLaunchViewPackageWorkspace).toHaveBeenCalledTimes(2);
   });
 
+  it('renders the columns in the order name, description, domains, status', () => {
+    mockUsePackages.mockReturnValue({
+      packages: [builtPackage],
+      totalCount: 1,
+      currentPage: 1,
+      currentPageSize: 10,
+      goTo: vi.fn(),
+      isLoading: false,
+      isValidating: false,
+      error: undefined,
+      mutate: vi.fn(),
+    });
+    render(<PackagesTable />);
+
+    const columnHeaders = screen.getAllByRole('columnheader').map((header) => header.textContent);
+    expect(columnHeaders.slice(0, 4)).toEqual(['Package name', 'Description', 'Domains', 'Status']);
+  });
+
   // 25 packages across pages of 10 gives three pages, so both Next and the page-size selector are active.
   const firstPageOfMany = Array.from({ length: 10 }, (_, index) => ({
     ...unbuiltPackage,
