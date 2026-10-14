@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Download, Edit, TrashCan } from '@carbon/react/icons';
+import { Download, Edit, Package, TrashCan } from '@carbon/react/icons';
 import { Button, ButtonSet, IconButton, InlineLoading, Link, Tag } from '@carbon/react';
 import { useSWRConfig } from 'swr';
 import {
@@ -115,6 +115,14 @@ const ViewMetadataPackageWorkspace: React.FC<Workspace2DefinitionProps<ViewPacka
     }
   }, [closeWorkspace, exportPackage.uuid]);
 
+  const hasNoBuilds = !isLoading && !error && builds.length === 0;
+
+  const triggerBuildLabel = isTriggeringBuild ? (
+    <InlineLoading description={t('triggeringBuild', 'Triggering build') + '…'} />
+  ) : (
+    t('triggerNewBuild', 'Trigger new build')
+  );
+
   return (
     <Workspace2 title={exportPackage.name}>
       <div className={styles.container}>
@@ -160,8 +168,25 @@ const ViewMetadataPackageWorkspace: React.FC<Workspace2DefinitionProps<ViewPacka
               <InlineLoading description={t('loadingBuilds', 'Loading builds…')} />
             ) : error ? (
               <ErrorState error={error} headerTitle={t('builds', 'Builds')} />
-            ) : builds.length === 0 ? (
-              <p className={styles.emptyBuilds}>{t('noBuildsYet', 'No builds yet')}</p>
+            ) : hasNoBuilds ? (
+              <div className={styles.emptyBuildsContainer}>
+                <Package size={32} className={styles.emptyBuildsIcon} />
+                <p className={styles.emptyBuildsTitle}>{t('noBuildsYet', 'No builds created yet')}</p>
+                <p className={styles.emptyBuildsDescription}>
+                  {t('noBuildsDescription', 'Build files allow you to export your metadata package for deployment.')}
+                </p>
+                {canManage && (
+                  <Button
+                    className={styles.emptyBuildsAction}
+                    kind="primary"
+                    size="md"
+                    onClick={handleTriggerBuild}
+                    disabled={isTriggeringBuild}
+                  >
+                    {triggerBuildLabel}
+                  </Button>
+                )}
+              </div>
             ) : (
               <ul className={styles.buildList}>
                 {builds.map((build) => (
@@ -206,17 +231,13 @@ const ViewMetadataPackageWorkspace: React.FC<Workspace2DefinitionProps<ViewPacka
           </section>
         </div>
 
-        {canManage && (
+        {canManage && !isLoading && !hasNoBuilds && (
           <ButtonSet className={isTablet ? styles.tabletButtonSet : styles.desktopButtonSet}>
             <Button className={styles.button} kind="secondary" onClick={() => closeWorkspace()}>
               {t('close', 'Close')}
             </Button>
             <Button className={styles.button} kind="primary" onClick={handleTriggerBuild} disabled={isTriggeringBuild}>
-              {isTriggeringBuild ? (
-                <InlineLoading description={t('triggeringBuild', 'Triggering build') + '…'} />
-              ) : (
-                t('triggerNewBuild', 'Trigger new build')
-              )}
+              {triggerBuildLabel}
             </Button>
           </ButtonSet>
         )}
