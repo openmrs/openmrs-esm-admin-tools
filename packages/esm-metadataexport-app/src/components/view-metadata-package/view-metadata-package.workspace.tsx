@@ -8,6 +8,7 @@ import {
   OpenmrsFetchError,
   formatDurationBetween,
   makeUrl,
+  parseDate,
   restBaseUrl,
   showModal,
   showSnackbar,
@@ -182,14 +183,17 @@ const ViewMetadataPackageWorkspace: React.FC<Workspace2DefinitionProps<ViewPacka
                     </div>
                     <div className={styles.buildRow}>
                       <span className={styles.buildMeta}>
+                        {/* Parse first: formatDurationBetween reads date strings as local time, dropping their offset */}
                         {build.dateStarted
-                          ? t('startedAgo', 'Started {{time}} ago', { time: formatDurationBetween(build.dateStarted) })
+                          ? t('startedAgo', 'Started {{time}} ago', {
+                              time: formatDurationBetween(parseDate(build.dateStarted)),
+                            })
                           : t('notStarted', 'Not started')}
                       </span>
                       {build.dateCompleted && (
                         <span className={styles.buildMeta}>
                           {t('completedAgo', 'Completed {{time}} ago', {
-                            time: formatDurationBetween(build.dateCompleted),
+                            time: formatDurationBetween(parseDate(build.dateCompleted)),
                           })}
                         </span>
                       )}

@@ -41,9 +41,9 @@ const build = (overrides: Partial<ExportPackageBuild> = {}): ExportPackageBuild 
   packageUuid: '361d69db-c018-4545-87a7-e987e8af9e85',
   version: 2,
   status: 'COMPLETED',
-  dateCreated: Date.now() - 15 * 60 * 1000,
-  dateStarted: Date.now() - 10 * 60 * 1000,
-  dateCompleted: Date.now() - 5 * 60 * 1000,
+  dateCreated: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
+  dateStarted: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
+  dateCompleted: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
   errorMessage: null,
   downloadUrl: '/download/build-1',
   manifest: null,
@@ -55,7 +55,7 @@ const exportPackage: ExportPackage = {
   name: 'Core reference data',
   description: 'Some notes',
   retired: false,
-  dateCreated: Date.now(),
+  dateCreated: '2026-10-14T14:22:47.000+0000',
   entries: [
     { domain: 'CONCEPTS', itemUuids: [] },
     { domain: 'ENCOUNTER_TYPES', itemUuids: [] },
@@ -141,6 +141,26 @@ describe('ViewPackageWorkspace', () => {
       'href',
       `/openmrs/ws/rest/v1/metadataexport/builds/${build().uuid}/download`,
     );
+  });
+
+  it('shows build times relative to now regardless of the browser timezone', () => {
+    const originalTimezone = process.env.TZ;
+    process.env.TZ = 'Asia/Jerusalem';
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-10-14T14:25:00.000Z'));
+    try {
+      // The REST API serializes dates as ISO 8601 strings with a UTC offset
+      mockBuilds({
+        builds: [build({ dateStarted: '2026-10-14T14:22:47.000+0000', dateCompleted: '2026-10-14T14:23:00.000+0000' })],
+      });
+      renderWorkspace();
+
+      expect(screen.getByText('Started 2 min ago')).toBeInTheDocument();
+      expect(screen.getByText('Completed 2 min ago')).toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+      process.env.TZ = originalTimezone;
+    }
   });
 
   it('shows the download link to users with only the Download Metadata Export Packages privilege', () => {

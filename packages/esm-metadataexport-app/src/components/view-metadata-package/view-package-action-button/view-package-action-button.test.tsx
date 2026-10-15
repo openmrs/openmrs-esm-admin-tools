@@ -22,7 +22,7 @@ const mockPackage: ExportPackage = {
   name: 'Core data',
   description: 'testing one',
   retired: false,
-  dateCreated: 0,
+  dateCreated: '2026-10-14T14:22:47.000+0000',
   entries: [],
   latestBuild: null,
 };
