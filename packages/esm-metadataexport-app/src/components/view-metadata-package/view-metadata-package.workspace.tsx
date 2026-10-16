@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Download } from '@carbon/react/icons';
-import { Button, InlineLoading, Link, Tag } from '@carbon/react';
+import { Download, Edit, Package, TrashCan } from '@carbon/react/icons';
+import { Button, ButtonSet, IconButton, InlineLoading, Link, Tag } from '@carbon/react';
 import { useSWRConfig } from 'swr';
 import {
   ErrorState,
@@ -11,6 +11,7 @@ import {
   restBaseUrl,
   showModal,
   showSnackbar,
+  useLayoutType,
   useSession,
   userHasAccess,
   Workspace2,
@@ -40,6 +41,7 @@ const ViewMetadataPackageWorkspace: React.FC<Workspace2DefinitionProps<ViewPacka
   const { exportPackage } = workspaceProps;
   const { t } = useTranslation();
   const session = useSession();
+  const isTablet = useLayoutType() === 'tablet';
   const { mutate: globalMutate } = useSWRConfig();
   const { builds, isLoading, error, mutate: mutateBuilds } = usePackageBuilds(exportPackage.uuid);
 
@@ -113,47 +115,47 @@ const ViewMetadataPackageWorkspace: React.FC<Workspace2DefinitionProps<ViewPacka
     }
   }, [closeWorkspace, exportPackage.uuid]);
 
+  const hasNoBuilds = !isLoading && !error && builds.length === 0;
+
+  const triggerBuildLabel = isTriggeringBuild ? (
+    <InlineLoading description={t('triggeringBuild', 'Triggering build') + '…'} />
+  ) : (
+    t('triggerNewBuild', 'Trigger new build')
+  );
+
   return (
     <Workspace2 title={exportPackage.name}>
       <div className={styles.container}>
         <div className={styles.body}>
-          {canManage && (
-            <section className={styles.actionRow}>
-              <Button
-                className={styles.triggerButton}
-                kind="primary"
-                onClick={handleTriggerBuild}
-                disabled={isTriggeringBuild}
-              >
-                {isTriggeringBuild ? (
-                  <InlineLoading description={t('triggeringBuild', 'Triggering build') + '…'} />
-                ) : (
-                  t('triggerNewBuild', 'Trigger new build')
-                )}
-              </Button>
-              <div className={styles.secondaryActions}>
-                <Button
-                  className={styles.secondaryButton}
-                  kind="secondary"
-                  onClick={editPackage}
-                  disabled={isTriggeringBuild}
-                >
-                  {t('edit', 'Edit')}
-                </Button>
-                <Button
-                  className={styles.secondaryButton}
-                  kind="danger--tertiary"
-                  onClick={launchDeleteModal}
-                  disabled={isTriggeringBuild}
-                >
-                  {t('delete', 'Delete')}
-                </Button>
-              </div>
-            </section>
-          )}
-
           <section className={styles.section}>
-            <span className={styles.sectionLabel}>{t('details', 'Details')}</span>
+            <div className={styles.sectionHeader}>
+              <span className={styles.sectionLabel}>{t('details', 'Details')}</span>
+              {canManage && (
+                <div className={styles.managementActions}>
+                  <IconButton
+                    kind="ghost"
+                    size="sm"
+                    align="bottom"
+                    label={t('edit', 'Edit')}
+                    onClick={editPackage}
+                    disabled={isTriggeringBuild}
+                  >
+                    <Edit size={16} />
+                  </IconButton>
+                  <IconButton
+                    className={styles.deleteButton}
+                    kind="ghost"
+                    size="sm"
+                    align="bottom-end"
+                    label={t('delete', 'Delete')}
+                    onClick={launchDeleteModal}
+                    disabled={isTriggeringBuild}
+                  >
+                    <TrashCan size={16} />
+                  </IconButton>
+                </div>
+              )}
+            </div>
             <dl className={styles.detailList}>
               <dt className={styles.detailKey}>{t('domains', 'Domains')}</dt>
               <dd className={styles.detailValue}>{domainsLabel}</dd>
@@ -166,8 +168,25 @@ const ViewMetadataPackageWorkspace: React.FC<Workspace2DefinitionProps<ViewPacka
               <InlineLoading description={t('loadingBuilds', 'Loading builds…')} />
             ) : error ? (
               <ErrorState error={error} headerTitle={t('builds', 'Builds')} />
-            ) : builds.length === 0 ? (
-              <p className={styles.emptyBuilds}>{t('noBuildsYet', 'No builds yet')}</p>
+            ) : hasNoBuilds ? (
+              <div className={styles.emptyBuildsContainer}>
+                <Package size={32} className={styles.emptyBuildsIcon} />
+                <p className={styles.emptyBuildsTitle}>{t('noBuildsYet', 'No builds created yet')}</p>
+                <p className={styles.emptyBuildsDescription}>
+                  {t('noBuildsDescription', 'Build files allow you to export your metadata package for deployment.')}
+                </p>
+                {canManage && (
+                  <Button
+                    className={styles.emptyBuildsAction}
+                    kind="primary"
+                    size="md"
+                    onClick={handleTriggerBuild}
+                    disabled={isTriggeringBuild}
+                  >
+                    {triggerBuildLabel}
+                  </Button>
+                )}
+              </div>
             ) : (
               <ul className={styles.buildList}>
                 {builds.map((build) => (
@@ -211,6 +230,17 @@ const ViewMetadataPackageWorkspace: React.FC<Workspace2DefinitionProps<ViewPacka
             )}
           </section>
         </div>
+
+        {canManage && !isLoading && !hasNoBuilds && (
+          <ButtonSet className={isTablet ? styles.tabletButtonSet : styles.desktopButtonSet}>
+            <Button className={styles.button} kind="secondary" onClick={() => closeWorkspace()}>
+              {t('close', 'Close')}
+            </Button>
+            <Button className={styles.button} kind="primary" onClick={handleTriggerBuild} disabled={isTriggeringBuild}>
+              {triggerBuildLabel}
+            </Button>
+          </ButtonSet>
+        )}
       </div>
     </Workspace2>
   );

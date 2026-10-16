@@ -126,7 +126,7 @@ describe('ViewPackageWorkspace', () => {
   it('shows an empty message when there are no builds', () => {
     renderWorkspace();
 
-    expect(screen.getByText('No builds yet')).toBeInTheDocument();
+    expect(screen.getByText('No builds created yet')).toBeInTheDocument();
   });
 
   it('renders each build with its version, status, and download link', () => {
@@ -310,6 +310,52 @@ describe('ViewPackageWorkspace', () => {
         closeModal: expect.any(Function),
       }),
     );
+  });
+
+  it('shows the trigger build action inside the empty builds section when there are no builds', () => {
+    renderWorkspace();
+
+    expect(screen.getByText('No builds created yet')).toBeInTheDocument();
+    expect(
+      screen.getByText('Build files allow you to export your metadata package for deployment.'),
+    ).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: 'Trigger new build' })).toHaveLength(1);
+    expect(screen.queryByRole('button', { name: 'Close' })).not.toBeInTheDocument();
+  });
+
+  it('shows the close and trigger build actions in the footer once builds exist', () => {
+    mockBuilds({ builds: [build()] });
+    renderWorkspace();
+
+    expect(screen.queryByText('No builds created yet')).not.toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: 'Trigger new build' })).toHaveLength(1);
+    expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
+  });
+
+  it('closes the workspace when Close is clicked', async () => {
+    const user = userEvent.setup();
+    mockBuilds({ builds: [build()] });
+    renderWorkspace();
+
+    await user.click(screen.getByRole('button', { name: 'Close' }));
+
+    expect(mockCloseWorkspace).toHaveBeenCalled();
+  });
+
+  it('does not show the trigger build action while builds are loading', () => {
+    mockBuilds({ isLoading: true });
+    renderWorkspace();
+
+    expect(screen.queryByRole('button', { name: 'Trigger new build' })).not.toBeInTheDocument();
+  });
+
+  it('hides the edit, delete, and trigger build actions from users without the manage privilege', () => {
+    mockUserHasAccess.mockReturnValue(false);
+    renderWorkspace();
+
+    expect(screen.queryByRole('button', { name: 'Edit' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Delete' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Trigger new build' })).not.toBeInTheDocument();
   });
 
   it('launches a modal name that is registered in routes.json', async () => {
