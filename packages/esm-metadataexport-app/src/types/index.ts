@@ -22,9 +22,9 @@ export interface ExportPackageBuild {
   packageUuid: string;
   version: number;
   status: ExportBuildStatus;
-  dateCreated: number;
-  dateStarted: number | null;
-  dateCompleted: number | null;
+  dateCreated: string;
+  dateStarted: string | null;
+  dateCompleted: string | null;
   errorMessage: string | null;
   downloadUrl: string | null;
   manifest: unknown | null;
@@ -35,7 +35,7 @@ export interface ExportPackage {
   name: string;
   description: string;
   retired: boolean;
-  dateCreated: number;
+  dateCreated: string;
   entries: Array<ExportPackageEntry>;
   latestBuild: ExportPackageBuild | null;
 }
