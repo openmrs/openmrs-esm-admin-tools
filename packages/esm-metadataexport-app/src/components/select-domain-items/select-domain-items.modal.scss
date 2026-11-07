@@ -1,0 +1,53 @@
+@use '@carbon/layout';
+@use '@carbon/type';
+@use '@openmrs/esm-styleguide/src/vars' as *;
+
+.modalBody {
+  padding-bottom: layout.$spacing-05;
+}
+
+.description {
+  @include type.type-style('body-01');
+  color: $text-02;
+  margin-bottom: layout.$spacing-05;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: layout.$spacing-05;
+  margin-bottom: layout.$spacing-05;
+}
+
+.viewSwitcher {
+  flex: 0 0 auto;
+  inline-size: 18rem;
+}
+
+.search {
+  flex: 1 1 16rem;
+}
+
+.itemName {
+  display: inline-flex;
+  align-items: center;
+  gap: layout.$spacing-03;
+}
+
+.emptyState {
+  @include type.type-style('body-01');
+  color: $text-02;
+  padding: layout.$spacing-05;
+  border-bottom: 1px solid $ui-03;
+}
+
+.selectionSummary {
+  @include type.type-style('body-01');
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: layout.$spacing-05;
+  color: $text-02;
+  margin-top: layout.$spacing-05;
+}
