@@ -1,15 +1,28 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { OpenmrsFetchError, showSnackbar, Workspace2, type Workspace2DefinitionProps } from '@openmrs/esm-framework';
+import {
+  OpenmrsFetchError,
+  showModal,
+  showSnackbar,
+  Workspace2,
+  type Workspace2DefinitionProps,
+} from '@openmrs/esm-framework';
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { useDomains } from '../../domain-lookups/domain-lookups.resource';
+import { useMetadataItemCount, useMetadataItemsByUuid } from '../../items/items.resource';
 import { createPackage, editPackage, usePackage } from '../../packages/packages.resource';
+import type { MetadataItem } from '../../types';
 import MetadataPackageFormWorkspace from './metadata-package-form.workspace';
 
 vi.mock('../../domain-lookups/domain-lookups.resource', async (importOriginal) => ({
   ...(await importOriginal<object>()),
   useDomains: vi.fn(),
+}));
+
+vi.mock('../../items/items.resource', () => ({
+  useMetadataItemCount: vi.fn(),
+  useMetadataItemsByUuid: vi.fn(),
 }));
 
 vi.mock('../../packages/packages.resource', () => ({
@@ -24,6 +37,9 @@ const mockCreatePackage = createPackage as Mock;
 const mockEditPackage = editPackage as Mock;
 const mockUsePackage = usePackage as Mock;
 const mockShowSnackbar = showSnackbar as Mock;
+const mockShowModal = showModal as Mock;
+const mockUseMetadataItemCount = useMetadataItemCount as Mock;
+const mockUseMetadataItemsByUuid = useMetadataItemsByUuid as Mock;
 const mockCloseWorkspace = vi.fn();
 const mockWorkspace2 = vi.mocked(Workspace2);
 
@@ -63,6 +79,9 @@ describe('PackageFormWorkspace', () => {
     mockUsePackage.mockReturnValue({ exportPackage: undefined, isLoading: false, error: undefined });
     mockCreatePackage.mockResolvedValue({ data: {} });
     mockEditPackage.mockResolvedValue({ data: {} });
+    mockUseMetadataItemCount.mockReturnValue({ totalCount: 7 });
+    mockUseMetadataItemsByUuid.mockReturnValue({ itemsByUuid: undefined, error: undefined });
+    mockShowModal.mockReturnValue(vi.fn());
   });
 
   it('renders a checkbox for each domain with a human-readable label', () => {
@@ -231,6 +250,116 @@ describe('PackageFormWorkspace', () => {
     );
   });
 
+  describe('choosing items', () => {
+    const punctuality: MetadataItem = {
+      uuid: 'uuid-1',
+      display: 'Punctuality',
+      domain: 'ATTRIBUTE_TYPES',
+      retired: false,
+    };
+    const paymentMethod: MetadataItem = {
+      uuid: 'uuid-2',
+      display: 'Payment Method',
+      domain: 'ATTRIBUTE_TYPES',
+      retired: false,
+    };
+
+    // Opens the picker for a domain and applies the given items as if the user picked them.
+    async function selectItemsInModal(user: ReturnType<typeof userEvent.setup>, items: Array<MetadataItem>) {
+      await user.click(screen.getByRole('button', { name: 'Choose items' }));
+      const { onApply } = mockShowModal.mock.lastCall[1];
+      act(() => onApply(items));
+    }
+
+    it('offers "Choose items" for a selected domain, which exports all items by default', async () => {
+      const user = userEvent.setup();
+      renderWorkspace();
+
+      expect(screen.queryByRole('button', { name: 'Choose items' })).not.toBeInTheDocument();
+
+      await user.click(screen.getByRole('checkbox', { name: 'Attribute types' }));
+
+      expect(screen.getByText('All items')).toBeInTheDocument();
+      await user.click(screen.getByRole('button', { name: 'Choose items' }));
+      expect(mockShowModal).toHaveBeenCalledWith(
+        'select-domain-items-modal',
+        expect.objectContaining({
+          domain: 'ATTRIBUTE_TYPES',
+          packageFormTitle: 'New package',
+          initiallySelectedItems: [],
+        }),
+      );
+    });
+
+    it('shows the picked items as tags with a count, and sends their uuids', async () => {
+      const user = userEvent.setup();
+      renderWorkspace();
+
+      await user.type(screen.getByRole('textbox', { name: 'Package name' }), 'Billing');
+      await user.click(screen.getByRole('checkbox', { name: 'Attribute types' }));
+      await selectItemsInModal(user, [punctuality, paymentMethod]);
+
+      expect(screen.getByText('2 of 7')).toBeInTheDocument();
+      expect(screen.getByText('Punctuality')).toBeInTheDocument();
+      expect(screen.getByText('Payment Method')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Edit' })).toBeInTheDocument();
+
+      await user.click(screen.getByRole('button', { name: 'Create package' }));
+
+      expect(mockCreatePackage).toHaveBeenCalledWith(
+        expect.objectContaining({ entries: [{ domain: 'ATTRIBUTE_TYPES', itemUuids: ['uuid-1', 'uuid-2'] }] }),
+      );
+    });
+
+    it('removes an item when its tag is dismissed, and falls back to all items when none are left', async () => {
+      const user = userEvent.setup();
+      renderWorkspace();
+
+      await user.click(screen.getByRole('checkbox', { name: 'Attribute types' }));
+      await selectItemsInModal(user, [punctuality]);
+
+      await user.click(screen.getByRole('button', { name: 'Remove Punctuality' }));
+
+      expect(screen.queryByText('Punctuality')).not.toBeInTheDocument();
+      expect(screen.getByText('All items')).toBeInTheDocument();
+    });
+
+    it('drops the picked items when the domain is unchecked', async () => {
+      const user = userEvent.setup();
+      renderWorkspace();
+
+      const checkbox = screen.getByRole('checkbox', { name: 'Attribute types' });
+      await user.click(checkbox);
+      await selectItemsInModal(user, [punctuality]);
+      await user.click(checkbox);
+      await user.click(checkbox);
+
+      expect(screen.getByText('All items')).toBeInTheDocument();
+      expect(screen.queryByText('Punctuality')).not.toBeInTheDocument();
+    });
+
+    it('does not send an empty entries array when every domain is selected but one has picked items', async () => {
+      const user = userEvent.setup();
+      renderWorkspace();
+
+      await user.type(screen.getByRole('textbox', { name: 'Package name' }), 'Everything');
+      await user.click(screen.getByRole('checkbox', { name: 'Select all' }));
+      await user.click(screen.getAllByRole('button', { name: 'Choose items' })[0]);
+      act(() => mockShowModal.mock.lastCall[1].onApply([punctuality]));
+      await user.click(screen.getByRole('button', { name: 'Create package' }));
+
+      expect(mockCreatePackage).toHaveBeenCalledWith(
+        expect.objectContaining({
+          entries: [
+            { domain: 'ATTRIBUTE_TYPES', itemUuids: ['uuid-1'] },
+            { domain: 'CONCEPTS' },
+            { domain: 'ENCOUNTER_TYPES' },
+          ],
+        }),
+      );
+    });
+  });
+
   describe('edit mode', () => {
     const uuid = 'package-uuid';
 
@@ -321,6 +450,33 @@ describe('PackageFormWorkspace', () => {
       for (const label of ['Attribute types', 'Concepts', 'Encounter types']) {
         expect(screen.getByRole('checkbox', { name: label })).toBeChecked();
       }
+    });
+
+    it('resolves saved item uuids into tags, marking ones the domain no longer exports', () => {
+      mockUsePackage.mockReturnValue({
+        exportPackage: {
+          name: 'Billing',
+          description: '',
+          entries: [{ domain: 'ATTRIBUTE_TYPES', itemUuids: ['uuid-1', 'deleted-uuid'] }],
+        },
+        isLoading: false,
+        error: undefined,
+      });
+      mockUseMetadataItemsByUuid.mockImplementation((_domain: string, uuids: Array<string>) => ({
+        itemsByUuid: uuids.length
+          ? new Map<string, MetadataItem | null>([
+              ['uuid-1', { uuid: 'uuid-1', display: 'Punctuality', domain: 'ATTRIBUTE_TYPES', retired: false }],
+              ['deleted-uuid', null],
+            ])
+          : undefined,
+        error: undefined,
+      }));
+      renderWorkspace(uuid);
+
+      expect(screen.getByRole('checkbox', { name: 'Attribute types' })).toBeChecked();
+      expect(screen.getByText('2 of 7')).toBeInTheDocument();
+      expect(screen.getByText('Punctuality')).toBeInTheDocument();
+      expect(screen.getByText('Unavailable item')).toBeInTheDocument();
     });
 
     it('updates the package via editPackage, shows a snackbar, and closes the workspace', async () => {
