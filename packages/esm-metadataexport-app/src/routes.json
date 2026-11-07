@@ -22,6 +22,10 @@
     {
       "name": "delete-metadata-package-modal",
       "component": "deleteMetadataPackageModal"
+    },
+    {
+      "name": "select-domain-items-modal",
+      "component": "selectDomainItemsModal"
     }
   ],
   "workspaceGroups2": [
