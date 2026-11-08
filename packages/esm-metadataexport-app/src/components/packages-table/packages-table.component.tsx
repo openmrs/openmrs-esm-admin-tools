@@ -49,8 +49,8 @@ const PackagesTable: React.FC = () => {
   const headers = useMemo(
     () => [
       { key: 'name', header: t('packageName', 'Package name') },
-      { key: 'domains', header: t('domains', 'Domains') },
       { key: 'description', header: t('description', 'Description') },
+      { key: 'domains', header: t('domains', 'Domains') },
       { key: 'status', header: t('status', 'Status') },
       { key: 'actions', header: ' ' },
     ],
@@ -62,11 +62,11 @@ const PackagesTable: React.FC = () => {
       packages.map((exportPackage) => ({
         id: exportPackage.uuid,
         name: exportPackage.name,
+        description: exportPackage.description,
         // An empty entries list means the package includes every registered domain.
         domains: exportPackage.entries.length
           ? exportPackage.entries.map((entry) => formatDomainLabel(entry.domain)).join(', ')
           : t('allDomains', 'All domains'),
-        description: exportPackage.description,
         status: exportPackage.latestBuild ? t(exportPackage.latestBuild.status) : t('noBuilds', 'No builds'),
       })),
     [packages, t],

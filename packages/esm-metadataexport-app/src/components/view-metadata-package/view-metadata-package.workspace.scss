@@ -6,6 +6,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  justify-content: space-between;
 }
 
 .body {
@@ -23,28 +24,37 @@
   gap: layout.$spacing-04;
 }
 
-.actionRow {
+.sectionHeader {
   display: flex;
-  flex-direction: column;
-  gap: layout.$spacing-04;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.triggerButton {
-  width: 100%;
-  max-width: none;
-  justify-content: center;
-}
-
-.secondaryActions {
+.managementActions {
   display: flex;
-  flex-direction: row;
-  gap: layout.$spacing-04;
+  gap: layout.$spacing-02;
 }
 
-.secondaryButton {
-  flex: 1 1 0;
-  max-width: none;
-  justify-content: center;
+.managementActions .deleteButton:not(:disabled) svg {
+  fill: $danger;
+}
+
+.desktopButtonSet {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.tabletButtonSet {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: row-reverse;
+}
+
+.desktopButtonSet > .button,
+.tabletButtonSet > .button {
+  flex: 1;
+  max-inline-size: none;
+  height: layout.$spacing-10;
 }
 
 .sectionLabel {
@@ -110,8 +120,33 @@
   margin: 0;
 }
 
-.emptyBuilds {
+.emptyBuildsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: layout.$spacing-03;
+  padding: layout.$spacing-07 layout.$spacing-05;
+  border: 1px solid $ui-03;
+  text-align: center;
+}
+
+.emptyBuildsAction {
+  margin-top: layout.$spacing-04;
+}
+
+.emptyBuildsIcon {
+  fill: $text-02;
+}
+
+.emptyBuildsTitle {
+  @include type.type-style('heading-compact-02');
+  color: $ui-05;
+  margin: 0;
+}
+
+.emptyBuildsDescription {
   @include type.type-style('body-compact-01');
   color: $text-02;
   margin: 0;
+  max-inline-size: 20rem;
 }
