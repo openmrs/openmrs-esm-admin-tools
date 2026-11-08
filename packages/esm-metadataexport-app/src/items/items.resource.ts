@@ -36,10 +36,11 @@ export function useMetadataItems(
 }
 
 /**
- * Counts the non-retired items in a domain. Only the total is needed, so it requests a single item.
+ * Counts every item in a domain, retired ones included, since the picker lets either be selected
+ * and the count is shown as the "of M" in "N of M". Only the total is needed, so it requests a single item.
  */
 export function useMetadataItemCount(domain: MetadataDomain, shouldFetch = true) {
-  const apiUrl = shouldFetch ? `${metadataItemsUrl}?domain=${domain}&limit=1&totalCount=true` : null;
+  const apiUrl = shouldFetch ? `${metadataItemsUrl}?domain=${domain}&includeAll=true&limit=1&totalCount=true` : null;
   const { data, error, isLoading } = useSWR<
     FetchResponse<{ results: Array<MetadataItem>; totalCount?: number }>,
     Error
