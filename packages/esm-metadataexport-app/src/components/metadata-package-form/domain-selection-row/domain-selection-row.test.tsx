@@ -215,6 +215,33 @@ describe('DomainSelectionRow', () => {
       expect(screen.getByRole('button', { name: 'Remove Unavailable item' })).toBeInTheDocument();
     });
 
+    it('keeps an unavailable item marked as unavailable after the picker is applied', async () => {
+      const user = userEvent.setup();
+      const { rerenderRow } = renderRow({ selectedItemUuids: ['uuid-1', 'deleted-uuid'] });
+
+      await user.click(screen.getByRole('button', { name: 'Edit' }));
+      act(() => lastModalProps().onApply(lastModalProps().initiallySelectedItems));
+      rerenderRow({ selectedItemUuids: ['uuid-1', 'deleted-uuid'] });
+
+      expect(screen.getByText('Punctuality')).toBeInTheDocument();
+      expect(screen.getByText('Unavailable item')).toBeInTheDocument();
+      expect(screen.queryByText('deleted-uuid')).not.toBeInTheDocument();
+    });
+
+    it('keeps looking up items that were still loading when the picker was applied', async () => {
+      mockUseMetadataItemsByUuid.mockReturnValue({ itemsByUuid: undefined, error: undefined });
+      const user = userEvent.setup();
+      const { rerenderRow } = renderRow({ selectedItemUuids: ['uuid-1'] });
+
+      await user.click(screen.getByRole('button', { name: 'Edit' }));
+      act(() => lastModalProps().onApply(lastModalProps().initiallySelectedItems));
+      mockServerLookUp();
+      rerenderRow({ selectedItemUuids: ['uuid-1'] });
+
+      expect(screen.getByText('Punctuality')).toBeInTheDocument();
+      expect(screen.queryByText('uuid-1')).not.toBeInTheDocument();
+    });
+
     it('falls back to the uuid when the look-up fails, so the item can still be removed', async () => {
       mockUseMetadataItemsByUuid.mockReturnValue({ itemsByUuid: undefined, error: new Error('Network error') });
       const user = userEvent.setup();

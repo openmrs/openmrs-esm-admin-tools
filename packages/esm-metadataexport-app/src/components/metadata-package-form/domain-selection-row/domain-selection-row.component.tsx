@@ -38,9 +38,18 @@ const DomainSelectionRow: React.FC<DomainSelectionRowProps> = ({
   const { totalCount: totalItemsInDomain } = useMetadataItemCount(domain, hasSelectedItems);
 
   const openSelectItemsModal = useCallback(() => {
-    const currentlySelectedItems = selectedItemUuids.map(
-      (uuid): MetadataItem => itemDetailsByUuid.get(uuid) ?? { uuid, domain, display: uuid, retired: false },
-    );
+    // Items whose details are loading, unavailable or failed to load are passed to the modal as placeholders.
+    // They are kept out of the details cache, so the row keeps looking them up or marking them as unavailable.
+    const placeholderItems = new Set<MetadataItem>();
+    const currentlySelectedItems = selectedItemUuids.map((uuid): MetadataItem => {
+      const itemDetails = itemDetailsByUuid.get(uuid);
+      if (itemDetails) {
+        return itemDetails;
+      }
+      const placeholderItem: MetadataItem = { uuid, domain, display: uuid, retired: false };
+      placeholderItems.add(placeholderItem);
+      return placeholderItem;
+    });
 
     const dispose = showModal('select-domain-items-modal', {
       size: 'lg',
@@ -49,7 +58,7 @@ const DomainSelectionRow: React.FC<DomainSelectionRowProps> = ({
       packageFormTitle,
       initiallySelectedItems: currentlySelectedItems,
       onApply: (newlySelectedItems: Array<MetadataItem>) => {
-        rememberItemDetails(newlySelectedItems);
+        rememberItemDetails(newlySelectedItems.filter((item) => !placeholderItems.has(item)));
         onSelectedItemUuidsChange(
           domain,
           newlySelectedItems.map((item) => item.uuid),
