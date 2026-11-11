@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Button,
@@ -59,7 +59,7 @@ const SelectDomainItemsModal: React.FC<SelectDomainItemsModalProps> = ({
   const trimmedSearchTerm = searchTerm.trim();
   const debouncedSearchTerm = useDebounce(trimmedSearchTerm);
 
-  const { selectedItems, selectedItemCount, isItemSelected, setItemsSelected, clearSelection } =
+  const { selectedItems, selectedItemCount, isItemSelected, setItemsSelected, clearSelection, refreshSelectedItems } =
     useItemSelection(initiallySelectedItems);
 
   const {
@@ -70,6 +70,10 @@ const SelectDomainItemsModal: React.FC<SelectDomainItemsModalProps> = ({
     isLoading: isLoadingSearchResults,
     error: searchError,
   } = useMetadataItems(domain, debouncedSearchTerm, includeRetired, pageSize);
+
+  useEffect(() => {
+    refreshSelectedItems(searchResults);
+  }, [refreshSelectedItems, searchResults]);
 
   const allTab = {
     itemsOnPage: searchResults,
@@ -342,12 +346,28 @@ function useItemSelection(initiallySelectedItems: Array<MetadataItem>) {
 
   const clearSelection = useCallback(() => setSelectedItemsByUuid(new Map()), []);
 
+  // Replaces selected items with the given versions of them; items that aren't selected are ignored.
+  const refreshSelectedItems = useCallback((items: Array<MetadataItem>) => {
+    setSelectedItemsByUuid((previousSelection) => {
+      const outdatedItems = items.filter(
+        (item) => previousSelection.has(item.uuid) && previousSelection.get(item.uuid) !== item,
+      );
+      if (outdatedItems.length === 0) {
+        return previousSelection;
+      }
+      const nextSelection = new Map(previousSelection);
+      outdatedItems.forEach((item) => nextSelection.set(item.uuid, item));
+      return nextSelection;
+    });
+  }, []);
+
   return {
     selectedItems,
     selectedItemCount: selectedItemsByUuid.size,
     isItemSelected,
     setItemsSelected,
     clearSelection,
+    refreshSelectedItems,
   };
 }
 

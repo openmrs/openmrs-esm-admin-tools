@@ -123,6 +123,31 @@ describe('SelectDomainItemsModal', () => {
     expect(screen.queryByRole('checkbox', { name: 'Punctuality' })).not.toBeInTheDocument();
   });
 
+  it('replaces a uuid placeholder in the selection with the real item once it loads', async () => {
+    const user = userEvent.setup();
+    const punctualityPlaceholder = item('uuid-1', 'uuid-1');
+    mockItems([]);
+    const { rerender } = renderModal([punctualityPlaceholder]);
+
+    mockItems([punctuality, insuranceScheme]);
+    rerender(
+      <SelectDomainItemsModal
+        closeModal={mockCloseModal}
+        domain="ATTRIBUTE_TYPES"
+        packageFormTitle="New package"
+        initiallySelectedItems={[punctualityPlaceholder]}
+        onApply={mockOnApply}
+      />,
+    );
+    await user.click(screen.getByRole('tab', { name: 'Selected (1)' }));
+
+    expect(screen.getByRole('checkbox', { name: 'Punctuality' })).toBeChecked();
+    expect(screen.queryByRole('checkbox', { name: 'uuid-1' })).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Add 1 selected' }));
+    expect(mockOnApply).toHaveBeenCalledWith([punctuality]);
+  });
+
   it('clears the selection', async () => {
     const user = userEvent.setup();
     renderModal([punctuality, insuranceScheme]);
