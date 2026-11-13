@@ -20,7 +20,7 @@ const exportPackage: ExportPackage = {
   name: 'Core reference data',
   description: 'Some notes',
   retired: false,
-  dateCreated: Date.now(),
+  dateCreated: '2026-10-14T14:22:47.000+0000',
   entries: [],
   latestBuild: null,
 };
