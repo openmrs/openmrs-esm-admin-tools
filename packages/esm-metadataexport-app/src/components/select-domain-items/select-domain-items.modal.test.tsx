@@ -232,6 +232,64 @@ describe('SelectDomainItemsModal', () => {
       await user.click(screen.getByRole('button', { name: 'Add 2 selected' }));
       expect(mockOnApply).toHaveBeenCalledWith([paymentMethod, placeholder('deleted-uuid')]);
     });
+
+    describe('while searching', () => {
+      // 12 saved items make 2 pages at the default page size of 8.
+      const savedItems = Array.from({ length: 12 }, (_, index) =>
+        item(`saved-${index + 1}`, `Attribute ${String(index + 1).padStart(2, '0')}`),
+      );
+      const savedItemsByUuid = new Map(savedItems.map((savedItem) => [savedItem.uuid, savedItem]));
+
+      function renderModalWithPlaceholders() {
+        mockItems([]);
+        return renderModal(
+          savedItems.map((savedItem) => placeholder(savedItem.uuid)),
+          savedItems.map((savedItem) => savedItem.uuid),
+        );
+      }
+
+      it('looks up the placeholders on every page so the search matches their names', async () => {
+        const user = userEvent.setup();
+        mockUseMetadataItemsByUuid.mockImplementation((_domain: string, uuids: Array<string>) => ({
+          itemsByUuid: uuids.length ? new Map(uuids.map((uuid) => [uuid, savedItemsByUuid.get(uuid)])) : undefined,
+          failedUuids: new Set(),
+          isLoading: false,
+        }));
+        renderModalWithPlaceholders();
+
+        await user.click(screen.getByRole('tab', { name: 'Selected (12)' }));
+        expect(mockUseMetadataItemsByUuid).toHaveBeenCalledWith(
+          'ATTRIBUTE_TYPES',
+          savedItems.slice(0, 8).map((savedItem) => savedItem.uuid),
+        );
+
+        // Matches Attribute 01, 10, 11 and 12; the last three were placeholders on the unopened page two.
+        await user.type(screen.getByRole('searchbox'), '1');
+
+        expect(await screen.findByRole('checkbox', { name: 'Attribute 10' })).toBeInTheDocument();
+        expect(screen.getByRole('checkbox', { name: 'Attribute 01' })).toBeInTheDocument();
+        expect(screen.getByRole('checkbox', { name: 'Attribute 11' })).toBeInTheDocument();
+        expect(screen.getByRole('checkbox', { name: 'Attribute 12' })).toBeInTheDocument();
+        expect(screen.getByText(/1–4 of 4 items/)).toBeInTheDocument();
+      });
+
+      it('shows a skeleton while the placeholders are looked up', async () => {
+        const user = userEvent.setup();
+        mockUseMetadataItemsByUuid.mockImplementation((_domain: string, uuids: Array<string>) => ({
+          itemsByUuid: undefined,
+          failedUuids: new Set(),
+          isLoading: uuids.length > 0,
+        }));
+        renderModalWithPlaceholders();
+
+        await user.click(screen.getByRole('tab', { name: 'Selected (12)' }));
+        expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+
+        await user.type(screen.getByRole('searchbox'), '1');
+
+        expect(await screen.findByRole('progressbar')).toBeInTheDocument();
+      });
+    });
   });
 
   it('clears the selection', async () => {

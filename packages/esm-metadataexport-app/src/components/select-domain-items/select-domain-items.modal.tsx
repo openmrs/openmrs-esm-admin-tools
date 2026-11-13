@@ -107,10 +107,13 @@ const SelectDomainItemsModal: React.FC<SelectDomainItemsModalProps> = ({
     goToPage: setRequestedSelectedTabPage,
   };
 
-  const isItemUnavailable = usePlaceholderItemLookup(
+  // A search has to see every placeholder's name to match it, not just the ones on the current page.
+  const itemsToLookUp =
+    activeTabName !== 'selected' ? noItems : debouncedSearchTerm ? selectedItems : selectedTabItemsOnPage;
+  const { isItemUnavailable, isLookingUpItems } = usePlaceholderItemLookup(
     domain,
     unresolvedItemUuids,
-    activeTabName === 'selected' ? selectedTabItemsOnPage : noItems,
+    itemsToLookUp,
     refreshSelectedItems,
   );
 
@@ -119,6 +122,7 @@ const SelectDomainItemsModal: React.FC<SelectDomainItemsModalProps> = ({
 
   const isWaitingForSearchToStart = trimmedSearchTerm !== debouncedSearchTerm;
   const isAllTabLoading = isLoadingSearchResults || isWaitingForSearchToStart;
+  const isSelectedTabLoading = Boolean(debouncedSearchTerm) && isLookingUpItems;
 
   const handleApply = useCallback(() => {
     onApply(selectedItems);
@@ -154,7 +158,7 @@ const SelectDomainItemsModal: React.FC<SelectDomainItemsModalProps> = ({
       );
     }
 
-    if (isAllTabActive && isAllTabLoading) {
+    if (isAllTabActive ? isAllTabLoading : isSelectedTabLoading) {
       return (
         <DataTableSkeleton
           role="progressbar"
@@ -398,25 +402,27 @@ function useItemSelection(initiallySelectedItems: Array<MetadataItem>) {
 const noItems: Array<MetadataItem> = [];
 
 /**
- * Looks up the uuid placeholders among `itemsOnPage`, the way the row looks up its visible tags, so a
- * page of the Selected tab shows names and retired tags instead of uuids. Found items replace their
- * placeholders in the selection. Returns whether an item is one the domain no longer exports.
+ * Looks up the uuid placeholders among `items` (a page of the Selected tab, or the whole selection
+ * while searching it), so the Selected tab shows names and retired tags instead of uuids. Found items
+ * replace their placeholders in the selection. Returns whether an item is one the domain no longer
+ * exports, and whether a lookup is in flight.
  */
 function usePlaceholderItemLookup(
   domain: MetadataDomain,
   unresolvedItemUuids: Array<string>,
-  itemsOnPage: Array<MetadataItem>,
+  items: Array<MetadataItem>,
   refreshSelectedItems: (items: Array<MetadataItem>) => void,
 ) {
   const [lookedUpItemsByUuid, setLookedUpItemsByUuid] = useState<Map<string, MetadataItem | null>>(() => new Map());
 
   const uuidsToLookUp = useMemo(() => {
     const unresolvedUuids = new Set(unresolvedItemUuids);
-    return itemsOnPage
-      .map((item) => item.uuid)
-      .filter((uuid) => unresolvedUuids.has(uuid) && !lookedUpItemsByUuid.has(uuid));
-  }, [unresolvedItemUuids, itemsOnPage, lookedUpItemsByUuid]);
-  const { itemsByUuid: fetchedItemsByUuid } = useMetadataItemsByUuid(domain, uuidsToLookUp);
+    return items.map((item) => item.uuid).filter((uuid) => unresolvedUuids.has(uuid) && !lookedUpItemsByUuid.has(uuid));
+  }, [unresolvedItemUuids, items, lookedUpItemsByUuid]);
+  const { itemsByUuid: fetchedItemsByUuid, isLoading: isLookingUpItems } = useMetadataItemsByUuid(
+    domain,
+    uuidsToLookUp,
+  );
 
   useEffect(() => {
     if (fetchedItemsByUuid) {
@@ -425,7 +431,11 @@ function usePlaceholderItemLookup(
     }
   }, [fetchedItemsByUuid, refreshSelectedItems]);
 
-  return useCallback((item: MetadataItem) => lookedUpItemsByUuid.get(item.uuid) === null, [lookedUpItemsByUuid]);
+  const isItemUnavailable = useCallback(
+    (item: MetadataItem) => lookedUpItemsByUuid.get(item.uuid) === null,
+    [lookedUpItemsByUuid],
+  );
+  return { isItemUnavailable, isLookingUpItems };
 }
 
 export default SelectDomainItemsModal;
