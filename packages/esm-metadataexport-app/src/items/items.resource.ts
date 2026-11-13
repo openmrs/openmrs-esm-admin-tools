@@ -55,12 +55,13 @@ export function useMetadataItemCount(domain: MetadataDomain, shouldFetch = true)
  * leaves its uuid out of `itemsByUuid` and adds it to `failedUuids`, so the other lookups still count.
  */
 export function useMetadataItemsByUuid(domain: MetadataDomain, uuids: Array<string>) {
-  const { data, isLoading } = useSWR<MetadataItemLookupResult, Error>(
+  const { data, error, isLoading } = useSWR<MetadataItemLookupResult, Error>(
     uuids.length ? ['metadataexport-items', domain, ...uuids] : null,
     () => fetchMetadataItemsByUuid(domain, uuids),
   );
 
-  return { itemsByUuid: data?.itemsByUuid, failedUuids: data?.failedUuids ?? noFailedUuids, isLoading };
+  const failedUuids = error ? new Set(uuids) : data?.failedUuids ?? noFailedUuids;
+  return { itemsByUuid: data?.itemsByUuid, failedUuids, isLoading };
 }
 
 interface MetadataItemLookupResult {
@@ -80,6 +81,11 @@ async function fetchMetadataItemsByUuid(domain: MetadataDomain, uuids: Array<str
       result.failedUuids.add(uuids[index]);
     }
   });
+  // Nothing resolved, so throw and let SWR retry. Lookups that failed next to successful ones
+  // are retried with a new key once the successful ones are cached.
+  if (result.itemsByUuid.size === 0) {
+    throw (settledLookups[0] as PromiseRejectedResult).reason;
+  }
   return result;
 }
 
