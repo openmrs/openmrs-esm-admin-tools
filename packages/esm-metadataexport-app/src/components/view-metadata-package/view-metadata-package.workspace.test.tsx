@@ -148,6 +148,7 @@ describe('ViewPackageWorkspace', () => {
     process.env.TZ = 'Asia/Jerusalem';
     vi.useFakeTimers({ toFake: ['Date'] });
     vi.setSystemTime(new Date('2026-10-14T14:25:00.000Z'));
+    expect(new Date().getTimezoneOffset()).toBe(-180);
     try {
       // The REST API serializes dates as ISO 8601 strings with a UTC offset
       mockBuilds({
