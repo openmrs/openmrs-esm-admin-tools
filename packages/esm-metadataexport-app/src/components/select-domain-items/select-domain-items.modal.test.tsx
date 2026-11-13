@@ -4,19 +4,21 @@ import userEvent from '@testing-library/user-event';
 import { SWRConfig } from 'swr';
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { useOpenmrsPagination } from '@openmrs/esm-framework';
-import { useMetadataItems } from '../../items/items.resource';
+import { useMetadataItems, useMetadataItemsByUuid } from '../../items/items.resource';
 import type * as itemsResource from '../../items/items.resource';
 import type { MetadataItem } from '../../types';
 import SelectDomainItemsModal from './select-domain-items.modal';
 
 vi.mock('../../items/items.resource', () => ({
   useMetadataItems: vi.fn(),
+  useMetadataItemsByUuid: vi.fn(),
 }));
 
 const { useMetadataItems: actualUseMetadataItems } =
   await vi.importActual<typeof itemsResource>('../../items/items.resource');
 
 const mockUseMetadataItems = useMetadataItems as Mock;
+const mockUseMetadataItemsByUuid = useMetadataItemsByUuid as Mock;
 const mockUseOpenmrsPagination = useOpenmrsPagination as Mock;
 const realUseOpenmrsPagination = mockUseOpenmrsPagination.getMockImplementation();
 const mockCloseModal = vi.fn();
@@ -70,13 +72,14 @@ function serveItems(items: Array<MetadataItem>) {
   );
 }
 
-function renderModal(initiallySelectedItems: Array<MetadataItem> = []) {
+function renderModal(initiallySelectedItems: Array<MetadataItem> = [], unresolvedItemUuids?: Array<string>) {
   return render(
     <SelectDomainItemsModal
       closeModal={mockCloseModal}
       domain="ATTRIBUTE_TYPES"
       packageFormTitle="New package"
       initiallySelectedItems={initiallySelectedItems}
+      unresolvedItemUuids={unresolvedItemUuids}
       onApply={mockOnApply}
     />,
     { wrapper: ({ children }) => <SWRConfig value={{ provider: () => new Map() }}>{children}</SWRConfig> },
@@ -86,6 +89,7 @@ function renderModal(initiallySelectedItems: Array<MetadataItem> = []) {
 describe('SelectDomainItemsModal', () => {
   beforeEach(() => {
     mockItems([punctuality, insuranceScheme, paymentMethod]);
+    mockUseMetadataItemsByUuid.mockReturnValue({ itemsByUuid: undefined, failedUuids: new Set() });
   });
 
   it('renders the header, the items and a retired tag for retired rows', () => {
@@ -180,6 +184,54 @@ describe('SelectDomainItemsModal', () => {
 
     await user.click(screen.getByRole('button', { name: 'Add 1 selected' }));
     expect(mockOnApply).toHaveBeenCalledWith([punctuality]);
+  });
+
+  describe('looking up uuid placeholders on the Selected tab', () => {
+    const placeholder = (uuid: string) => item(uuid, uuid);
+
+    it('looks up only the placeholders on the current page, and only while the tab is open', async () => {
+      const user = userEvent.setup();
+      const placeholders = Array.from({ length: 10 }, (_, index) => placeholder(`hidden-${index + 1}`));
+      renderModal(
+        [punctuality, ...placeholders],
+        placeholders.map((item) => item.uuid),
+      );
+
+      expect(mockUseMetadataItemsByUuid).toHaveBeenLastCalledWith('ATTRIBUTE_TYPES', []);
+
+      await user.click(screen.getByRole('tab', { name: 'Selected (11)' }));
+
+      // Page one holds punctuality and the first seven placeholders.
+      expect(mockUseMetadataItemsByUuid).toHaveBeenLastCalledWith(
+        'ATTRIBUTE_TYPES',
+        placeholders.slice(0, 7).map((item) => item.uuid),
+      );
+    });
+
+    it('shows the looked-up names and retired tags, flags unavailable items and applies the real items', async () => {
+      const user = userEvent.setup();
+      mockUseMetadataItemsByUuid.mockImplementation((_domain: string, uuids: Array<string>) => ({
+        itemsByUuid: uuids.length
+          ? new Map<string, MetadataItem | null>([
+              [paymentMethod.uuid, paymentMethod],
+              ['deleted-uuid', null],
+            ])
+          : undefined,
+        failedUuids: new Set(),
+      }));
+      mockItems([]);
+      renderModal([placeholder(paymentMethod.uuid), placeholder('deleted-uuid')], [paymentMethod.uuid, 'deleted-uuid']);
+
+      await user.click(screen.getByRole('tab', { name: 'Selected (2)' }));
+
+      expect(screen.getByRole('checkbox', { name: 'Payment Method' })).toBeChecked();
+      expect(screen.getByText('Retired')).toBeInTheDocument();
+      expect(screen.getByRole('checkbox', { name: 'deleted-uuid' })).toBeChecked();
+      expect(screen.getByText('Unavailable')).toBeInTheDocument();
+
+      await user.click(screen.getByRole('button', { name: 'Add 2 selected' }));
+      expect(mockOnApply).toHaveBeenCalledWith([paymentMethod, placeholder('deleted-uuid')]);
+    });
   });
 
   it('clears the selection', async () => {

@@ -90,6 +90,7 @@
   "status": "Status",
   "triggeringBuild": "Triggering build",
   "triggerNewBuild": "Trigger new build",
+  "unavailable": "Unavailable",
   "unavailableItem": "Unavailable item",
   "unexpectedError": "An unexpected error occurred",
   "view": "View"

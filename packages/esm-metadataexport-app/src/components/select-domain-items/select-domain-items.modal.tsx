@@ -25,7 +25,7 @@ import {
 } from '@carbon/react';
 import { useDebounce } from '@openmrs/esm-framework';
 import { formatDomainLabel } from '../../domain-lookups/domain-lookups.resource';
-import { useMetadataItems } from '../../items/items.resource';
+import { useMetadataItems, useMetadataItemsByUuid } from '../../items/items.resource';
 import type { MetadataDomain, MetadataItem } from '../../types';
 import styles from './select-domain-items.modal.scss';
 
@@ -34,6 +34,8 @@ interface SelectDomainItemsModalProps {
   domain: MetadataDomain;
   packageFormTitle: string;
   initiallySelectedItems: Array<MetadataItem>;
+  // Uuids of initially selected items the caller has no details for; those items are uuid placeholders.
+  unresolvedItemUuids?: Array<string>;
   onApply: (selectedItems: Array<MetadataItem>) => void;
 }
 
@@ -41,11 +43,14 @@ type TabName = 'all' | 'selected';
 
 const pageSizeOptions = [8, 20, 50];
 
+const noUnresolvedItemUuids: Array<string> = [];
+
 const SelectDomainItemsModal: React.FC<SelectDomainItemsModalProps> = ({
   closeModal,
   domain,
   packageFormTitle,
   initiallySelectedItems,
+  unresolvedItemUuids = noUnresolvedItemUuids,
   onApply,
 }) => {
   const { t } = useTranslation();
@@ -91,12 +96,23 @@ const SelectDomainItemsModal: React.FC<SelectDomainItemsModalProps> = ({
   const selectedTabPageCount = Math.max(1, Math.ceil(selectedItemsMatchingSearch.length / pageSize));
   const selectedTabPage = Math.min(requestedSelectedTabPage, selectedTabPageCount);
 
+  const selectedTabItemsOnPage = useMemo(
+    () => selectedItemsMatchingSearch.slice((selectedTabPage - 1) * pageSize, selectedTabPage * pageSize),
+    [selectedItemsMatchingSearch, selectedTabPage, pageSize],
+  );
   const selectedTab = {
-    itemsOnPage: selectedItemsMatchingSearch.slice((selectedTabPage - 1) * pageSize, selectedTabPage * pageSize),
+    itemsOnPage: selectedTabItemsOnPage,
     page: selectedTabPage,
     totalItemCount: selectedItemsMatchingSearch.length,
     goToPage: setRequestedSelectedTabPage,
   };
+
+  const isItemUnavailable = usePlaceholderItemLookup(
+    domain,
+    unresolvedItemUuids,
+    activeTabName === 'selected' ? selectedTabItemsOnPage : noItems,
+    refreshSelectedItems,
+  );
 
   const isAllTabActive = activeTabName === 'all';
   const activeTab = isAllTabActive ? allTab : selectedTab;
@@ -156,6 +172,7 @@ const SelectDomainItemsModal: React.FC<SelectDomainItemsModalProps> = ({
           domain={domain}
           items={activeTab.itemsOnPage}
           isItemSelected={isItemSelected}
+          isItemUnavailable={isItemUnavailable}
           onItemsSelectedChange={setItemsSelected}
           emptyStateText={
             isAllTabActive
@@ -253,6 +270,7 @@ interface ItemsTableProps {
   domain: MetadataDomain;
   items: Array<MetadataItem>;
   isItemSelected: (item: MetadataItem) => boolean;
+  isItemUnavailable: (item: MetadataItem) => boolean;
   onItemsSelectedChange: (items: Array<MetadataItem>, isSelected: boolean) => void;
   emptyStateText: string;
 }
@@ -261,6 +279,7 @@ const ItemsTable: React.FC<ItemsTableProps> = ({
   domain,
   items,
   isItemSelected,
+  isItemUnavailable,
   onItemsSelectedChange,
   emptyStateText,
 }) => {
@@ -303,6 +322,11 @@ const ItemsTable: React.FC<ItemsTableProps> = ({
                     {item.retired && (
                       <Tag size="sm" type="gray">
                         {t('retired', 'Retired')}
+                      </Tag>
+                    )}
+                    {isItemUnavailable(item) && (
+                      <Tag size="sm" type="red">
+                        {t('unavailable', 'Unavailable')}
                       </Tag>
                     )}
                   </span>
@@ -369,6 +393,39 @@ function useItemSelection(initiallySelectedItems: Array<MetadataItem>) {
     clearSelection,
     refreshSelectedItems,
   };
+}
+
+const noItems: Array<MetadataItem> = [];
+
+/**
+ * Looks up the uuid placeholders among `itemsOnPage`, the way the row looks up its visible tags, so a
+ * page of the Selected tab shows names and retired tags instead of uuids. Found items replace their
+ * placeholders in the selection. Returns whether an item is one the domain no longer exports.
+ */
+function usePlaceholderItemLookup(
+  domain: MetadataDomain,
+  unresolvedItemUuids: Array<string>,
+  itemsOnPage: Array<MetadataItem>,
+  refreshSelectedItems: (items: Array<MetadataItem>) => void,
+) {
+  const [lookedUpItemsByUuid, setLookedUpItemsByUuid] = useState<Map<string, MetadataItem | null>>(() => new Map());
+
+  const uuidsToLookUp = useMemo(() => {
+    const unresolvedUuids = new Set(unresolvedItemUuids);
+    return itemsOnPage
+      .map((item) => item.uuid)
+      .filter((uuid) => unresolvedUuids.has(uuid) && !lookedUpItemsByUuid.has(uuid));
+  }, [unresolvedItemUuids, itemsOnPage, lookedUpItemsByUuid]);
+  const { itemsByUuid: fetchedItemsByUuid } = useMetadataItemsByUuid(domain, uuidsToLookUp);
+
+  useEffect(() => {
+    if (fetchedItemsByUuid) {
+      setLookedUpItemsByUuid((previousItems) => new Map([...previousItems, ...fetchedItemsByUuid]));
+      refreshSelectedItems(Array.from(fetchedItemsByUuid.values()).filter(Boolean));
+    }
+  }, [fetchedItemsByUuid, refreshSelectedItems]);
+
+  return useCallback((item: MetadataItem) => lookedUpItemsByUuid.get(item.uuid) === null, [lookedUpItemsByUuid]);
 }
 
 export default SelectDomainItemsModal;

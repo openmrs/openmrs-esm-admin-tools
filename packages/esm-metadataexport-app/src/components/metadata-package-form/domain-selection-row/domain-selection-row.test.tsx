@@ -295,6 +295,16 @@ describe('DomainSelectionRow', () => {
       expect(mockUseMetadataItemsByUuid).not.toHaveBeenCalledWith('ATTRIBUTE_TYPES', manyUuids);
     });
 
+    it('hands the items past the visible tags to the modal to look up', async () => {
+      const user = userEvent.setup();
+      renderRow({ selectedItemUuids: manyUuids });
+
+      await user.click(screen.getByRole('button', { name: '+2 more' }));
+
+      expect(lastModalProps().unresolvedItemUuids).toEqual(expect.arrayContaining(['uuid-11', 'uuid-12']));
+      expect(lastModalProps().unresolvedItemUuids).not.toContain('uuid-1');
+    });
+
     it('opens the modal from the "+N more" tag', async () => {
       const user = userEvent.setup();
       renderRow({ selectedItemUuids: manyUuids });
