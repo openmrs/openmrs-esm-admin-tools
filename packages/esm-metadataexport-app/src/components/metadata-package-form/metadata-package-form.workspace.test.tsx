@@ -80,7 +80,7 @@ describe('PackageFormWorkspace', () => {
     mockCreatePackage.mockResolvedValue({ data: {} });
     mockEditPackage.mockResolvedValue({ data: {} });
     mockUseMetadataItemCount.mockReturnValue({ totalCount: 7 });
-    mockUseMetadataItemsByUuid.mockReturnValue({ itemsByUuid: undefined, error: undefined });
+    mockUseMetadataItemsByUuid.mockReturnValue({ itemsByUuid: undefined, failedUuids: new Set() });
     mockShowModal.mockReturnValue(vi.fn());
   });
 
@@ -469,7 +469,7 @@ describe('PackageFormWorkspace', () => {
               ['deleted-uuid', null],
             ])
           : undefined,
-        error: undefined,
+        failedUuids: new Set(),
       }));
       renderWorkspace(uuid);
 

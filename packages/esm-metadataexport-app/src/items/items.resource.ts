@@ -51,20 +51,36 @@ export function useMetadataItemCount(domain: MetadataDomain, shouldFetch = true)
 
 /**
  * Looks up saved item uuids so their names can be shown. A uuid the domain no longer exports
- * (deleted, or excluded from the build) maps to `null`.
+ * (deleted, or excluded from the build) maps to `null`. A lookup that fails for another reason
+ * leaves its uuid out of `itemsByUuid` and adds it to `failedUuids`, so the other lookups still count.
  */
 export function useMetadataItemsByUuid(domain: MetadataDomain, uuids: Array<string>) {
-  const { data, error, isLoading } = useSWR<Map<string, MetadataItem | null>, Error>(
+  const { data, isLoading } = useSWR<MetadataItemLookupResult, Error>(
     uuids.length ? ['metadataexport-items', domain, ...uuids] : null,
     () => fetchMetadataItemsByUuid(domain, uuids),
   );
 
-  return { itemsByUuid: data, isLoading, error };
+  return { itemsByUuid: data?.itemsByUuid, failedUuids: data?.failedUuids ?? noFailedUuids, isLoading };
 }
 
+interface MetadataItemLookupResult {
+  itemsByUuid: Map<string, MetadataItem | null>;
+  failedUuids: ReadonlySet<string>;
+}
+
+const noFailedUuids: ReadonlySet<string> = new Set();
+
 async function fetchMetadataItemsByUuid(domain: MetadataDomain, uuids: Array<string>) {
-  const uuidItemPairs = await Promise.all(uuids.map((uuid) => fetchMetadataItem(domain, uuid)));
-  return new Map(uuidItemPairs);
+  const settledLookups = await Promise.allSettled(uuids.map((uuid) => fetchMetadataItem(domain, uuid)));
+  const result = { itemsByUuid: new Map<string, MetadataItem | null>(), failedUuids: new Set<string>() };
+  settledLookups.forEach((lookup, index) => {
+    if (lookup.status === 'fulfilled') {
+      result.itemsByUuid.set(...lookup.value);
+    } else {
+      result.failedUuids.add(uuids[index]);
+    }
+  });
+  return result;
 }
 
 async function fetchMetadataItem(domain: MetadataDomain, uuid: string): Promise<[string, MetadataItem | null]> {

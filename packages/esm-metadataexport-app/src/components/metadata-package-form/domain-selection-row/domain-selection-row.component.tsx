@@ -31,9 +31,14 @@ const DomainSelectionRow: React.FC<DomainSelectionRowProps> = ({
   // A selected domain with no specific items picked exports all of its items.
   const hasSelectedItems = isDomainSelected && selectedItemUuids.length > 0;
 
-  const { itemDetailsByUuid, rememberItemDetails, hasDetailsFetchFailed } = useSelectedItemDetails(
+  const visibleItemUuids = useMemo(() => selectedItemUuids.slice(0, maxVisibleItemTags), [selectedItemUuids]);
+  const hiddenItemCount = selectedItemUuids.length - visibleItemUuids.length;
+
+  // Only the visible tags need names, so only those are looked up. Most domains load in full on the
+  // server for every lookup, so looking up every selected item would be a full load per item.
+  const { itemDetailsByUuid, rememberItemDetails, failedLookupUuids } = useSelectedItemDetails(
     domain,
-    selectedItemUuids,
+    visibleItemUuids,
   );
   const { totalCount: totalItemsInDomain } = useMetadataItemCount(domain, hasSelectedItems);
 
@@ -91,9 +96,6 @@ const DomainSelectionRow: React.FC<DomainSelectionRowProps> = ({
     });
   };
 
-  const visibleItemUuids = selectedItemUuids.slice(0, maxVisibleItemTags);
-  const hiddenItemCount = selectedItemUuids.length - visibleItemUuids.length;
-
   return (
     <div className={styles.row}>
       <div className={styles.header}>
@@ -120,7 +122,7 @@ const DomainSelectionRow: React.FC<DomainSelectionRowProps> = ({
               key={uuid}
               uuid={uuid}
               itemDetails={itemDetailsByUuid.get(uuid)}
-              hasDetailsFetchFailed={hasDetailsFetchFailed}
+              hasDetailsFetchFailed={failedLookupUuids.has(uuid)}
               onRemove={removeSelectedItem}
             />
           ))}
@@ -176,20 +178,20 @@ const SelectedItemTag: React.FC<SelectedItemTagProps> = ({ uuid, itemDetails, ha
   );
 };
 
-function useSelectedItemDetails(domain: MetadataDomain, selectedItemUuids: Array<string>) {
+function useSelectedItemDetails(domain: MetadataDomain, itemUuids: Array<string>) {
   const [itemDetailsByUuid, setItemDetailsByUuid] = useState<Map<string, MetadataItem | null>>(() => new Map());
 
   const uuidsMissingDetails = useMemo(
-    () => selectedItemUuids.filter((uuid) => !itemDetailsByUuid.has(uuid)),
-    [selectedItemUuids, itemDetailsByUuid],
+    () => itemUuids.filter((uuid) => !itemDetailsByUuid.has(uuid)),
+    [itemUuids, itemDetailsByUuid],
   );
-  const { itemsByUuid: fetchedItemDetailsByUuid, error: detailsFetchError } = useMetadataItemsByUuid(
+  const { itemsByUuid: fetchedItemDetailsByUuid, failedUuids: failedLookupUuids } = useMetadataItemsByUuid(
     domain,
     uuidsMissingDetails,
   );
 
-  // Copy fetched details into local state. That empties `uuidsMissingDetails`, which stops the fetch,
-  // and keeps the details around when a tag is removed and the uuid list changes.
+  // Copy fetched details into local state. That leaves only failed lookups in `uuidsMissingDetails`, so those
+  // are fetched once more, and keeps the details around when a tag is removed and the uuid list changes.
   useEffect(() => {
     if (fetchedItemDetailsByUuid) {
       setItemDetailsByUuid((previousDetails) => new Map([...previousDetails, ...fetchedItemDetailsByUuid]));
@@ -207,7 +209,7 @@ function useSelectedItemDetails(domain: MetadataDomain, selectedItemUuids: Array
   return {
     itemDetailsByUuid,
     rememberItemDetails,
-    hasDetailsFetchFailed: Boolean(detailsFetchError),
+    failedLookupUuids,
   };
 }
 

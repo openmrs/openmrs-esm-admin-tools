@@ -37,7 +37,7 @@ const itemsOnServer = new Map([
 function mockServerLookUp() {
   mockUseMetadataItemsByUuid.mockImplementation((_domain: string, uuids: Array<string>) => ({
     itemsByUuid: uuids.length ? new Map(uuids.map((uuid) => [uuid, itemsOnServer.get(uuid) ?? null])) : undefined,
-    error: undefined,
+    failedUuids: new Set(),
   }));
 }
 
@@ -198,7 +198,7 @@ describe('DomainSelectionRow', () => {
 
   describe('labelling saved items', () => {
     it('shows placeholder tags rather than names or uuids while the saved items are being looked up', () => {
-      mockUseMetadataItemsByUuid.mockReturnValue({ itemsByUuid: undefined, error: undefined });
+      mockUseMetadataItemsByUuid.mockReturnValue({ itemsByUuid: undefined, failedUuids: new Set() });
       renderRow({ selectedItemUuids: ['uuid-1', 'uuid-2'] });
 
       expect(screen.getByText('2 of 7')).toBeInTheDocument();
@@ -229,7 +229,7 @@ describe('DomainSelectionRow', () => {
     });
 
     it('keeps looking up items that were still loading when the picker was applied', async () => {
-      mockUseMetadataItemsByUuid.mockReturnValue({ itemsByUuid: undefined, error: undefined });
+      mockUseMetadataItemsByUuid.mockReturnValue({ itemsByUuid: undefined, failedUuids: new Set() });
       const user = userEvent.setup();
       const { rerenderRow } = renderRow({ selectedItemUuids: ['uuid-1'] });
 
@@ -243,7 +243,7 @@ describe('DomainSelectionRow', () => {
     });
 
     it('falls back to the uuid when the look-up fails, so the item can still be removed', async () => {
-      mockUseMetadataItemsByUuid.mockReturnValue({ itemsByUuid: undefined, error: new Error('Network error') });
+      mockUseMetadataItemsByUuid.mockReturnValue({ itemsByUuid: undefined, failedUuids: new Set(['uuid-1']) });
       const user = userEvent.setup();
       renderRow({ selectedItemUuids: ['uuid-1'] });
 
@@ -253,8 +253,20 @@ describe('DomainSelectionRow', () => {
       expect(mockOnSelectedItemUuidsChange).toHaveBeenCalledWith('ATTRIBUTE_TYPES', []);
     });
 
+    it('still names the other items when one look-up fails', () => {
+      mockUseMetadataItemsByUuid.mockReturnValue({
+        itemsByUuid: new Map([[punctuality.uuid, punctuality]]),
+        failedUuids: new Set(['uuid-2']),
+      });
+      renderRow({ selectedItemUuids: ['uuid-1', 'uuid-2'] });
+
+      expect(screen.getByText('Punctuality')).toBeInTheDocument();
+      expect(screen.getByText('uuid-2')).toBeInTheDocument();
+      expect(screen.queryByText('uuid-1')).not.toBeInTheDocument();
+    });
+
     it('opens the modal with an item that could not be looked up labelled by its uuid', async () => {
-      mockUseMetadataItemsByUuid.mockReturnValue({ itemsByUuid: undefined, error: new Error('Network error') });
+      mockUseMetadataItemsByUuid.mockReturnValue({ itemsByUuid: undefined, failedUuids: new Set(['uuid-1']) });
       const user = userEvent.setup();
       renderRow({ selectedItemUuids: ['uuid-1'] });
 
@@ -274,6 +286,13 @@ describe('DomainSelectionRow', () => {
 
       expect(screen.getAllByRole('button', { name: /^Remove/ })).toHaveLength(10);
       expect(screen.getByText('+2 more')).toBeInTheDocument();
+    });
+
+    it('looks up only the items shown as tags', () => {
+      renderRow({ selectedItemUuids: manyUuids });
+
+      expect(mockUseMetadataItemsByUuid).toHaveBeenCalledWith('ATTRIBUTE_TYPES', manyUuids.slice(0, 10));
+      expect(mockUseMetadataItemsByUuid).not.toHaveBeenCalledWith('ATTRIBUTE_TYPES', manyUuids);
     });
 
     it('opens the modal from the "+N more" tag', async () => {
