@@ -20,9 +20,39 @@ import {
   Workspace2,
   type Workspace2DefinitionProps,
 } from '@openmrs/esm-framework';
-import { formatDomainLabel, useDomains } from '../../domain-lookups/domain-lookups.resource';
+import { useDomains } from '../../domain-lookups/domain-lookups.resource';
 import { createPackage, editPackage, isPackagesCacheKey, usePackage } from '../../packages/packages.resource';
+import type { ExportPackageEntry, ExportPackageEntryDto, MetadataDomain } from '../../types';
+import DomainSelectionRow from './domain-selection-row/domain-selection-row.component';
 import styles from './metadata-package-form.workspace.scss';
+
+type SelectedItemUuidsByDomain = Map<MetadataDomain, Array<string>>;
+
+// A single shared empty list, so a domain without chosen items always gets the same prop value.
+const noSelectedItemUuids: Array<string> = [];
+
+function buildPackageEntries(
+  selectedDomains: Set<MetadataDomain>,
+  selectedItemUuidsByDomain: SelectedItemUuidsByDomain,
+  areAllDomainsSelected: boolean,
+): Array<ExportPackageEntryDto> {
+  const isAnyDomainNarrowedToItems = Array.from(selectedDomains).some((domain) =>
+    selectedItemUuidsByDomain.has(domain),
+  );
+  if (areAllDomainsSelected && !isAnyDomainNarrowedToItems) {
+    return [];
+  }
+
+  return Array.from(selectedDomains, (domain) => {
+    const itemUuids = selectedItemUuidsByDomain.get(domain);
+    return itemUuids ? { domain, itemUuids } : { domain };
+  });
+}
+
+function getSelectedItemUuidsByDomain(entries: Array<ExportPackageEntry>): SelectedItemUuidsByDomain {
+  const entriesWithChosenItems = entries.filter((entry) => entry.itemUuids?.length > 0);
+  return new Map(entriesWithChosenItems.map((entry) => [entry.domain, entry.itemUuids]));
+}
 
 interface PackageFormWorkspaceProps {
   uuid?: string;
@@ -44,29 +74,54 @@ const MetadataPackageFormWorkspace: React.FC<Workspace2DefinitionProps<PackageFo
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedDomains, setSelectedDomains] = useState<Set<string>>(new Set());
 
+  const [selectedItemUuidsByDomain, setSelectedItemUuidsByDomain] = useState<SelectedItemUuidsByDomain>(new Map());
+
   const allSelected = domains.length > 0 && selectedDomains.size === domains.length;
   const someSelected = selectedDomains.size > 0 && !allSelected;
 
   const { exportPackage, isLoading: isLoadingPackage, error: packageError } = usePackage(uuid ?? '');
 
+  // An empty list removes the domain from the map, so it goes back to exporting all of its items.
+  const setSelectedItemUuidsForDomain = useCallback((domain: MetadataDomain, itemUuids: Array<string>) => {
+    setSelectedItemUuidsByDomain((previousSelection) => {
+      const nextSelection = new Map(previousSelection);
+      if (itemUuids.length > 0) {
+        nextSelection.set(domain, itemUuids);
+      } else {
+        nextSelection.delete(domain);
+      }
+      return nextSelection;
+    });
+  }, []);
+
   const toggleSelectAll = useCallback(
     (checked: boolean) => {
       setSelectedDomains(checked ? new Set(domains) : new Set());
+      if (!checked) {
+        setSelectedItemUuidsByDomain(new Map());
+      }
     },
     [domains],
   );
 
-  const toggleDomain = useCallback((domain: string, checked: boolean) => {
-    setSelectedDomains((previous) => {
-      const next = new Set(previous);
-      if (checked) {
-        next.add(domain);
-      } else {
-        next.delete(domain);
+  const toggleDomain = useCallback(
+    (domain: string, checked: boolean) => {
+      setSelectedDomains((previous) => {
+        const next = new Set(previous);
+        if (checked) {
+          next.add(domain);
+        } else {
+          next.delete(domain);
+        }
+        return next;
+      });
+
+      if (!checked) {
+        setSelectedItemUuidsForDomain(domain, []);
       }
-      return next;
-    });
-  }, []);
+    },
+    [setSelectedItemUuidsForDomain],
+  );
 
   const hasUnsavedChanges = packageName.trim().length > 0 || description.trim().length > 0 || selectedDomains.size > 0;
 
@@ -90,6 +145,7 @@ const MetadataPackageFormWorkspace: React.FC<Workspace2DefinitionProps<PackageFo
         ? new Set(domains)
         : new Set(exportPackage.entries.map((entry) => entry.domain)),
     );
+    setSelectedItemUuidsByDomain(getSelectedItemUuidsByDomain(exportPackage.entries));
   }, [isEditMode, exportPackage, domains]);
 
   const handleSubmit = useCallback(
@@ -97,8 +153,7 @@ const MetadataPackageFormWorkspace: React.FC<Workspace2DefinitionProps<PackageFo
       event.preventDefault();
       setIsSubmitting(true);
 
-      // An explicit empty array tells the server to include every registered domain.
-      const entries = allSelected ? [] : Array.from(selectedDomains, (domain) => ({ domain }));
+      const entries = buildPackageEntries(selectedDomains, selectedItemUuidsByDomain, allSelected);
       const payload = { name: packageName.trim(), description: description.trim(), entries };
 
       try {
@@ -154,7 +209,18 @@ const MetadataPackageFormWorkspace: React.FC<Workspace2DefinitionProps<PackageFo
         setIsSubmitting(false);
       }
     },
-    [allSelected, closeWorkspace, description, isEditMode, mutate, packageName, selectedDomains, t, uuid],
+    [
+      allSelected,
+      closeWorkspace,
+      description,
+      isEditMode,
+      mutate,
+      packageName,
+      selectedDomains,
+      selectedItemUuidsByDomain,
+      t,
+      uuid,
+    ],
   );
 
   const isSubmitDisabled = packageName.trim().length === 0 || selectedDomains.size === 0 || isSubmitting;
@@ -238,12 +304,14 @@ const MetadataPackageFormWorkspace: React.FC<Workspace2DefinitionProps<PackageFo
                   />
                   <div className={styles.domainList}>
                     {domains.map((domain) => (
-                      <Checkbox
+                      <DomainSelectionRow
                         key={domain}
-                        id={`domain-${domain}`}
-                        labelText={formatDomainLabel(domain)}
-                        checked={selectedDomains.has(domain)}
-                        onChange={(_event, { checked }) => toggleDomain(domain, checked)}
+                        domain={domain}
+                        isDomainSelected={selectedDomains.has(domain)}
+                        selectedItemUuids={selectedItemUuidsByDomain.get(domain) ?? noSelectedItemUuids}
+                        packageFormTitle={title}
+                        onDomainSelectedChange={toggleDomain}
+                        onSelectedItemUuidsChange={setSelectedItemUuidsForDomain}
                       />
                     ))}
                   </div>

@@ -2,6 +2,15 @@ export type MetadataDomain = string;
 
 export interface ExportPackageEntryDto {
   domain: MetadataDomain;
+  // Omitted to export every item in the domain.
+  itemUuids?: Array<string>;
+}
+
+export interface MetadataItem {
+  uuid: string;
+  display: string;
+  domain: MetadataDomain;
+  retired: boolean;
 }
 
 export interface ExportPackageRequest {
