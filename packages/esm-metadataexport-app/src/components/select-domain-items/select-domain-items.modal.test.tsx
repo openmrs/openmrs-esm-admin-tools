@@ -72,7 +72,11 @@ function serveItems(items: Array<MetadataItem>) {
   );
 }
 
-function renderModal(initiallySelectedItems: Array<MetadataItem> = [], unresolvedItemUuids?: Array<string>) {
+function renderModal(
+  initiallySelectedItems: Array<MetadataItem> = [],
+  unresolvedItemUuids?: Array<string>,
+  initialTab?: 'all' | 'selected',
+) {
   return render(
     <SelectDomainItemsModal
       closeModal={mockCloseModal}
@@ -80,6 +84,7 @@ function renderModal(initiallySelectedItems: Array<MetadataItem> = [], unresolve
       packageFormTitle="New package"
       initiallySelectedItems={initiallySelectedItems}
       unresolvedItemUuids={unresolvedItemUuids}
+      initialTab={initialTab}
       onApply={mockOnApply}
     />,
     { wrapper: ({ children }) => <SWRConfig value={{ provider: () => new Map() }}>{children}</SWRConfig> },
@@ -103,11 +108,11 @@ describe('SelectDomainItemsModal', () => {
     expect(screen.getByRole('tab', { name: 'All (3)' })).toBeInTheDocument();
   });
 
-  it('applies "export all" when nothing is selected', async () => {
+  it('applies "include all" when nothing is selected', async () => {
     const user = userEvent.setup();
     renderModal();
 
-    await user.click(screen.getByRole('button', { name: 'Export all attribute types' }));
+    await user.click(screen.getByRole('button', { name: 'Include all attribute types' }));
 
     expect(mockOnApply).toHaveBeenCalledWith([]);
     expect(mockCloseModal).toHaveBeenCalled();
@@ -121,7 +126,7 @@ describe('SelectDomainItemsModal', () => {
     await user.click(screen.getByRole('checkbox', { name: 'Insurance Scheme' }));
     expect(screen.getByText(/2 selected across all pages/)).toBeInTheDocument();
 
-    await user.click(screen.getByRole('button', { name: 'Add 2 selected' }));
+    await user.click(screen.getByRole('button', { name: 'Include 2 selected' }));
 
     expect(mockOnApply).toHaveBeenCalledWith([punctuality, insuranceScheme]);
   });
@@ -182,7 +187,7 @@ describe('SelectDomainItemsModal', () => {
     expect(screen.getByRole('checkbox', { name: 'Punctuality' })).toBeChecked();
     expect(screen.queryByRole('checkbox', { name: 'uuid-1' })).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole('button', { name: 'Add 1 selected' }));
+    await user.click(screen.getByRole('button', { name: 'Include 1 selected' }));
     expect(mockOnApply).toHaveBeenCalledWith([punctuality]);
   });
 
@@ -229,7 +234,7 @@ describe('SelectDomainItemsModal', () => {
       expect(screen.getByRole('checkbox', { name: 'deleted-uuid' })).toBeChecked();
       expect(screen.getByText('Unavailable')).toBeInTheDocument();
 
-      await user.click(screen.getByRole('button', { name: 'Add 2 selected' }));
+      await user.click(screen.getByRole('button', { name: 'Include 2 selected' }));
       expect(mockOnApply).toHaveBeenCalledWith([paymentMethod, placeholder('deleted-uuid')]);
     });
 
@@ -298,7 +303,47 @@ describe('SelectDomainItemsModal', () => {
     await user.click(screen.getByRole('button', { name: 'Clear selection' }));
 
     expect(screen.getByRole('tab', { name: 'Selected (0)' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Export all attribute types' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Include all attribute types' })).toBeInTheDocument();
+  });
+
+  it('opens on the Selected tab when asked to', () => {
+    renderModal([paymentMethod], undefined, 'selected');
+
+    expect(screen.getByRole('tab', { name: 'Selected (1)' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('checkbox', { name: 'Payment Method' })).toBeInTheDocument();
+    expect(screen.queryByRole('checkbox', { name: 'Punctuality' })).not.toBeInTheDocument();
+  });
+
+  describe('when a search on the Selected tab matches nothing', () => {
+    it('says nothing matches if there is a selection', async () => {
+      const user = userEvent.setup();
+      renderModal([punctuality], undefined, 'selected');
+
+      await user.type(screen.getByRole('searchbox'), 'zzz');
+
+      expect(await screen.findByText('No attribute types match your search')).toBeInTheDocument();
+      expect(screen.queryByText('Nothing selected yet')).not.toBeInTheDocument();
+    });
+
+    it('says nothing is selected if the selection is empty', async () => {
+      const user = userEvent.setup();
+      renderModal([], undefined, 'selected');
+
+      await user.type(screen.getByRole('searchbox'), 'zzz');
+
+      expect(screen.getByText('Nothing selected yet')).toBeInTheDocument();
+    });
+  });
+
+  it('disables "Include retired" on the Selected tab, where it does not apply', async () => {
+    const user = userEvent.setup();
+    renderModal([paymentMethod]);
+
+    expect(screen.getByRole('switch', { name: 'Include retired' })).toBeEnabled();
+
+    await user.click(screen.getByRole('tab', { name: 'Selected (1)' }));
+
+    expect(screen.getByRole('switch', { name: 'Include retired' })).toBeDisabled();
   });
 
   it('requests retired rows when "Include retired" is toggled on', async () => {
@@ -354,7 +399,7 @@ describe('SelectDomainItemsModal', () => {
       expect(screen.getByRole('checkbox', { name: 'Attribute 02' })).toBeChecked();
       await user.click(screen.getByRole('checkbox', { name: 'Attribute 01' }));
 
-      await user.click(screen.getByRole('button', { name: 'Add 2 selected' }));
+      await user.click(screen.getByRole('button', { name: 'Include 2 selected' }));
 
       expect(mockOnApply).toHaveBeenCalledWith([attribute02, attribute09]);
     });

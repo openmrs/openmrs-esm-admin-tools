@@ -4,6 +4,7 @@ import { Button, Checkbox, DismissibleTag, OperationalTag, TagSkeleton } from '@
 import { showModal } from '@openmrs/esm-framework';
 import { formatDomainLabel } from '../../../domain-lookups/domain-lookups.resource';
 import { useMetadataItemCount, useMetadataItemsByUuid } from '../../../items/items.resource';
+import type { TabName } from '../../select-domain-items/select-domain-items.modal';
 import type { MetadataDomain, MetadataItem } from '../../../types';
 import styles from './domain-selection-row.scss';
 
@@ -27,6 +28,7 @@ const DomainSelectionRow: React.FC<DomainSelectionRowProps> = ({
   onSelectedItemUuidsChange,
 }) => {
   const { t } = useTranslation();
+  const domainLabel = formatDomainLabel(domain);
 
   // A selected domain with no specific items picked exports all of its items.
   const hasSelectedItems = isDomainSelected && selectedItemUuids.length > 0;
@@ -42,7 +44,7 @@ const DomainSelectionRow: React.FC<DomainSelectionRowProps> = ({
   );
   const { totalCount: totalItemsInDomain } = useMetadataItemCount(domain, hasSelectedItems);
 
-  const openSelectItemsModal = useCallback(() => {
+  const openSelectItemsModal = (initialTab: TabName = 'all') => {
     // Items whose details are loading, unavailable, failed to load or were never looked up (past the visible tags)
     // are passed to the modal as placeholders, which the modal looks up a page at a time.
     // They are kept out of the details cache, so the row keeps looking them up or marking them as unavailable.
@@ -64,6 +66,7 @@ const DomainSelectionRow: React.FC<DomainSelectionRowProps> = ({
       packageFormTitle,
       initiallySelectedItems: currentlySelectedItems,
       unresolvedItemUuids: Array.from(placeholderItems, (item) => item.uuid),
+      initialTab,
       onApply: (newlySelectedItems: Array<MetadataItem>) => {
         rememberItemDetails(newlySelectedItems.filter((item) => !placeholderItems.has(item)));
         onSelectedItemUuidsChange(
@@ -72,7 +75,7 @@ const DomainSelectionRow: React.FC<DomainSelectionRowProps> = ({
         );
       },
     });
-  }, [domain, itemDetailsByUuid, onSelectedItemUuidsChange, packageFormTitle, rememberItemDetails, selectedItemUuids]);
+  };
 
   const removeSelectedItem = useCallback(
     (uuidToRemove: string) => {
@@ -103,14 +106,24 @@ const DomainSelectionRow: React.FC<DomainSelectionRowProps> = ({
       <div className={styles.header}>
         <Checkbox
           id={`domain-${domain}`}
-          labelText={formatDomainLabel(domain)}
+          labelText={domainLabel}
           checked={isDomainSelected}
           onChange={(_event, { checked }) => onDomainSelectedChange(domain, checked)}
         />
         {isDomainSelected && (
           <div className={styles.actions}>
             <span className={styles.status}>{getSelectionStatusText()}</span>
-            <Button className={styles.linkButton} kind="ghost" size="sm" onClick={openSelectItemsModal}>
+            <Button
+              className={styles.linkButton}
+              kind="ghost"
+              size="sm"
+              aria-label={
+                hasSelectedItems
+                  ? t('editDomainItems', 'Edit items for {{domain}}', { domain: domainLabel })
+                  : t('chooseDomainItems', 'Choose items for {{domain}}', { domain: domainLabel })
+              }
+              onClick={() => openSelectItemsModal()}
+            >
               {hasSelectedItems ? t('edit', 'Edit') : t('chooseItems', 'Choose items')}
             </Button>
           </div>
@@ -132,7 +145,8 @@ const DomainSelectionRow: React.FC<DomainSelectionRowProps> = ({
             <OperationalTag
               type="gray"
               text={t('moreItems', '+{{count}} more', { count: hiddenItemCount })}
-              onClick={openSelectItemsModal}
+              // The hidden items are only listed on the Selected tab.
+              onClick={() => openSelectItemsModal('selected')}
             />
           )}
         </div>

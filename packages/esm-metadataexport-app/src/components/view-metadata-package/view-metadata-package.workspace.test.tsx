@@ -103,6 +103,18 @@ describe('ViewPackageWorkspace', () => {
     expect(screen.getByText('Concepts, Encounter types')).toBeInTheDocument();
   });
 
+  it('says how many items a domain is narrowed to', () => {
+    renderWorkspace({
+      ...exportPackage,
+      entries: [
+        { domain: 'ROLES', itemUuids: ['role-1', 'role-2'] },
+        { domain: 'ENCOUNTER_TYPES', itemUuids: [] },
+      ],
+    });
+
+    expect(screen.getByText('Roles (2 items), Encounter types')).toBeInTheDocument();
+  });
+
   it('shows "All domains" when the package has no entries', () => {
     renderWorkspace({ ...exportPackage, entries: [] });
 

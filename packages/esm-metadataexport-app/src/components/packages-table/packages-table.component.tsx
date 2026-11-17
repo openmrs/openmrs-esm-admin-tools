@@ -21,7 +21,7 @@ import {
   useSession,
   userHasAccess,
 } from '@openmrs/esm-framework';
-import { formatDomainLabel } from '../../domain-lookups/domain-lookups.resource';
+import { formatPackageDomains } from '../../domain-lookups/domain-lookups.resource';
 import { usePackages } from '../../packages/packages.resource';
 import { launchPackageFormWorkspace } from '../metadata-package-form/metadata-package-form-utils';
 import ViewPackageActionButton from '../view-metadata-package/view-package-action-button/view-package-action-button.component';
@@ -33,6 +33,12 @@ import styles from './packages-table.scss';
  * t('RUNNING', 'Running')
  * t('COMPLETED', 'Completed')
  * t('FAILED', 'Failed')
+ */
+
+/**
+ * DO NOT REMOVE THIS COMMENT, IT ADDS TRANSLATIONS FOR formatPackageDomains
+ * t('allDomains', 'All domains')
+ * t('domainWithItemCount', '{{domain}} ({{count}} items)', { count })
  */
 
 const PackagesTable: React.FC = () => {
@@ -63,10 +69,7 @@ const PackagesTable: React.FC = () => {
         id: exportPackage.uuid,
         name: exportPackage.name,
         description: exportPackage.description,
-        // An empty entries list means the package includes every registered domain.
-        domains: exportPackage.entries.length
-          ? exportPackage.entries.map((entry) => formatDomainLabel(entry.domain)).join(', ')
-          : t('allDomains', 'All domains'),
+        domains: formatPackageDomains(exportPackage.entries, t),
         status: exportPackage.latestBuild ? t(exportPackage.latestBuild.status) : t('noBuilds', 'No builds'),
       })),
     [packages, t],

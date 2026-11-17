@@ -36,10 +36,11 @@ interface SelectDomainItemsModalProps {
   initiallySelectedItems: Array<MetadataItem>;
   // Uuids of initially selected items the caller has no details for; those items are uuid placeholders.
   unresolvedItemUuids?: Array<string>;
+  initialTab?: TabName;
   onApply: (selectedItems: Array<MetadataItem>) => void;
 }
 
-type TabName = 'all' | 'selected';
+export type TabName = 'all' | 'selected';
 
 const pageSizeOptions = [8, 20, 50];
 
@@ -51,13 +52,14 @@ const SelectDomainItemsModal: React.FC<SelectDomainItemsModalProps> = ({
   packageFormTitle,
   initiallySelectedItems,
   unresolvedItemUuids = noUnresolvedItemUuids,
+  initialTab = 'all',
   onApply,
 }) => {
   const { t } = useTranslation();
   const domainLabel = formatDomainLabel(domain);
   const lowercaseDomainLabel = domainLabel.toLowerCase();
 
-  const [activeTabName, setActiveTabName] = useState<TabName>('all');
+  const [activeTabName, setActiveTabName] = useState<TabName>(initialTab);
   const [searchTerm, setSearchTerm] = useState('');
   const [includeRetired, setIncludeRetired] = useState(false);
   const [pageSize, setPageSize] = useState(pageSizeOptions[0]);
@@ -142,8 +144,8 @@ const SelectDomainItemsModal: React.FC<SelectDomainItemsModalProps> = ({
 
   const applyButtonLabel =
     selectedItemCount > 0
-      ? t('addSelectedItems', 'Add {{count}} selected', { count: selectedItemCount })
-      : t('exportAllDomainItems', 'Export all {{domain}}', { domain: lowercaseDomainLabel });
+      ? t('includeSelectedItems', 'Include {{count}} selected', { count: selectedItemCount })
+      : t('includeAllDomainItems', 'Include all {{domain}}', { domain: lowercaseDomainLabel });
 
   const renderTabContent = () => {
     if (isAllTabActive && searchError) {
@@ -161,6 +163,8 @@ const SelectDomainItemsModal: React.FC<SelectDomainItemsModalProps> = ({
     if (isAllTabActive ? isAllTabLoading : isSelectedTabLoading) {
       return (
         <DataTableSkeleton
+          // Same row height as the items table, so the skeleton is no taller than the table it stands in for.
+          className="cds--data-table--md"
           role="progressbar"
           columnCount={1}
           rowCount={pageSize}
@@ -185,6 +189,7 @@ const SelectDomainItemsModal: React.FC<SelectDomainItemsModalProps> = ({
           }
         />
         <Pagination
+          className={styles.pagination}
           forwardText={t('nextPage', 'Next page')}
           backwardText={t('previousPage', 'Previous page')}
           page={activeTab.page}
@@ -237,12 +242,14 @@ const SelectDomainItemsModal: React.FC<SelectDomainItemsModalProps> = ({
             size="sm"
             hideLabel
             labelText={t('includeRetired', 'Include retired')}
+            // Retired items that are selected always show on the Selected tab, so the toggle only applies to All.
+            disabled={!isAllTabActive}
             toggled={includeRetired}
             onToggle={setIncludeRetired}
           />
         </div>
 
-        {renderTabContent()}
+        <div className={styles.tabContent}>{renderTabContent()}</div>
 
         <div className={styles.selectionSummary}>
           <span>
