@@ -284,7 +284,7 @@ describe('SelectDomainItemsModal', () => {
         await user.click(screen.getByRole('tab', { name: 'Selected (12)' }));
         expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
 
-        await user.type(screen.getByRole('searchbox'), '1');
+        await user.type(screen.getByRole('searchbox'), 'Attribute 1');
 
         expect(await screen.findByRole('progressbar')).toBeInTheDocument();
       });
