@@ -25,6 +25,11 @@ export const deleteMetadataPackageModal = getAsyncLifecycle(
   options,
 );
 
+export const selectDomainItemsModal = getAsyncLifecycle(
+  () => import('./components/select-domain-items/select-domain-items.modal'),
+  options,
+);
+
 // Workspaces
 export const metadataPackageFormWorkspace = getAsyncLifecycle(
   () => import('./components/metadata-package-form/metadata-package-form.workspace'),
