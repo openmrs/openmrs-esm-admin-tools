@@ -266,7 +266,7 @@ describe('PackageFormWorkspace', () => {
 
     // Opens the picker for a domain and applies the given items as if the user picked them.
     async function selectItemsInModal(user: ReturnType<typeof userEvent.setup>, items: Array<MetadataItem>) {
-      await user.click(screen.getByRole('button', { name: 'Choose items' }));
+      await user.click(screen.getByRole('button', { name: /^Choose items for / }));
       const { onApply } = mockShowModal.mock.lastCall[1];
       act(() => onApply(items));
     }
@@ -275,12 +275,12 @@ describe('PackageFormWorkspace', () => {
       const user = userEvent.setup();
       renderWorkspace();
 
-      expect(screen.queryByRole('button', { name: 'Choose items' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /^Choose items for / })).not.toBeInTheDocument();
 
       await user.click(screen.getByRole('checkbox', { name: 'Attribute types' }));
 
       expect(screen.getByText('All items')).toBeInTheDocument();
-      await user.click(screen.getByRole('button', { name: 'Choose items' }));
+      await user.click(screen.getByRole('button', { name: /^Choose items for / }));
       expect(mockShowModal).toHaveBeenCalledWith(
         'select-domain-items-modal',
         expect.objectContaining({
@@ -302,7 +302,7 @@ describe('PackageFormWorkspace', () => {
       expect(screen.getByText('2 of 7')).toBeInTheDocument();
       expect(screen.getByText('Punctuality')).toBeInTheDocument();
       expect(screen.getByText('Payment Method')).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Edit' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /^Edit items for / })).toBeInTheDocument();
 
       await user.click(screen.getByRole('button', { name: 'Create package' }));
 
@@ -344,7 +344,7 @@ describe('PackageFormWorkspace', () => {
 
       await user.type(screen.getByRole('textbox', { name: 'Package name' }), 'Everything');
       await user.click(screen.getByRole('checkbox', { name: 'Select all' }));
-      await user.click(screen.getAllByRole('button', { name: 'Choose items' })[0]);
+      await user.click(screen.getAllByRole('button', { name: /^Choose items for / })[0]);
       act(() => mockShowModal.mock.lastCall[1].onApply([punctuality]));
       await user.click(screen.getByRole('button', { name: 'Create package' }));
 

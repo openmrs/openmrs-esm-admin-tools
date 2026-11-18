@@ -72,7 +72,7 @@ describe('DomainSelectionRow', () => {
 
       expect(screen.getByRole('checkbox', { name: 'Attribute types' })).not.toBeChecked();
       expect(screen.queryByText('All items')).not.toBeInTheDocument();
-      expect(screen.queryByRole('button', { name: 'Choose items' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /^Choose items for / })).not.toBeInTheDocument();
     });
 
     it('reports the domain as selected when the checkbox is ticked', async () => {
@@ -91,7 +91,7 @@ describe('DomainSelectionRow', () => {
 
       expect(screen.getByRole('checkbox', { name: 'Attribute types' })).toBeChecked();
       expect(screen.getByText('All items')).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Choose items' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /^Choose items for / })).toBeInTheDocument();
       expect(screen.queryByRole('button', { name: /^Remove/ })).not.toBeInTheDocument();
     });
 
@@ -114,7 +114,7 @@ describe('DomainSelectionRow', () => {
       const user = userEvent.setup();
       renderRow();
 
-      await user.click(screen.getByRole('button', { name: 'Choose items' }));
+      await user.click(screen.getByRole('button', { name: /^Choose items for / }));
 
       expect(mockShowModal).toHaveBeenCalledWith(
         'select-domain-items-modal',
@@ -133,7 +133,7 @@ describe('DomainSelectionRow', () => {
       const user = userEvent.setup();
       renderRow();
 
-      await user.click(screen.getByRole('button', { name: 'Choose items' }));
+      await user.click(screen.getByRole('button', { name: /^Choose items for / }));
       act(() => lastModalProps().onApply([punctuality, paymentMethod]));
 
       expect(mockOnSelectedItemUuidsChange).toHaveBeenCalledWith('ATTRIBUTE_TYPES', ['uuid-1', 'uuid-2']);
@@ -143,7 +143,7 @@ describe('DomainSelectionRow', () => {
       const user = userEvent.setup();
       const { rerenderRow } = renderRow();
 
-      await user.click(screen.getByRole('button', { name: 'Choose items' }));
+      await user.click(screen.getByRole('button', { name: /^Choose items for / }));
       act(() => lastModalProps().onApply([punctuality]));
       rerenderRow({ selectedItemUuids: ['uuid-1'] });
 
@@ -157,7 +157,7 @@ describe('DomainSelectionRow', () => {
       renderRow({ selectedItemUuids: ['uuid-1', 'uuid-2'] });
 
       expect(screen.getByText('2 of 7')).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Edit' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /^Edit items for / })).toBeInTheDocument();
       expect(screen.getByText('Punctuality')).toBeInTheDocument();
       expect(screen.getByText('Payment Method')).toBeInTheDocument();
       expect(mockUseMetadataItemCount).toHaveBeenLastCalledWith('ATTRIBUTE_TYPES', true);
@@ -183,7 +183,7 @@ describe('DomainSelectionRow', () => {
       const user = userEvent.setup();
       renderRow({ selectedItemUuids: ['uuid-1', 'uuid-2'] });
 
-      await user.click(screen.getByRole('button', { name: 'Edit' }));
+      await user.click(screen.getByRole('button', { name: /^Edit items for / }));
 
       expect(lastModalProps().initiallySelectedItems).toEqual([punctuality, paymentMethod]);
     });
@@ -219,7 +219,7 @@ describe('DomainSelectionRow', () => {
       const user = userEvent.setup();
       const { rerenderRow } = renderRow({ selectedItemUuids: ['uuid-1', 'deleted-uuid'] });
 
-      await user.click(screen.getByRole('button', { name: 'Edit' }));
+      await user.click(screen.getByRole('button', { name: /^Edit items for / }));
       act(() => lastModalProps().onApply(lastModalProps().initiallySelectedItems));
       rerenderRow({ selectedItemUuids: ['uuid-1', 'deleted-uuid'] });
 
@@ -233,7 +233,7 @@ describe('DomainSelectionRow', () => {
       const user = userEvent.setup();
       const { rerenderRow } = renderRow({ selectedItemUuids: ['uuid-1'] });
 
-      await user.click(screen.getByRole('button', { name: 'Edit' }));
+      await user.click(screen.getByRole('button', { name: /^Edit items for / }));
       act(() => lastModalProps().onApply(lastModalProps().initiallySelectedItems));
       mockServerLookUp();
       rerenderRow({ selectedItemUuids: ['uuid-1'] });
@@ -270,7 +270,7 @@ describe('DomainSelectionRow', () => {
       const user = userEvent.setup();
       renderRow({ selectedItemUuids: ['uuid-1'] });
 
-      await user.click(screen.getByRole('button', { name: 'Edit' }));
+      await user.click(screen.getByRole('button', { name: /^Edit items for / }));
 
       expect(lastModalProps().initiallySelectedItems).toEqual([
         { uuid: 'uuid-1', domain: 'ATTRIBUTE_TYPES', display: 'uuid-1', retired: false },
@@ -305,13 +305,25 @@ describe('DomainSelectionRow', () => {
       expect(lastModalProps().unresolvedItemUuids).not.toContain('uuid-1');
     });
 
-    it('opens the modal from the "+N more" tag', async () => {
+    it('opens the modal on the Selected tab from the "+N more" tag, since that is where the hidden items are', async () => {
       const user = userEvent.setup();
       renderRow({ selectedItemUuids: manyUuids });
 
       await user.click(screen.getByRole('button', { name: '+2 more' }));
 
-      expect(mockShowModal).toHaveBeenCalledWith('select-domain-items-modal', expect.anything());
+      expect(mockShowModal).toHaveBeenCalledWith(
+        'select-domain-items-modal',
+        expect.objectContaining({ initialTab: 'selected' }),
+      );
+    });
+
+    it('opens the modal on the All tab from "Edit"', async () => {
+      const user = userEvent.setup();
+      renderRow({ selectedItemUuids: manyUuids });
+
+      await user.click(screen.getByRole('button', { name: 'Edit items for Attribute types' }));
+
+      expect(lastModalProps().initialTab).toBe('all');
     });
   });
 });

@@ -168,6 +168,31 @@ describe('PackagesTable', () => {
     expect(mockLaunchViewPackageWorkspace).toHaveBeenCalledTimes(2);
   });
 
+  it('says how many items a domain is narrowed to, so it does not read as the whole domain', () => {
+    const narrowedPackage: ExportPackage = {
+      ...unbuiltPackage,
+      entries: [
+        { domain: 'ROLES', itemUuids: ['role-1', 'role-2'] },
+        { domain: 'PRIVILEGES', itemUuids: [] },
+        { domain: 'CONCEPTS', itemUuids: ['concept-1', 'concept-2', 'concept-3'] },
+      ],
+    };
+    mockUsePackages.mockReturnValue({
+      packages: [narrowedPackage],
+      totalCount: 1,
+      currentPage: 1,
+      currentPageSize: 10,
+      goTo: vi.fn(),
+      isLoading: false,
+      isValidating: false,
+      error: undefined,
+      mutate: vi.fn(),
+    });
+    render(<PackagesTable />);
+
+    expect(screen.getByText('Roles (2 items), Privileges, Concepts (3 items)')).toBeInTheDocument();
+  });
+
   it('renders the columns in the order name, description, domains, status', () => {
     mockUsePackages.mockReturnValue({
       packages: [builtPackage],

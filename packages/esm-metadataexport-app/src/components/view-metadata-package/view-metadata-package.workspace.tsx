@@ -18,7 +18,7 @@ import {
   Workspace2,
   type Workspace2DefinitionProps,
 } from '@openmrs/esm-framework';
-import { formatDomainLabel } from '../../domain-lookups/domain-lookups.resource';
+import { formatPackageDomains } from '../../domain-lookups/domain-lookups.resource';
 import { isPackagesCacheKey, triggerBuild, usePackageBuilds } from '../../packages/packages.resource';
 import type { ExportBuildStatus, ExportPackage } from '../../types';
 import styles from './view-metadata-package.workspace.scss';
@@ -99,15 +99,7 @@ const ViewMetadataPackageWorkspace: React.FC<Workspace2DefinitionProps<ViewPacka
     });
   }, [exportPackage, closeWorkspace]);
 
-  const domainsLabel = useMemo(() => {
-    // An empty entries list means the package includes every registered domain.
-    const includesEveryDomain = exportPackage.entries.length === 0;
-    if (includesEveryDomain) {
-      return t('allDomains', 'All domains');
-    }
-
-    return exportPackage.entries.map((entry) => formatDomainLabel(entry.domain)).join(', ');
-  }, [exportPackage.entries, t]);
+  const domainsLabel = useMemo(() => formatPackageDomains(exportPackage.entries, t), [exportPackage.entries, t]);
 
   // Replace this workspace with the edit form so it doesn't reappear with stale package details
   const editPackage = useCallback(async () => {

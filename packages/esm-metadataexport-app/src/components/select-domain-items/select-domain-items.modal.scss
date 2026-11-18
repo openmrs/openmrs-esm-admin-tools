@@ -29,6 +29,18 @@
   flex: 1 1 16rem;
 }
 
+// Holds the height of a full first page (header, 8 rows and the pagination bar), so the modal and its
+// controls stay put when a tab, a search or a page has fewer rows.
+.tabContent {
+  display: flex;
+  flex-direction: column;
+  min-block-size: 25rem;
+}
+
+.pagination {
+  margin-block-start: auto;
+}
+
 .itemName {
   display: inline-flex;
   align-items: center;
