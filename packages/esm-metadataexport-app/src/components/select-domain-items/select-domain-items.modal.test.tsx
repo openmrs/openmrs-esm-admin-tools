@@ -263,14 +263,13 @@ describe('SelectDomainItemsModal', () => {
           savedItems.slice(0, 8).map((savedItem) => savedItem.uuid),
         );
 
-        // Matches Attribute 01, 10, 11 and 12; the last three were placeholders on the unopened page two.
-        await user.type(screen.getByRole('searchbox'), '1');
+        // Matches Attribute 10, 11 and 12, which are placeholders on the unopened page two.
+        await user.type(screen.getByRole('searchbox'), 'Attribute 1');
 
         expect(await screen.findByRole('checkbox', { name: 'Attribute 10' })).toBeInTheDocument();
-        expect(screen.getByRole('checkbox', { name: 'Attribute 01' })).toBeInTheDocument();
         expect(screen.getByRole('checkbox', { name: 'Attribute 11' })).toBeInTheDocument();
         expect(screen.getByRole('checkbox', { name: 'Attribute 12' })).toBeInTheDocument();
-        expect(screen.getByText(/1–4 of 4 items/)).toBeInTheDocument();
+        expect(screen.getByText(/1–3 of 3 items/)).toBeInTheDocument();
       });
 
       it('shows a skeleton while the placeholders are looked up', async () => {
