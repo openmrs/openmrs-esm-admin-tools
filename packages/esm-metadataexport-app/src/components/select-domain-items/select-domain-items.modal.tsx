@@ -179,7 +179,7 @@ const SelectDomainItemsModal: React.FC<SelectDomainItemsModalProps> = ({
           isItemUnavailable={isItemUnavailable}
           onItemsSelectedChange={setItemsSelected}
           emptyStateText={
-            isAllTabActive
+            isAllTabActive || (debouncedSearchTerm && selectedItemCount > 0)
               ? t('noMatchingItems', 'No {{domain}} match your search', { domain: lowercaseDomainLabel })
               : t('noSelectedItems', 'Nothing selected yet')
           }
