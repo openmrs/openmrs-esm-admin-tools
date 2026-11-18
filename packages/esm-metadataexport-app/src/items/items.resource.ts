@@ -72,7 +72,12 @@ interface MetadataItemLookupResult {
 const noFailedUuids: ReadonlySet<string> = new Set();
 
 async function fetchMetadataItemsByUuid(domain: MetadataDomain, uuids: Array<string>) {
-  const settledLookups = await Promise.allSettled(uuids.map((uuid) => fetchMetadataItem(domain, uuid)));
+  const batchSize = 10;
+  const settledLookups: Array<PromiseSettledResult<[string, MetadataItem | null]>> = [];
+  for (let start = 0; start < uuids.length; start += batchSize) {
+    const batch = uuids.slice(start, start + batchSize);
+    settledLookups.push(...(await Promise.allSettled(batch.map((uuid) => fetchMetadataItem(domain, uuid)))));
+  }
   const result = { itemsByUuid: new Map<string, MetadataItem | null>(), failedUuids: new Set<string>() };
   settledLookups.forEach((lookup, index) => {
     if (lookup.status === 'fulfilled') {
