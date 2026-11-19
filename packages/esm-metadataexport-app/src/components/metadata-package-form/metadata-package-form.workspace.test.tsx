@@ -237,17 +237,13 @@ describe('PackageFormWorkspace', () => {
     const user = userEvent.setup();
     renderWorkspace();
 
-    expect(mockWorkspace2).toHaveBeenLastCalledWith(
+    expect(mockWorkspace2.mock.lastCall?.[0]).toEqual(
       expect.objectContaining({ title: 'New package', hasUnsavedChanges: false }),
-      expect.anything(),
     );
 
     await user.type(screen.getByRole('textbox', { name: 'Package name' }), 'Core reference data');
 
-    expect(mockWorkspace2).toHaveBeenLastCalledWith(
-      expect.objectContaining({ hasUnsavedChanges: true }),
-      expect.anything(),
-    );
+    expect(mockWorkspace2.mock.lastCall?.[0]).toEqual(expect.objectContaining({ hasUnsavedChanges: true }));
   });
 
   describe('choosing items', () => {
@@ -392,10 +388,7 @@ describe('PackageFormWorkspace', () => {
       rerender(<MetadataPackageFormWorkspace {...workspaceProps(uuid)} />);
 
       expect(screen.getByText('Error loading package')).toBeInTheDocument();
-      expect(mockWorkspace2).toHaveBeenLastCalledWith(
-        expect.objectContaining({ hasUnsavedChanges: true }),
-        expect.anything(),
-      );
+      expect(mockWorkspace2.mock.lastCall?.[0]).toEqual(expect.objectContaining({ hasUnsavedChanges: true }));
     });
 
     it('seeds the form from the fetched package', () => {
