@@ -28,7 +28,7 @@ const ReportDataViewer: React.FC<ReportDataViewerProps> = ({ reportData }) => {
   const layout = useLayoutType();
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [currentPage, setCurrentPage] = useState(1);
-  const disposeModal = useRef<ReturnType<typeof showModal>>();
+  const disposeModal = useRef<ReturnType<typeof showModal>>(undefined);
   useEffect(() => () => disposeModal.current?.(), []);
   const [selectedColumns, setSelectedColumns] = useState<Record<string, boolean>>({});
 
