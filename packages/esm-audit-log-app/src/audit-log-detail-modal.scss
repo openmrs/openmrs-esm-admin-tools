@@ -1,0 +1,37 @@
+.detailContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding-block: 1rem;
+}
+
+.metaSection,
+.changesSection,
+.childLogsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sectionTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--cds-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-block-end: 0.25rem;
+}
+
+.oldValue {
+  color: var(--cds-support-error);
+}
+
+.newValue {
+  color: var(--cds-support-success);
+}
+
+.emptyChanges {
+  padding: 1rem;
+  text-align: center;
+  color: var(--cds-text-secondary);
+}
